@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import {
+  BadgeIndianRupee,
   Clock,
   GraduationCap,
   Guitar,
+  IndianRupee,
   MapPin,
   Music,
   Star,
@@ -98,8 +100,11 @@ function ArtistDetail({ artist }) {
               </div>
             </div>
           </div>
-
-          <h2 className="font-bold text-xl p-1 rounded-full px-2 ">₹9,999/-</h2>
+          <hr />
+          <h2 className="flex font-bold items-center text-xl p-1 rounded-full px-1">
+            <IndianRupee className="bg-gray-200 rounded-lg p-2 size-10 mr-3" />{" "}
+            ₹{artist.price}/-
+          </h2>
 
           {/* <div className="flex gap-3">
             {socialMediaList.map((item, index) => (

@@ -21,6 +21,7 @@ function Search() {
   const [eventsTypes, setEventsTypes] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [instruments, setInstruments] = useState([]);
+  const [genders, setGenders] = useState(["All"]);
   const [selectedCategory, setSelectedCategory] = useState("All Artist Types");
   const [selectedGenre, setSelectedGenre] = useState("All Genres");
   const [selectedLocation, setSelectedLocation] = useState("All Locations");
@@ -28,6 +29,9 @@ function Search() {
   const [selectedLanguage, setSelectedLanguage] = useState("All Languages");
   const [selectedInstrument, setSelectedInstrument] =
     useState("All Instruments");
+  const [selectedGender, setSelectedGender] = useState("All");
+  const [selectedSortOption, setSelectedSortOption] = useState("Low to High"); // Default to Low to High
+  const [sortedArtists, setSortedArtists] = useState([]);
 
   useEffect(() => {
     fetchArtists();
@@ -81,36 +85,40 @@ function Search() {
 
     const uniqueInstruments = [
       "All Instruments",
-      ...new Set(artists.flatMap((artist) => artist.instruments.split(", "))),
+      ...new Set(
+        artists.flatMap((artist) =>
+          artist.instruments ? artist.instruments.split(", ") : []
+        )
+      ),
     ];
     setInstruments(uniqueInstruments);
+
+    const uniqueGenders = [
+      "All",
+      ...new Set(artists.map((artist) => artist.gender)),
+    ];
+    setGenders(uniqueGenders);
   };
 
-  const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value);
+  useEffect(() => {
+    if (selectedSortOption === "Low to High") {
+      setSortedArtists(
+        [...artists].sort((a, b) => parsePrice(a.price) - parsePrice(b.price))
+      );
+    } else if (selectedSortOption === "High to Low") {
+      setSortedArtists(
+        [...artists].sort((a, b) => parsePrice(b.price) - parsePrice(a.price))
+      );
+    } else {
+      setSortedArtists([...artists]);
+    }
+  }, [selectedSortOption, artists]);
+
+  const parsePrice = (priceString) => {
+    return parseInt(priceString.replace(/,/g, ""), 10);
   };
 
-  const handleGenreChange = (event) => {
-    setSelectedGenre(event.target.value);
-  };
-
-  const handleLocationChange = (event) => {
-    setSelectedLocation(event.target.value);
-  };
-
-  const handleEventTypeChange = (event) => {
-    setSelectedEventType(event.target.value);
-  };
-
-  const handleLanguageChange = (event) => {
-    setSelectedLanguage(event.target.value);
-  };
-
-  const handleInstrumentChange = (event) => {
-    setSelectedInstrument(event.target.value);
-  };
-
-  const filteredArtists = artists.filter((artist) => {
+  const filteredArtists = sortedArtists.filter((artist) => {
     const matchesCategory =
       selectedCategory === "All Artist Types" ||
       artist.artistType === selectedCategory;
@@ -128,18 +136,22 @@ function Search() {
       artist.languages.split(", ").includes(selectedLanguage);
     const matchesInstrument =
       selectedInstrument === "All Instruments" ||
-      artist.instruments.split(", ").includes(selectedInstrument);
+      (artist.instruments &&
+        artist.instruments.split(", ").includes(selectedInstrument));
+    const matchesGender =
+      selectedGender === "All" || artist.gender === selectedGender;
+
     return (
       matchesCategory &&
       matchesGenre &&
       matchesLocation &&
       matchesEventType &&
       matchesLanguage &&
-      matchesInstrument
+      matchesInstrument &&
+      matchesGender
     );
   });
 
-  // Define your custom theme
   const theme = createTheme({
     typography: {
       fontFamily: '"Your Custom Font", sans-serif',
@@ -151,14 +163,13 @@ function Search() {
       <CssBaseline />
       <div className="mt-5 mx-5">
         <h3>Filters</h3>
-        <div className="flex flex-wrap items-end gap-4">
-          {/* Artist Type Filter */}
-          <div>
-            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+        <div className="mt-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 xl:grid-cols-7 gap-4">
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
               <InputLabel>Artist Types</InputLabel>
               <Select
                 value={selectedCategory}
-                onChange={handleCategoryChange}
+                onChange={(event) => setSelectedCategory(event.target.value)}
                 label="Artist Types"
               >
                 {categories.map((category, index) => (
@@ -170,13 +181,12 @@ function Search() {
             </FormControl>
           </div>
 
-          {/* Genre Filter */}
-          <div>
-            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
               <InputLabel>Genre</InputLabel>
               <Select
                 value={selectedGenre}
-                onChange={handleGenreChange}
+                onChange={(event) => setSelectedGenre(event.target.value)}
                 label="Genre"
               >
                 {genres.map((genre, index) => (
@@ -188,13 +198,12 @@ function Search() {
             </FormControl>
           </div>
 
-          {/* Location Filter */}
-          <div>
-            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
               <InputLabel>Locations</InputLabel>
               <Select
                 value={selectedLocation}
-                onChange={handleLocationChange}
+                onChange={(event) => setSelectedLocation(event.target.value)}
                 label="Locations"
               >
                 {locations.map((location, index) => (
@@ -206,13 +215,12 @@ function Search() {
             </FormControl>
           </div>
 
-          {/* Events Type Filter */}
-          <div>
-            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
               <InputLabel>Event Types</InputLabel>
               <Select
                 value={selectedEventType}
-                onChange={handleEventTypeChange}
+                onChange={(event) => setSelectedEventType(event.target.value)}
                 label="Event Types"
               >
                 {eventsTypes.map((eventType, index) => (
@@ -224,13 +232,29 @@ function Search() {
             </FormControl>
           </div>
 
-          {/* Languages Filter */}
-          <div>
-            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
+              <InputLabel>Gender</InputLabel>
+              <Select
+                value={selectedGender}
+                onChange={(event) => setSelectedGender(event.target.value)}
+                label="Gender"
+              >
+                {genders.map((gender, index) => (
+                  <MenuItem key={index} value={gender}>
+                    {gender}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
               <InputLabel>Languages</InputLabel>
               <Select
                 value={selectedLanguage}
-                onChange={handleLanguageChange}
+                onChange={(event) => setSelectedLanguage(event.target.value)}
                 label="Languages"
               >
                 {languages.map((language, index) => (
@@ -242,13 +266,12 @@ function Search() {
             </FormControl>
           </div>
 
-          {/* Instruments Filter */}
-          <div>
-            <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
               <InputLabel>Instruments</InputLabel>
               <Select
                 value={selectedInstrument}
-                onChange={handleInstrumentChange}
+                onChange={(event) => setSelectedInstrument(event.target.value)}
                 label="Instruments"
               >
                 {instruments.map((instrument, index) => (
@@ -256,6 +279,20 @@ function Search() {
                     {instrument}
                   </MenuItem>
                 ))}
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
+              <InputLabel>Budget</InputLabel>
+              <Select
+                value={selectedSortOption}
+                onChange={(event) => setSelectedSortOption(event.target.value)}
+                label="Budget"
+              >
+                <MenuItem value="Low to High">Low to High</MenuItem>
+                <MenuItem value="High to Low">High to Low</MenuItem>
               </Select>
             </FormControl>
           </div>

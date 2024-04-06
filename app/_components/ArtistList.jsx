@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-function ArtistList({ artists = artists }, { heading = "Popular Singers" }) {
+function ArtistList({ artists, heading }) {
   return (
     <div className="mb-10 px-8">
-      <h2 className="font-bold text-xl">{heading}</h2>
+      {/* <h2 className="font-bold text-xl">{heading}</h2> */}
 
       <div
         className="grid grid-cols-2 
@@ -15,12 +15,11 @@ function ArtistList({ artists = artists }, { heading = "Popular Singers" }) {
       >
         {artists.length > 0
           ? artists.map((artist, index) => (
-              <Link href={"/artist/" + artist.linkid}>
+              <Link href={"/artist/" + artist.linkid} key={index}>
                 <div
                   className="border-[1px] rounded-lg p-3
                 cursor-pointer hover:border-primary
                 hover:shadow-sm transition-all ease-in-out"
-                  key={index}
                 >
                   <Image
                     src={artist.profilePic}
@@ -37,9 +36,7 @@ function ArtistList({ artists = artists }, { heading = "Popular Singers" }) {
                       {artist.artistType}
                     </h2>
                     <h2 className="font-bold">{artist.name}</h2>
-                    <h2 className="text-primary text-sm">
-                      10+ Years of Experience
-                    </h2>
+                    <h2 className="text-primary text-sm">₹ {artist.price}</h2>
                     <h2 className="text-gray-500 text-sm">{artist.location}</h2>
                     <Link href={"/artist/" + artist.linkid} className="w-full">
                       <h2

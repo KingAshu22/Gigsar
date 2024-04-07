@@ -8,6 +8,9 @@ import {
   ThemeProvider,
   createTheme,
   CssBaseline,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
 } from "@mui/material";
 import ArtistList from "@/app/_components/ArtistList";
 import axios from "axios";
@@ -23,33 +26,32 @@ function Search() {
   const [instruments, setInstruments] = useState([]);
   const [genders, setGenders] = useState(["All"]);
   const [selectedCategory, setSelectedCategory] = useState("All Artist Types");
-  const [selectedGenre, setSelectedGenre] = useState("All Genres");
+  const [selectedGenre, setSelectedGenre] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("All Locations");
   const [selectedEventType, setSelectedEventType] = useState("All Event Types");
-  const [selectedLanguage, setSelectedLanguage] = useState("All Languages");
-  const [selectedInstrument, setSelectedInstrument] =
-    useState("All Instruments");
+  const [selectedLanguage, setSelectedLanguage] = useState([]);
+  const [selectedInstrument, setSelectedInstrument] = useState([]);
   const [selectedGender, setSelectedGender] = useState("All");
-  const [selectedSortOption, setSelectedSortOption] = useState("Low to High"); // Default to Low to High
+  const [selectedSortOption, setSelectedSortOption] = useState("Low to High");
+  const [selectedMinBudget, setSelectedMinBudget] = useState("");
+  const [selectedMaxBudget, setSelectedMaxBudget] = useState("");
   const [sortedArtists, setSortedArtists] = useState([]);
 
   useEffect(() => {
     fetchArtists();
   }, []);
 
-  const fetchArtists = () => {
+  const fetchArtists = async () => {
     setLoading(true);
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API}/artist`)
-      .then((response) => {
-        setArtists(response.data);
-        extractFilters(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching artists:", error);
-        setLoading(false);
-      });
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/artist`);
+      setArtists(response.data);
+      extractFilters(response.data);
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const extractFilters = (artists) => {
@@ -60,7 +62,6 @@ function Search() {
     setCategories(uniqueCategories);
 
     const uniqueGenres = [
-      "All Genres",
       ...new Set(artists.flatMap((artist) => artist.genre.split(", "))),
     ];
     setGenres(uniqueGenres);
@@ -78,13 +79,11 @@ function Search() {
     setEventsTypes(uniqueEventsTypes);
 
     const uniqueLanguages = [
-      "All Languages",
       ...new Set(artists.flatMap((artist) => artist.languages.split(", "))),
     ];
     setLanguages(uniqueLanguages);
 
     const uniqueInstruments = [
-      "All Instruments",
       ...new Set(
         artists.flatMap((artist) =>
           artist.instruments ? artist.instruments.split(", ") : []
@@ -123,8 +122,8 @@ function Search() {
       selectedCategory === "All Artist Types" ||
       artist.artistType === selectedCategory;
     const matchesGenre =
-      selectedGenre === "All Genres" ||
-      artist.genre.split(", ").includes(selectedGenre);
+      selectedGenre.length === 0 ||
+      selectedGenre.every((genre) => artist.genre.split(", ").includes(genre));
     const matchesLocation =
       selectedLocation === "All Locations" ||
       artist.location === selectedLocation;
@@ -132,14 +131,27 @@ function Search() {
       selectedEventType === "All Event Types" ||
       artist.eventsType.split(", ").includes(selectedEventType);
     const matchesLanguage =
-      selectedLanguage === "All Languages" ||
-      artist.languages.split(", ").includes(selectedLanguage);
+      selectedLanguage.length === 0 ||
+      selectedLanguage.every((language) =>
+        artist.languages.split(", ").includes(language)
+      );
     const matchesInstrument =
-      selectedInstrument === "All Instruments" ||
-      (artist.instruments &&
-        artist.instruments.split(", ").includes(selectedInstrument));
+      selectedInstrument.length === 0 ||
+      selectedInstrument.every(
+        (instrument) =>
+          artist.instruments &&
+          artist.instruments.split(", ").includes(instrument)
+      );
     const matchesGender =
       selectedGender === "All" || artist.gender === selectedGender;
+    const matchesMinBudget =
+      selectedMinBudget === "" ||
+      parsePrice(artist.price) >=
+        parseInt(selectedMinBudget.replace(/,/g, ""), 10);
+    const matchesMaxBudget =
+      selectedMaxBudget === "" ||
+      parsePrice(artist.price) <=
+        parseInt(selectedMaxBudget.replace(/,/g, ""), 10);
 
     return (
       matchesCategory &&
@@ -148,7 +160,9 @@ function Search() {
       matchesEventType &&
       matchesLanguage &&
       matchesInstrument &&
-      matchesGender
+      matchesGender &&
+      matchesMinBudget &&
+      matchesMaxBudget
     );
   });
 
@@ -158,12 +172,87 @@ function Search() {
     },
   });
 
+  const budgetOptions = [
+    "10,000",
+    "11,000",
+    "12,000",
+    "13,000",
+    "14,000",
+    "15,000",
+    "16,000",
+    "17,000",
+    "18,000",
+    "19,000",
+    "20,000",
+    "25,000",
+    "30,000",
+    "35,000",
+    "40,000",
+    "45,000",
+    "50,000",
+    "60,000",
+    "70,000",
+    "80,000",
+    "90,000",
+    "1,00,000",
+    "1,25,000",
+    "1,50,000",
+    "1,75,000",
+    "2,00,000",
+    "2,50,000",
+    "3,00,000",
+    "3,50,000",
+    "4,00,000",
+    "4,50,000",
+    "5,00,000",
+    "6,00,000",
+    "7,00,000",
+    "8,00,000",
+    "9,00,000",
+    "10,00,000",
+    "11,00,000",
+    "12,00,000",
+    "13,00,000",
+    "14,00,000",
+    "15,00,000",
+    "16,00,000",
+    "17,00,000",
+    "18,00,000",
+    "19,00,000",
+    "20,00,000",
+    "25,00,000",
+    "30,00,000",
+    "35,00,000",
+    "40,00,000",
+    "45,00,000",
+    "50,00,000",
+    "55,00,000",
+    "60,00,000",
+    "65,00,000",
+    "70,00,000",
+    "75,00,000",
+    "80,00,000",
+    "85,00,000",
+    "90,00,000",
+    "95,00,000",
+    "1,00,00,000",
+    "2,00,00,000",
+    "3,00,00,000",
+    "4,00,00,000",
+    "5,00,00,000",
+    "6,00,00,000",
+    "7,00,00,000",
+    "8,00,00,000",
+    "9,00,00,000",
+    "10,00,00,000",
+  ];
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="mt-5 mx-5">
         <h3>Filters</h3>
-        <div className="mt-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 xl:grid-cols-8 gap-4">
+        <div className="mt-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 xl:grid-cols-10 gap-4">
           <div className="flex flex-col">
             <FormControl variant="outlined">
               <InputLabel>Artist Types</InputLabel>
@@ -182,16 +271,19 @@ function Search() {
           </div>
 
           <div className="flex flex-col">
-            <FormControl variant="outlined">
+            <FormControl variant="outlined" fullWidth>
               <InputLabel>Genre</InputLabel>
               <Select
+                multiple
                 value={selectedGenre}
                 onChange={(event) => setSelectedGenre(event.target.value)}
-                label="Genre"
+                input={<OutlinedInput label="Genre" />}
+                renderValue={(selected) => selected.join(", ")}
               >
-                {genres.map((genre, index) => (
-                  <MenuItem key={index} value={genre}>
-                    {genre}
+                {genres.map((genre) => (
+                  <MenuItem key={genre} value={genre}>
+                    <Checkbox checked={selectedGenre.indexOf(genre) > -1} />
+                    <ListItemText primary={genre} />
                   </MenuItem>
                 ))}
               </Select>
@@ -250,16 +342,43 @@ function Search() {
           </div>
 
           <div className="flex flex-col">
-            <FormControl variant="outlined">
+            <FormControl variant="outlined" fullWidth>
               <InputLabel>Languages</InputLabel>
               <Select
+                multiple
                 value={selectedLanguage}
                 onChange={(event) => setSelectedLanguage(event.target.value)}
-                label="Languages"
+                input={<OutlinedInput label="Languages" />}
+                renderValue={(selected) => selected.join(", ")}
               >
-                {languages.map((language, index) => (
-                  <MenuItem key={index} value={language}>
-                    {language}
+                {languages.map((language) => (
+                  <MenuItem key={language} value={language}>
+                    <Checkbox
+                      checked={selectedLanguage.indexOf(language) > -1}
+                    />
+                    <ListItemText primary={language} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className="flex flex-col">
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel>Instruments</InputLabel>
+              <Select
+                multiple
+                value={selectedInstrument}
+                onChange={(event) => setSelectedInstrument(event.target.value)}
+                input={<OutlinedInput label="Instruments" />}
+                renderValue={(selected) => selected.join(", ")}
+              >
+                {instruments.map((instrument) => (
+                  <MenuItem key={instrument} value={instrument}>
+                    <Checkbox
+                      checked={selectedInstrument.indexOf(instrument) > -1}
+                    />
+                    <ListItemText primary={instrument} />
                   </MenuItem>
                 ))}
               </Select>
@@ -268,17 +387,42 @@ function Search() {
 
           <div className="flex flex-col">
             <FormControl variant="outlined">
-              <InputLabel>Instruments</InputLabel>
+              <InputLabel>Minimum Budget</InputLabel>
               <Select
-                value={selectedInstrument}
-                onChange={(event) => setSelectedInstrument(event.target.value)}
-                label="Instruments"
+                value={selectedMinBudget}
+                onChange={(event) => setSelectedMinBudget(event.target.value)}
+                label="Minimum Budget"
               >
-                {instruments.map((instrument, index) => (
-                  <MenuItem key={index} value={instrument}>
-                    {instrument}
+                {budgetOptions.map((option, index) => (
+                  <MenuItem key={index} value={option}>
+                    {option}
                   </MenuItem>
                 ))}
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className="flex flex-col">
+            <FormControl variant="outlined">
+              <InputLabel>Maximum Budget</InputLabel>
+              <Select
+                value={selectedMaxBudget}
+                onChange={(event) => setSelectedMaxBudget(event.target.value)}
+                label="Maximum Budget"
+              >
+                {budgetOptions
+                  .filter((option) => {
+                    if (selectedMinBudget === "") return true;
+                    return (
+                      parseInt(option.replace(/,/g, ""), 10) >
+                      parseInt(selectedMinBudget.replace(/,/g, ""), 10)
+                    );
+                  })
+                  .map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
           </div>
@@ -304,7 +448,13 @@ function Search() {
         ) : filteredArtists.length > 0 ? (
           <ArtistList
             artists={filteredArtists}
-            heading={`${selectedCategory} - ${selectedGenre} - ${selectedLocation} - ${selectedEventType} - ${selectedLanguage} - ${selectedInstrument}`}
+            heading={`${selectedCategory} - ${selectedGenre.join(
+              ", "
+            )} - ${selectedLocation} - ${selectedEventType} - ${selectedLanguage.join(
+              ", "
+            )} - ${selectedInstrument.join(
+              ", "
+            )} - ${selectedMinBudget} to ${selectedMaxBudget}`}
           />
         ) : (
           <p>No artists found.</p>

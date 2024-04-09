@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Select,
   MenuItem,
@@ -14,8 +15,12 @@ import {
 } from "@mui/material";
 import ArtistList from "@/app/_components/ArtistList";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 function Search() {
+  const searchParams = useSearchParams();
+  const filterParams = new URLSearchParams(searchParams.toString());
+  console.log(filterParams);
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -38,8 +43,35 @@ function Search() {
   const [sortedArtists, setSortedArtists] = useState([]);
 
   useEffect(() => {
+    const params = Object.fromEntries(filterParams.entries());
+
+    const {
+      selectedCategory,
+      selectedGenre,
+      selectedLocation,
+      selectedEventType,
+      selectedLanguage,
+      selectedInstrument,
+      selectedGender,
+      selectedSortOption,
+      minBudget,
+      maxBudget,
+    } = params;
+
+    setSelectedCategory(selectedCategory || "All Artist Types");
+    setSelectedGenre(selectedGenre ? selectedGenre.split(",") : []);
+    setSelectedLocation(selectedLocation || "All Locations");
+    setSelectedEventType(selectedEventType || "All Event Types");
+    setSelectedLanguage(selectedLanguage ? selectedLanguage.split(",") : []);
+    setSelectedInstrument(
+      selectedInstrument ? selectedInstrument.split(",") : []
+    );
+    setSelectedGender(selectedGender || "All");
+    setSelectedSortOption(selectedSortOption || "Low to High");
+    setSelectedMinBudget(minBudget || "");
+    setSelectedMaxBudget(maxBudget || "");
     fetchArtists();
-  }, []);
+  }, [searchParams]);
 
   const fetchArtists = async () => {
     setLoading(true);
@@ -165,6 +197,25 @@ function Search() {
       matchesMaxBudget
     );
   });
+
+  const handleCopyLink = () => {
+    const currentURL = window.location.href;
+    const filteredURL = new URL(currentURL);
+    const params = new URLSearchParams(filteredURL.search);
+    params.set("selectedCategory", selectedCategory);
+    params.set("selectedGenre", selectedGenre.join(","));
+    params.set("selectedLocation", selectedLocation);
+    params.set("selectedEventType", selectedEventType);
+    params.set("selectedLanguage", selectedLanguage.join(","));
+    params.set("selectedInstrument", selectedInstrument.join(","));
+    params.set("selectedGender", selectedGender);
+    params.set("selectedSortOption", selectedSortOption);
+    params.set("minBudget", selectedMinBudget);
+    params.set("maxBudget", selectedMaxBudget);
+    filteredURL.search = params.toString();
+    navigator.clipboard.writeText(filteredURL.toString());
+    alert("Filtered URL copied to clipboard!");
+  };
 
   const theme = createTheme({
     typography: {
@@ -440,6 +491,14 @@ function Search() {
               </Select>
             </FormControl>
           </div>
+          <Button
+            onClick={handleCopyLink}
+            className="p-2 px-3 border-[1px] border-gray
+                        text-primary bg-white w-auto text-center
+                         mt-2 cursor-pointer hover:bg-primary hover:text-white"
+          >
+            Filter Link
+          </Button>
         </div>
       </div>
       <div className="mt-5">

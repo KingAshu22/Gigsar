@@ -4,6 +4,7 @@ const nextConfig = {
     remotePatterns: [
       // Add your remote patterns here
       { hostname: "book-my-singer.s3.ap-south-1.amazonaws.com" },
+      { hostname: "gigsar.s3.ap-south-1.amazonaws.com" },
       { hostname: "bookmysinger.com" },
       { hostname: "lh3.googleusercontent.com" },
     ],
@@ -16,10 +17,6 @@ const nextConfig = {
     };
 
     return config;
-  },
-
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
   },
 };
 

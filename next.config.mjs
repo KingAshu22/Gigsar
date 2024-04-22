@@ -10,6 +10,10 @@ const nextConfig = {
     ],
   },
 
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
+
   webpack: (config) => {
     config.resolve.fallback = {
       "mongodb-client-encryption": false,

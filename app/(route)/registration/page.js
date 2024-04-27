@@ -34,6 +34,7 @@ const ArtistRegistration = () => {
   const [galleryZoom, setGalleryZoom] = useState(1);
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [galleryLink, setGalleryLink] = useState([]);
+  const [tempStorage, setTempStorage] = useState([]);
   const [youtubeLinks, setYoutubeLinks] = useState([""]);
   const [gender, setGender] = useState("");
   const [contactNumber, setContactNumber] = useState("");
@@ -62,6 +63,7 @@ const ArtistRegistration = () => {
   const [aboutArtist, setAboutArtist] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isCroppingComplete, setIsCroppingComplete] = useState(false);
 
   const handleEventTypeChange = (event) => {
     const selectedEventType = event.target.value;
@@ -132,25 +134,28 @@ const ArtistRegistration = () => {
   const onGalleryCropComplete = async (croppedArea) => {
     try {
       const croppedImg = await getCroppedImg(gallerySrc, croppedArea);
-      setGalleryCropData((prevCropData) => {
-        const updatedCropData = [...prevCropData, croppedImg];
-        return updatedCropData;
-      });
+      setTempStorage((prevStorage) => [...prevStorage, croppedImg]);
     } catch (e) {
       console.error(e);
     }
   };
 
   const handleNext = () => {
+    setGalleryCropData((prevCropData) => [
+      ...prevCropData,
+      tempStorage[tempStorage.length - 1],
+    ]);
+    setTempStorage([]);
     setGalleryImages((prevImages) => {
-      const updatedImages = [...prevImages, galleryCropData[currentImageIndex]];
+      const updatedImages = [...prevImages, galleryCropData[0]]; // Add the current cropped image to the images array
       if (updatedImages.length === 9) {
         // Last image, trigger upload
         handleGalleryUpload(updatedImages);
-        setShowGalleryModal(false);
+        setShowGalleryModal(false); // Close the modal after uploading the last image
       } else {
         setCurrentImageIndex((prevIndex) => prevIndex + 1);
         setGallerySrc(null);
+        setShowGalleryModal(false); // Close the modal after clicking "Next"
       }
       return updatedImages;
     });
@@ -188,6 +193,7 @@ const ArtistRegistration = () => {
 
   const handleGalleryUpload = async (images) => {
     try {
+      console.log(images.length);
       const promises = images.map(async (gallery) => {
         const img = new Image();
         img.src = gallery;
@@ -352,15 +358,13 @@ const ArtistRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    await handleProfileUpload(cropData, artistName);
+    await handleGalleryUpload(galleryCropData);
     setShowConfirmationModal(true);
   };
 
   const handleConfirmSubmit = async () => {
     try {
-      // Handle profile pic upload
-      await handleProfileUpload(cropData, artistName);
-      await handleGalleryUpload(galleryCropData, artistName);
-
       // Handle the submission of form data
       const formData = {
         artistName,
@@ -632,15 +636,20 @@ const ArtistRegistration = () => {
             </div>
           </div>
         )}
-        {galleryImages.map((image, index) => (
-          <div key={index}>
-            <img
-              src={image}
-              alt={`Gallery Image ${index + 1}`}
-              className="mb-4 rounded-lg max-w-36"
-            />
-          </div>
-        ))}
+        {galleryImages.slice(0).map(
+          (
+            image,
+            index // Start from the 1st index
+          ) => (
+            <div key={index}>
+              <img
+                src={image}
+                alt={`Gallery Image ${index + 2}`} // Adjust alt text index accordingly
+                className="mb-4 rounded-lg max-w-36"
+              />
+            </div>
+          )
+        )}
 
         <div className="mb-4">
           <div>

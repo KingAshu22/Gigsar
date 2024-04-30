@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, model, models } from "mongoose";
 
-const artistSchema = new mongoose.Schema({
+const ArtistSchema = new Schema({
   metaTitle: String,
   metaDesc: String,
   keywords: String,
@@ -29,6 +29,6 @@ const artistSchema = new mongoose.Schema({
   blog: String,
 });
 
-const Artist = mongoose.model("Artist", artistSchema);
+const Artist = models.Artist || model("Artist", ArtistSchema);
 
 export default Artist;

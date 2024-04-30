@@ -1,4 +1,4 @@
-import Artist from "@/lib/models/Artist";
+import Artist from "@/models/Artist";
 import { connectToDB } from "@/app/_utils/mongodb";
 
 // Handler function for GET requests

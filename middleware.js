@@ -1,12 +1,11 @@
-import { NextResponse } from "next/server";
-// This function can be marked `async` if using `await` inside
-export async function middleware(request) {
-  return NextResponse.redirect(
-    new URL("/api/auth/login?post_login_redirect_url=/", request.url)
-  );
-}
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// See "Matching Paths" below to learn more
+const isProtectedRoute = createRouteMatcher(["/registration(.*)"]);
+
+export default clerkMiddleware((auth, req) => {
+  if (isProtectedRoute(req)) auth().protect();
+});
+
 export const config = {
-  matcher: ["/details/:path*"],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };

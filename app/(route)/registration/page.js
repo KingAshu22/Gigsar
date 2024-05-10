@@ -18,9 +18,12 @@ import genreOptions from "./constants/genres";
 import instrumentOptions from "./constants/instruments";
 import languageOptions from "./constants/languages";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@clerk/nextjs";
 
 const ArtistRegistration = () => {
-  const [artistName, setArtistName] = useState("");
+  const { user } = useUser();
+
+  const [artistName, setArtistName] = useState();
   const [imageSrc, setImageSrc] = useState(null);
   const [profilePic, setProfilePic] = useState("");
   const [cropData, setCropData] = useState(null);
@@ -64,6 +67,19 @@ const ArtistRegistration = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isCroppingComplete, setIsCroppingComplete] = useState(false);
+
+  useEffect(() => {
+    if (
+      user &&
+      user.fullName &&
+      user.phoneNumbers[0].phoneNumber &&
+      user.emailAddresses[0].emailAddress
+    ) {
+      setArtistName(user.fullName);
+      setContactNumber(user.phoneNumbers[0].phoneNumber);
+      setEmail(user.emailAddresses[0].emailAddress);
+    }
+  }, [user]);
 
   const handleEventTypeChange = (event) => {
     const selectedEventType = event.target.value;
@@ -432,6 +448,7 @@ const ArtistRegistration = () => {
             type="text"
             id="artistName"
             value={artistName}
+            readOnly
             onChange={(e) => setArtistName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
@@ -534,6 +551,7 @@ const ArtistRegistration = () => {
           <input
             type="text"
             id="contactNumber"
+            readOnly
             value={contactNumber}
             onChange={(e) => setContactNumber(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -550,6 +568,7 @@ const ArtistRegistration = () => {
           <input
             type="email"
             id="email"
+            readOnly
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -587,8 +606,7 @@ const ArtistRegistration = () => {
             required
           >
             <option value="">Select Artist Type</option>
-            <option value="Singer">Singer</option>
-            <option value="Live Band">Live Band</option>
+            <option value="singer-band">Singer/Live Bamd</option>
             <option value="Musician">Musician</option>
             <option value="DJ">DJ</option>
           </select>

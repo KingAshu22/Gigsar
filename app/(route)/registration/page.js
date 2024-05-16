@@ -68,18 +68,18 @@ const ArtistRegistration = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isCroppingComplete, setIsCroppingComplete] = useState(false);
 
-  useEffect(() => {
-    if (
-      user &&
-      user.fullName &&
-      user.phoneNumbers[0].phoneNumber &&
-      user.emailAddresses[0].emailAddress
-    ) {
-      setArtistName(user.fullName);
-      setContactNumber(user.phoneNumbers[0].phoneNumber);
-      setEmail(user.emailAddresses[0].emailAddress);
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (
+  //     user &&
+  //     user.fullName &&
+  //     user.phoneNumbers[0].phoneNumber &&
+  //     user.emailAddresses[0].emailAddress
+  //   ) {
+  //     setArtistName(user.fullName);
+  //     setContactNumber(user.phoneNumbers[0].phoneNumber);
+  //     setEmail(user.emailAddresses[0].emailAddress);
+  //   }
+  // }, [user]);
 
   const handleEventTypeChange = (event) => {
     const selectedEventType = event.target.value;

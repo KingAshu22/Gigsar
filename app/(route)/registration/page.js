@@ -358,11 +358,29 @@ const ArtistRegistration = () => {
     setYoutubeLinks((prevLinks) => [...prevLinks, ""]);
   };
 
+  // Function to extract video ID from YouTube link
+  const extractVideoId = (link) => {
+    // Regular expression to match YouTube video ID
+    const regex =
+      /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = link.match(regex);
+    return match ? match[1] : null;
+  };
+
   // Function to handle input change
   const handleLinkChange = (index, value) => {
-    const updatedLinks = [...youtubeLinks];
-    updatedLinks[index] = value;
-    setYoutubeLinks(updatedLinks);
+    const videoId = extractVideoId(value);
+    if (videoId) {
+      const updatedLinks = [...youtubeLinks];
+      updatedLinks[index] = videoId;
+      setYoutubeLinks(updatedLinks);
+    } else {
+      // Handle invalid link or show an error message
+      // For now, let's set an empty string
+      const updatedLinks = [...youtubeLinks];
+      updatedLinks[index] = "";
+      setYoutubeLinks(updatedLinks);
+    }
   };
 
   const handleSave = async () => {

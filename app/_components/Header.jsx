@@ -21,14 +21,14 @@ function Header() {
     },
     {
       id: 2,
-      name: "Explore",
-      path: "/explore",
+      name: "Registration",
+      path: "/registration",
     },
-    {
-      id: 3,
-      name: "Contact Us",
-      path: "/",
-    },
+    // {
+    //   id: 3,
+    //   name: "Contact Us",
+    //   path: "/",
+    // },
   ];
   return (
     <div

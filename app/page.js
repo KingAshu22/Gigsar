@@ -8,9 +8,17 @@ import axios from "axios";
 export default function Home() {
   const [artists, setArtists] = useState([]);
   useEffect(() => {
-    axios.get(`${process.env.NEXT_PUBLIC_API}/artist`).then((response) => {
-      setArtists(response.data);
-    });
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API}/artist`)
+      .then((response) => {
+        const filteredArtists = response.data.filter(
+          (artist) => artist.showGigsar
+        );
+        setArtists(filteredArtists);
+      })
+      .catch((error) => {
+        console.error("Error fetching artists:", error);
+      });
   }, []);
   return (
     <div>

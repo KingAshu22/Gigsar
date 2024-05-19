@@ -1,43 +1,26 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Dropzone from "react-dropzone";
-import { Cropper, getCroppedImg } from "react-cropper-custom";
 import "react-cropper-custom/dist/index.css";
 import "./modal.css"; // Import CSS for modal styles
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
-import {
-  S3Client,
-  PutObjectCommand,
-  ListObjectsCommand,
-} from "@aws-sdk/client-s3";
-import { fromBase64 } from "@aws-sdk/util-base64";
-import { nanoid } from "nanoid";
 import eventTypesOptions from "./constants/eventTypes";
 import genreOptions from "./constants/genres";
 import instrumentOptions from "./constants/instruments";
 import languageOptions from "./constants/languages";
 import { Button } from "@/components/ui/button";
+import PhotoUploader from "@/app/_components/PhotoUploader";
+import { useRouter } from "next/navigation";
+import Modal from "@/app/_components/Modal";
+import { HashLoader } from "react-spinners";
 import { useUser } from "@clerk/nextjs";
 
 const ArtistRegistration = () => {
   const { user } = useUser();
 
   const [artistName, setArtistName] = useState();
-  const [imageSrc, setImageSrc] = useState(null);
   const [profilePic, setProfilePic] = useState("");
-  const [cropData, setCropData] = useState(null);
-  const [zoom, setZoom] = useState(1);
-  const [showModal, setShowModal] = useState(false); // State to manage modal visibility
-  const [showCroppedImage, setShowCroppedImage] = useState(false); // State to manage cropped image display
-  const [galleryImages, setGalleryImages] = useState([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [gallerySrc, setGallerySrc] = useState(null);
-  const [galleryCropData, setGalleryCropData] = useState([]);
-  const [galleryZoom, setGalleryZoom] = useState(1);
-  const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [galleryLink, setGalleryLink] = useState([]);
-  const [tempStorage, setTempStorage] = useState([]);
   const [youtubeLinks, setYoutubeLinks] = useState([""]);
   const [gender, setGender] = useState("");
   const [contactNumber, setContactNumber] = useState("");
@@ -65,21 +48,27 @@ const ArtistRegistration = () => {
   const [musicTraining, setMusicTraining] = useState("");
   const [aboutArtist, setAboutArtist] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [isCroppingComplete, setIsCroppingComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   if (
-  //     user &&
-  //     user.fullName &&
-  //     user.phoneNumbers[0].phoneNumber &&
-  //     user.emailAddresses[0].emailAddress
-  //   ) {
-  //     setArtistName(user.fullName);
-  //     setContactNumber(user.phoneNumbers[0].phoneNumber);
-  //     setEmail(user.emailAddresses[0].emailAddress);
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    if (
+      user &&
+      user.fullName &&
+      user.phoneNumbers[0].phoneNumber &&
+      user.emailAddresses[0].emailAddress
+    ) {
+      setArtistName(user.fullName);
+      setContactNumber(user.phoneNumbers[0].phoneNumber);
+      setEmail(user.emailAddresses[0].emailAddress);
+    }
+  }, [user]);
+
+  const formatArtistName = (name) => {
+    return name.toLowerCase().replace(/ /g, "-");
+  };
 
   const handleEventTypeChange = (event) => {
     const selectedEventType = event.target.value;
@@ -113,244 +102,9 @@ const ArtistRegistration = () => {
       setInstruments(instruments.filter((type) => type !== selectedInstrument));
     }
   };
-  const onFileDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageSrc(reader.result);
-        setShowModal(true); // Show the modal after image upload
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
-  const onGalleryDrop = (acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setGallerySrc(reader.result);
-        setShowGalleryModal(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const onCropComplete = async (croppedArea) => {
-    try {
-      const croppedImg = await getCroppedImg(imageSrc, croppedArea);
-      setCropData(croppedImg);
-      console.log(cropData);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const onGalleryCropComplete = async (croppedArea) => {
-    try {
-      const croppedImg = await getCroppedImg(gallerySrc, croppedArea);
-      setTempStorage((prevStorage) => [...prevStorage, croppedImg]);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleNext = () => {
-    setGalleryCropData((prevCropData) => [
-      ...prevCropData,
-      tempStorage[tempStorage.length - 1],
-    ]);
-    setTempStorage([]);
-    setGalleryImages((prevImages) => {
-      const updatedImages = [...prevImages, galleryCropData[0]]; // Add the current cropped image to the images array
-      if (updatedImages.length === 9) {
-        // Last image, trigger upload
-        handleGalleryUpload(updatedImages);
-        setShowGalleryModal(false); // Close the modal after uploading the last image
-      } else {
-        setCurrentImageIndex((prevIndex) => prevIndex + 1);
-        setGallerySrc(null);
-        setShowGalleryModal(false); // Close the modal after clicking "Next"
-      }
-      return updatedImages;
-    });
-  };
-
-  const handleGallerySave = () => {
-    // Save cropped image
-    setGalleryImages((prevImages) => {
-      const updatedImages = [...prevImages, galleryCropData[currentImageIndex]];
-      handleGalleryUpload(updatedImages);
-      setShowGalleryModal(false);
-      return updatedImages;
-    });
-  };
-
-  const handleProfileUpload = async (base64, artistName) => {
-    try {
-      const img = new Image();
-      img.src = base64;
-      img.onload = async () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = 350;
-        canvas.height = 350;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, 350, 350);
-        const webpData = canvas.toDataURL("image/webp", 0.8);
-        const imageData = webpData.split(",")[1];
-        const response = await uploadProfileToS3(imageData, artistName);
-      };
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      // Show error message to the user
-    }
-  };
-
-  const handleGalleryUpload = async (images) => {
-    try {
-      console.log(images.length);
-      const promises = images.map(async (gallery) => {
-        const img = new Image();
-        img.src = gallery;
-        await new Promise((resolve) => {
-          img.onload = resolve;
-        });
-
-        // Create a canvas element for image manipulation
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-
-        // Resize the image to 350x350
-        const aspectRatio = img.width / img.height;
-        let newWidth, newHeight;
-        if (aspectRatio > 1) {
-          newWidth = 350;
-          newHeight = 350 / aspectRatio;
-        } else {
-          newWidth = 350 * aspectRatio;
-          newHeight = 350;
-        }
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-        // Compress and convert to WebP format
-        const webpData = canvas.toDataURL("image/webp", 0.8);
-        const imageData = webpData.split(",")[1];
-
-        // Upload to S3
-        await uploadGalleryToS3(imageData, artistName);
-      });
-      await Promise.all(promises);
-    } catch (error) {
-      console.error("Error uploading images:", error);
-      // Show error message to the user
-    }
-  };
-
-  const uploadProfileToS3 = async (base64, artistName) => {
-    try {
-      const s3Client = new S3Client({
-        region: process.env.NEXT_PUBLIC_REGION,
-        credentials: {
-          accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
-          secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY,
-        },
-      });
-
-      const folderName = artistName.replace(/\s+/g, "-");
-      const folderKey = `${folderName}/`;
-
-      // Check if the folder exists
-      const listObjectsCommand = new ListObjectsCommand({
-        Bucket: process.env.NEXT_PUBLIC_BUCKET,
-        Prefix: folderKey,
-      });
-      const { Contents } = await s3Client.send(listObjectsCommand);
-
-      if (!Contents || Contents.length === 0) {
-        // Create the folder
-        const createFolderParams = {
-          Bucket: process.env.NEXT_PUBLIC_BUCKET,
-          Key: folderKey,
-        };
-        const putObjectCommand = new PutObjectCommand(createFolderParams);
-        await s3Client.send(putObjectCommand);
-      }
-
-      const fileName = `${nanoid()}.webp`;
-      const buffer = fromBase64(base64);
-      const uploadParams = {
-        Bucket: process.env.NEXT_PUBLIC_BUCKET,
-        Key: `${folderKey}${fileName}`,
-        Body: buffer,
-        ACL: "public-read",
-        ContentType: "image/webp",
-      };
-      const putObjectCommand = new PutObjectCommand(uploadParams);
-      const response = await s3Client.send(putObjectCommand);
-
-      const location = `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`;
-      // console.log("Image uploaded successfully:", location);
-      setProfilePic(location);
-      return location;
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      throw error;
-    }
-  };
-
-  const uploadGalleryToS3 = async (base64, artistName) => {
-    try {
-      const s3Client = new S3Client({
-        region: process.env.NEXT_PUBLIC_REGION,
-        credentials: {
-          accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
-          secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY,
-        },
-      });
-
-      const folderName = artistName.replace(/\s+/g, "-");
-      const folderKey = `${folderName}/`;
-
-      // Check if the folder exists
-      const listObjectsCommand = new ListObjectsCommand({
-        Bucket: process.env.NEXT_PUBLIC_BUCKET,
-        Prefix: folderKey,
-      });
-      const { Contents } = await s3Client.send(listObjectsCommand);
-
-      if (!Contents || Contents.length === 0) {
-        // Create the folder
-        const createFolderParams = {
-          Bucket: process.env.NEXT_PUBLIC_BUCKET,
-          Key: folderKey,
-        };
-        const putObjectCommand = new PutObjectCommand(createFolderParams);
-        await s3Client.send(putObjectCommand);
-      }
-
-      const fileName = `${nanoid()}.webp`;
-      const buffer = fromBase64(base64);
-      const uploadParams = {
-        Bucket: process.env.NEXT_PUBLIC_BUCKET,
-        Key: `${folderKey}${fileName}`,
-        Body: buffer,
-        ACL: "public-read",
-        ContentType: "image/webp",
-      };
-      const putObjectCommand = new PutObjectCommand(uploadParams);
-      const response = await s3Client.send(putObjectCommand);
-
-      const location = `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`;
-      // console.log("Image uploaded successfully:", location);
-      setGalleryLink((prevLinks) => [...prevLinks, location]);
-      return location;
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      throw error;
-    }
+  const handleGalleryUpload = (link) => {
+    setGalleryLink((prevLinks) => [...prevLinks, link]);
   };
 
   // Function to add more input fields
@@ -383,22 +137,17 @@ const ArtistRegistration = () => {
     }
   };
 
-  const handleSave = async () => {
-    // Handle saving the cropped image
-    // For demonstration, let's log the cropped image data
-    setShowModal(false); // Close the modal after saving
-    setShowCroppedImage(true); // Show the cropped image
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleProfileUpload(cropData, artistName);
-    await handleGalleryUpload(galleryCropData);
     setShowConfirmationModal(true);
+    setError(null);
+    setSuccess(false);
   };
 
   const handleConfirmSubmit = async () => {
     try {
+      setShowConfirmationModal(false);
+      setIsLoading(true);
       // Handle the submission of form data
       const formData = {
         artistName,
@@ -431,24 +180,22 @@ const ArtistRegistration = () => {
         aboutArtist,
       };
 
-      console.log(formData);
-
-      const response = await axios.post(
+      const response = axios.post(
         `${process.env.NEXT_PUBLIC_API}/artist-registration`,
-        formData
+        formData,
+        { withCredentials: true }
       );
-
-      setShowConfirmationModal(false);
-      setShowSuccessModal(true);
     } catch (error) {
-      console.error("Error submitting form:", error);
       // Handle error
+      console.error("Error submitting form:", error);
+      setError(error.message || "An error occurred during submission.");
+    } finally {
+      // Reset loading state
+      setTimeout(() => {
+        setIsLoading(false);
+        setSuccess(true);
+      }, 3000);
     }
-  };
-
-  const handleModalClose = () => {
-    setShowSuccessModal(false);
-    // Redirect to home page or perform any other action
   };
 
   return (
@@ -466,77 +213,16 @@ const ArtistRegistration = () => {
             type="text"
             id="artistName"
             value={artistName}
+            required
+            readOnly
             onChange={(e) => setArtistName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
-        {!showCroppedImage && (
-          <div className="mb-4">
-            <label
-              htmlFor="profilePic"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Upload Profile Pic
-            </label>
-            <Dropzone
-              onDrop={onFileDrop}
-              acceptedFiles={["image/*"]}
-              maxFileSize={5000000}
-            >
-              {({ getRootProps, getInputProps }) => (
-                <section className="bg-gray-200 rounded-lg p-4 pt-8 pb-8 text-center max-w-36">
-                  <div {...getRootProps()}>
-                    <input {...getInputProps()} />
-                    <p>
-                      Drag & drop Profile Pic here, or click to select Profile
-                      Pic
-                    </p>
-                  </div>
-                </section>
-              )}
-            </Dropzone>
-          </div>
-        )}
-        {showCroppedImage && cropData && (
-          <>
-            <label className="block text-sm font-medium text-gray-700">
-              Profile Pic
-            </label>
-            <img
-              src={cropData}
-              alt="Cropped Image"
-              className="mb-4 rounded-lg max-w-36"
-            />
-          </>
-        )}
-        {showModal && imageSrc && (
-          <div className="modal-overlay">
-            <div className="modal flex flex-col gap-4">
-              <Cropper
-                src={imageSrc}
-                width={300}
-                height={300}
-                zoom={zoom}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.1}
-                value={zoom}
-                onChange={(e) => setZoom(parseFloat(e.target.value))}
-              />
-              <button
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={handleSave}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        )}
+        <label className="block text-sm font-medium text-gray-700">
+          Upload Profile Pic
+        </label>
+        <PhotoUploader artistName={artistName} setProfilePic={setProfilePic} />
 
         <div className="mb-4">
           <label
@@ -569,6 +255,7 @@ const ArtistRegistration = () => {
             type="text"
             id="contactNumber"
             value={contactNumber}
+            readOnly
             onChange={(e) => setContactNumber(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
@@ -585,6 +272,7 @@ const ArtistRegistration = () => {
             type="email"
             id="email"
             value={email}
+            readOnly
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
@@ -621,68 +309,33 @@ const ArtistRegistration = () => {
             required
           >
             <option value="">Select Artist Type</option>
-            <option value="singer-band">Singer/Live Bamd</option>
+            <option value="singer-band">Singer/Live Band</option>
             <option value="Musician">Musician</option>
             <option value="DJ">DJ</option>
           </select>
         </div>
 
-        <Dropzone
-          onDrop={onGalleryDrop}
-          acceptedFiles={["image/*"]}
-          maxFiles={9 - galleryImages.length}
-          maxFileSize={5000000}
-        >
-          {({ getRootProps, getInputProps }) => (
-            <section className="bg-gray-200 rounded-lg p-4 pt-8 pb-8 text-center max-w-36">
-              <div {...getRootProps()}>
-                <input {...getInputProps()} />
-                <p>Drag & drop images here, or click to select images</p>
+        {/* Gallery Image Uploaders */}
+        <div className="mb-4">
+          <h3>Upload Gallery Images</h3>
+          <div className="gallery-uploader-container grid grid-cols-3 gap-4 justify-center">
+            {[...Array(9)].map((_, index) => (
+              <div key={index} className="flex flex-col items-center">
+                <label
+                  htmlFor={`galleryImage${index + 1}`}
+                  className="block text-sm font-medium text-gray-700 text-center"
+                >
+                  Upload Gallery Image {index + 1}
+                </label>
+                <PhotoUploader
+                  id={`galleryImage${index + 1}`}
+                  artistName={artistName}
+                  setProfilePic={handleGalleryUpload}
+                />
               </div>
-            </section>
-          )}
-        </Dropzone>
-        {showGalleryModal && gallerySrc && (
-          <div className="modal-overlay">
-            <div className="modal flex flex-col gap-4">
-              <Cropper
-                src={gallerySrc}
-                width={300}
-                height={300}
-                zoom={galleryZoom}
-                onZoomChange={setGalleryZoom}
-                onCropComplete={onGalleryCropComplete}
-              />
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.1}
-                value={galleryZoom}
-                onChange={(e) => setGalleryZoom(parseFloat(e.target.value))}
-              />
-              {currentImageIndex === 8 ? (
-                <button onClick={handleGallerySave}>Save</button>
-              ) : (
-                <button onClick={handleNext}>Next</button>
-              )}
-            </div>
+            ))}
           </div>
-        )}
-        {galleryImages.slice(0).map(
-          (
-            image,
-            index // Start from the 1st index
-          ) => (
-            <div key={index}>
-              <img
-                src={image}
-                alt={`Gallery Image ${index + 2}`} // Adjust alt text index accordingly
-                className="mb-4 rounded-lg max-w-36"
-              />
-            </div>
-          )
-        )}
+        </div>
 
         <div className="mb-4">
           <div>
@@ -735,12 +388,13 @@ const ArtistRegistration = () => {
               htmlFor="corporateBudget"
               className="block text-sm font-medium text-gray-700"
             >
-              Corporate Budget
+              Corporate/Private Event Budget
             </label>
             <input
               type="number"
               id="corporateBudget"
               value={corporateBudget}
+              step={10000}
               onChange={(e) => setCorporateBudget(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               required
@@ -754,7 +408,7 @@ const ArtistRegistration = () => {
               htmlFor="collegeBudget"
               className="block text-sm font-medium text-gray-700"
             >
-              College Budget
+              College Event Budget
             </label>
             <input
               type="number"
@@ -773,7 +427,7 @@ const ArtistRegistration = () => {
               htmlFor="weddingBudget"
               className="block text-sm font-medium text-gray-700"
             >
-              Wedding Budget
+              Wedding Event Budget
             </label>
             <input
               type="number"
@@ -1042,25 +696,62 @@ const ArtistRegistration = () => {
         </button>
       </form>
       {/* Confirmation modal */}
-      {showConfirmationModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <p>Are you sure you want to submit the form?</p>
-            <button onClick={handleConfirmSubmit}>Yes</button>
-            <button onClick={() => setShowConfirmationModal(false)}>No</button>
-          </div>
+      <Modal
+        isOpen={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+        title="Are you sure you want to submit the form?"
+        description={`This will create a profile for ${artistName}`}
+      >
+        <div className="flex justify-between">
+          <button
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            type="button"
+            onClick={() => setShowConfirmationModal(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            type="button"
+            onClick={handleConfirmSubmit}
+          >
+            Submit
+          </button>
         </div>
-      )}
+      </Modal>
 
-      {/* Success modal */}
-      {showSuccessModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <p>Success! Your form has been submitted.</p>
-            <button onClick={handleModalClose}>Back to home page</button>
-          </div>
+      <Modal isOpen={isLoading} title="Submitting Form...">
+        <div className="flex justify-center items-center">
+          <HashLoader color="#dc2626" size={80} />
         </div>
-      )}
+      </Modal>
+
+      {error && <p className="error">{error}</p>}
+      <Modal
+        isOpen={success}
+        onClose={() => setSuccess(false)}
+        title="Artist Registered"
+        description={`${artistName}'s Form has been successfully Registered. Your Form is now in Pending Status. Our Team will verify your details and once everything is correct we will make your page live.`}
+      >
+        <div className="flex justify-between">
+          {/* <button
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            type="button"
+            onClick={() =>
+              router.push(`/artist/${formatArtistName(artistName)}`)
+            }
+          >
+            View Page
+          </button> */}
+          <button
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            type="button"
+            onClick={() => router.push("/")}
+          >
+            Home Page
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

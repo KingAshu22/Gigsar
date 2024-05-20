@@ -35,8 +35,8 @@ function Hero() {
               repellat.
             </p>
 
-            <Link href={"/book"}>
-              <Button className="mt-10">Book Now</Button>
+            <Link href={"/registration"}>
+              <Button className="mt-10">Register Now</Button>
             </Link>
           </div>
         </div>

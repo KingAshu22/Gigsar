@@ -29,10 +29,10 @@ function Hero() {
             </h2>
 
             <p className="mt-4 text-gray-500">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aut qui
-              hic atque tenetur quis eius quos ea neque sunt, accusantium soluta
-              minus veniam tempora deserunt? Molestiae eius quidem quam
-              repellat.
+              Discover the perfect artist for any event with Gigsar. Our
+              advanced search engine makes finding and booking talented
+              performers easier than ever. Transform your events with Gigsar
+              today!
             </p>
 
             <Link href={"/registration"}>

@@ -23,10 +23,10 @@ function ArtistList({ artists, heading }) {
                 >
                   <Image
                     src={artist.profilePic}
-                    alt="artist.name"
-                    width={500}
-                    height={200}
-                    className="h-[200px] w-full object-cover rounded-lg"
+                    alt={artist.name}
+                    width={350}
+                    height={350}
+                    className="object-cover rounded-lg"
                   />
                   <div className="mt-3 items-baseline flex flex-col gap-1">
                     <h2

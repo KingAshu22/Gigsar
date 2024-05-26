@@ -8,4 +8,10 @@ function layout({ children }) {
   );
 }
 
+export const metadata = {
+  title: "Artist | Gigsar",
+  description:
+    "Gigsar provides singers, live bands, musicians, instrumentalists, dj for events such as corporate events, college events, wedding events, house parties, private parties, virtual events. We offer a variety of singers, including playback singers, sufi singers, and live ghazal singers",
+};
+
 export default layout;

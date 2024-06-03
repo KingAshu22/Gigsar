@@ -26,6 +26,11 @@ function Header() {
     },
     {
       id: 2,
+      name: "Artist",
+      path: "/artist",
+    },
+    {
+      id: 2,
       name: "Registration",
       path: "/registration",
     },

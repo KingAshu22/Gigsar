@@ -4,6 +4,7 @@ import CategorySearch from "./_components/CategorySearch";
 import ArtistList from "./_components/ArtistList";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import ArtistFilter from "./(route)/artist/page";
 
 export default function Home() {
   const [artists, setArtists] = useState([]);
@@ -26,10 +27,10 @@ export default function Home() {
       <Hero />
 
       {/* Search bar + Categories  */}
-      <CategorySearch />
+      {/* <CategorySearch /> */}
 
       {/* Popular Artists List  */}
-      <ArtistList artists={artists} />
+      <ArtistFilter />
     </div>
   );
 }

@@ -17,7 +17,7 @@ import ArtistList from "@/app/_components/ArtistList";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 
-function Search() {
+function ArtistFilter() {
   const searchParams = useSearchParams();
   const filterParams = new URLSearchParams(searchParams.toString());
   console.log(filterParams);
@@ -417,7 +417,7 @@ function Search() {
             </FormControl>
           </div>
 
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <FormControl variant="outlined" fullWidth>
               <InputLabel>Instruments</InputLabel>
               <Select
@@ -437,7 +437,7 @@ function Search() {
                 ))}
               </Select>
             </FormControl>
-          </div>
+          </div> */}
 
           <div className="flex flex-col">
             <FormControl variant="outlined">
@@ -526,4 +526,4 @@ function Search() {
   );
 }
 
-export default Search;
+export default ArtistFilter;

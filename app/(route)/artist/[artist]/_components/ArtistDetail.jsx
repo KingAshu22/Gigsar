@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   BadgeIndianRupee,
@@ -12,126 +13,242 @@ import {
   User,
 } from "lucide-react";
 import Image from "next/image";
-import React from "react";
-import BookAppointment from "./BookArtist";
+import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player/lazy";
+import { formatToIndianNumber } from "@/lib/utils";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function ArtistDetail({ artist }) {
-  const socialMediaList = [
-    {
-      id: 1,
-      icon: "/youtube.png",
-      url: "",
-    },
-    {
-      id: 2,
-      icon: "/linkedin.png",
-      url: "",
-    },
-    {
-      id: 3,
-      icon: "/twitter.png",
-      url: "",
-    },
-    {
-      id: 4,
-      icon: "/facebook.png",
-      url: "",
-    },
-  ];
+  const router = useRouter();
+  const [eventName, setEventName] = useState("");
+  const [eventInfo, setEventInfo] = useState("");
+  const [selectedEventType, setSelectedEventType] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const selectedEventType = params.get("selectedEventType");
+
+    const eventTypeMapping = {
+      Corporate: "corporateBudget",
+      College: "collegeBudget",
+      Wedding: "price",
+      Reception: "price",
+      Haldi: "price",
+      Mehendi: "price",
+      "Mayra/Bhaat": "price",
+      "Musical/Vedic Pheras": "price",
+      Sangeet: "price",
+      "House Party": "singerCumGuitaristBudget",
+      "Ticketing Concert": "ticketingConcertBudget",
+      Virtual: "singerCumGuitaristBudget",
+    };
+
+    const eventInfoMapping = {
+      Corporate: "1 x Singer + 4 Instrumental Artists",
+      College: "1 x Singer + 4 Instrumental Artists",
+      Wedding: "1 x Singer + 4 Instrumental Artists",
+      Reception: "1 x Singer + 4 Instrumental Artists",
+      Haldi: "1 x Singer + 4 Instrumental Artists",
+      Mehendi: "1 x Singer + 4 Instrumental Artists",
+      "Mayra/Bhaat": "1 x Singer + 4 Instrumental Artists",
+      "Musical/Vedic Pheras": "1 x Singer + 4 Instrumental Artists",
+      Sangeet: "1 x Singer + 4 Instrumental Artists",
+      "House Party": `1 x Singer Cum Guitarist or Singer + Guitarist<br/> 1 x Top Speaker with Stand<br/> 1 x Monitor Speaker with Stand<br/> 1 x Live Mixer<br/> 1 x Microphone with Stand<br/> 1 x Guitar Line Out<br/> Wires & other related Accessories<br/> Travelling Expenses in the same City`,
+      "Ticketing Concert": "1 x Singer + 4 Instrumental Artists",
+      Virtual: "1 x Singer + 4 Instrumental Artists",
+    };
+
+    setEventName(selectedEventType);
+    setSelectedEventType(eventTypeMapping[selectedEventType] || "");
+    setEventInfo(eventInfoMapping[selectedEventType] || "");
+  }, []);
+
+  const handleBookClick = (event, price) => {
+    router.push(`/book/${artist.name}?event=${event}`);
+  };
+
+  const renderPricing = () => {
+    if (selectedEventType && artist[selectedEventType]) {
+      const price = artist[selectedEventType];
+      return (
+        <>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600">{`${eventName} Event:`}</span>
+            <span className="font-medium text-gray-900 whitespace-nowrap">
+              ₹ {formatToIndianNumber(price)}
+            </span>
+          </div>
+          <p
+            className="mt-4 text-sm text-gray-500"
+            dangerouslySetInnerHTML={{ __html: eventInfo }}
+          ></p>
+          <hr />
+          <Button
+            className="mt-3 rounded-full"
+            onClick={() => handleBookClick(eventName, price)}
+          >
+            Book {artist.name} for {eventName} at ₹{" "}
+            {formatToIndianNumber(price)}
+          </Button>
+        </>
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        {artist.price && (
+          <>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Wedding Event:</span>
+              <span className="font-medium text-gray-900 whitespace-nowrap">
+                ₹ {formatToIndianNumber(artist.price)}
+              </span>
+              <Button
+                className="mt-3 rounded-full"
+                onClick={() => handleBookClick("Wedding Event", artist.price)}
+              >
+                Book {artist.name} for Wedding Event at ₹{" "}
+                {formatToIndianNumber(artist.price)}
+              </Button>
+            </div>
+            <hr />
+          </>
+        )}
+        {artist.corporateBudget && (
+          <>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Corporate Event:</span>
+              <span className="font-medium text-gray-900 whitespace-nowrap">
+                ₹ {formatToIndianNumber(artist.corporateBudget)}
+              </span>
+              <Button
+                className="mt-3 rounded-full"
+                onClick={() =>
+                  handleBookClick("Corporate Event", artist.corporateBudget)
+                }
+              >
+                Book {artist.name} for Corporate Event at ₹{" "}
+                {formatToIndianNumber(artist.corporateBudget)}
+              </Button>
+            </div>
+            <hr />
+          </>
+        )}
+        {artist.collegeBudget && (
+          <>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">College Event:</span>
+              <span className="font-medium text-gray-900 whitespace-nowrap">
+                ₹ {formatToIndianNumber(artist.collegeBudget)}
+              </span>
+              <Button
+                className="mt-3 rounded-full"
+                onClick={() =>
+                  handleBookClick("College Event", artist.collegeBudget)
+                }
+              >
+                Book {artist.name} for College Event at ₹{" "}
+                {formatToIndianNumber(artist.collegeBudget)}
+              </Button>
+            </div>
+            <hr />
+          </>
+        )}
+        {artist.singerCumGuitaristBudget && (
+          <>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">House/Private Event:</span>
+              <span className="font-medium text-gray-900 whitespace-nowrap">
+                ₹ {formatToIndianNumber(artist.singerCumGuitaristBudget)}
+              </span>
+              <Button
+                className="mt-3 rounded-full"
+                onClick={() =>
+                  handleBookClick(
+                    "House/Private Event",
+                    artist.singerCumGuitaristBudget
+                  )
+                }
+              >
+                Book {artist.name} for House/Private Event at ₹{" "}
+                {formatToIndianNumber(artist.singerCumGuitaristBudget)}
+              </Button>
+            </div>
+            <hr />
+          </>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 border-[1px] p-5 mt-5 rounded-lg">
-        {/* Artist Image  */}
-        <div>
+      <div className="grid grid-cols-1 md:grid-cols-3 border p-5 mt-5 rounded-lg shadow-lg gap-5">
+        <div className="flex justify-center md:justify-start">
           <Image
             src={artist.profilePic}
             width={200}
             height={200}
             alt={artist.name}
-            className="border-[1px] rounded-lg w-full h-[280px] object-cover"
+            className="border rounded-lg w-full h-auto object-cover"
           />
         </div>
-        {/* Doctor Info  */}
-        <div className="col-span-2 md:px-10 mt-5 flex flex-col gap-3 items-baseline">
-          <h2 className="font-bold text-2xl">{artist.name}</h2>
-
-          {/* Container for the two columns */}
-          <div className="md:flex md:gap-10">
-            {/* First Column */}
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2 items-center text-gray-500 text-md">
-                <User className="bg-gray-200 rounded-lg p-2 size-10" />
-                <span className="text-sm">{artist.code}</span>
+        <div className="col-span-2 flex flex-col gap-4">
+          <h2 className="font-bold text-3xl text-gray-800">{artist.name}</h2>
+          <div className="flex flex-col md:flex-row md:gap-10 gap-4">
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2 items-center text-gray-600 text-lg">
+                <User className="bg-gray-200 rounded-lg p-2" />
+                <span>{artist.code}</span>
               </div>
-              <div className="flex gap-2 items-center text-gray-500 text-md">
-                <Music className="bg-gray-200 rounded-lg p-2 size-10" />
+              <div className="flex gap-2 items-center text-gray-600 text-lg">
+                <Music className="bg-gray-200 rounded-lg p-2" />
                 <span className="capitalize">Genre: {artist.genre}</span>
               </div>
-              <div className="flex gap-2 items-center text-gray-500 text-md">
-                <Star className="bg-gray-200 rounded-lg p-2 size-10" />
-                <span>8.5/10</span>
-              </div>
-              <div className="text-md flex gap-2 items-center text-gray-500">
-                <MapPin className="bg-gray-200 rounded-lge p-2 size-10" />
+              <div className="flex gap-2 items-center text-gray-600 text-lg">
+                <MapPin className="bg-gray-200 rounded-lg p-2" />
                 <span className="capitalize">{artist.location}</span>
               </div>
             </div>
-
-            {/* Second Column */}
-            <div className="flex flex-col gap-2">
-              <div className="text-md flex gap-2 items-center text-gray-500">
-                <Type className="bg-gray-200 rounded-lg p-2 size-10" />
-                <span className="capitalize">Type: {artist.artistType}</span>
-              </div>
-              <div className="flex gap-2 items-center text-gray-500 text-md">
-                <Guitar className="bg-gray-200 rounded-lg p-2 size-10" />
-                <span className="capitalize">
-                  Instruments: {artist.instruments}
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2 items-center text-gray-600 text-lg">
+                <Type className="bg-gray-200 rounded-lg p-2" />
+                <span className="capitalize whitespace-nowrap">
+                  Type: {artist.artistType}
                 </span>
               </div>
-              <div className="flex gap-2 items-center text-gray-500 text-md">
-                <GraduationCap className="bg-gray-200 rounded-lg p-2 size-10" />
-                <span>10+ Years of Experience</span>
+              <div className="flex gap-2 items-center text-gray-600 text-lg">
+                <GraduationCap className="bg-gray-200 rounded-lg p-2" />
+                <span>Events: {artist.eventsType}</span>
               </div>
-              <div className="flex gap-2 items-center text-gray-500 text-md">
-                <Clock className="bg-gray-200 rounded-lg p-2 size-10" />
-                <span>Duration: {artist.time}</span>
+              <div className="flex gap-2 items-center text-gray-600 text-lg">
+                <Clock className="bg-gray-200 rounded-lg p-2" />
+                <span>Duration: {artist.time} Mins</span>
               </div>
             </div>
           </div>
-          <hr />
-          <h2 className="flex font-bold items-center text-xl p-1 rounded-full px-1">
-            <IndianRupee className="bg-gray-200 rounded-lg p-2 size-10 mr-3" />{" "}
-            ₹{artist.price}/-
-          </h2>
-
-          {/* <div className="flex gap-3">
-            {socialMediaList.map((item, index) => (
-              <Image src={item.icon} key={index} width={30} height={30} />
-            ))}
-          </div> */}
-
-          <BookAppointment artist={artist} />
         </div>
-
-        {/* About Artist  */}
       </div>
-      <div className="p-3 border-[1px] rounded-lg mt-5">
-        <h2 className="font-bold text-[30px]">Videos</h2>
-        <div className="mt-2 mx-4 my-4">
+      <div className="p-5 border rounded-lg mt-5 shadow-lg">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Pricing</h2>
+        <div className="space-y-2">{renderPricing()}</div>
+      </div>
+      <div className="p-5 border rounded-lg mt-5 shadow-lg">
+        <h2 className="font-bold text-2xl text-gray-800 mb-4">Videos</h2>
+        <div className="space-y-6">
           {artist.events.map((event, index) => (
             <div key={index}>
-              <h2>{event.name}</h2>
-              {/* Grid container */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <h3 className="font-semibold text-xl text-gray-700 mb-2">
+                {event.name}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {event.links.map((link, linkIndex) => (
-                  <div key={linkIndex} className="w-full h-full mx-4 my-4 mb-8">
+                  <div key={linkIndex} className="w-full h-64">
                     <ReactPlayer
-                      url={"https://www.youtube.com/watch?v=" + link}
-                      className="react-player" // Add custom class for potential styling
-                      width="100%" // Ensures ReactPlayer takes the full width of the parent div
-                      height="100%" // Adjust height accordingly, might require specific values or adjustments
+                      url={`https://www.youtube.com/watch?v=${link}`}
+                      className="react-player"
+                      width="100%"
+                      height="100%"
                     />
                   </div>
                 ))}
@@ -139,9 +256,9 @@ function ArtistDetail({ artist }) {
             </div>
           ))}
         </div>
-        <h2 className="font-bold text-[20px]">About Me</h2>
+        <h2 className="font-bold text-2xl text-gray-800 mt-8">About Me</h2>
         <div
-          className="text-gray-500 tracking-wide mt-2 mx-4 my-4 text-justify"
+          className="text-gray-600 tracking-wide mt-4 text-justify"
           dangerouslySetInnerHTML={{ __html: artist.blog }}
         ></div>
       </div>

@@ -22,6 +22,7 @@ function ArtistFilter() {
   const filterParams = new URLSearchParams(searchParams.toString());
   console.log(filterParams);
   const [artists, setArtists] = useState([]);
+  const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [genres, setGenres] = useState([]);
@@ -146,7 +147,33 @@ function ArtistFilter() {
     } else {
       setSortedArtists([...artists]);
     }
-  }, [selectedSortOption, artists]);
+
+    if (selectedEventType === "Corporate") {
+      setBudget("corporateBudget");
+    } else if (selectedEventType === "College") {
+      setBudget("collegeBudget");
+    } else if (selectedEventType === "Wedding") {
+      setBudget("price");
+    } else if (selectedEventType === "Reception") {
+      setBudget("price");
+    } else if (selectedEventType === "Haldi") {
+      setBudget("price");
+    } else if (selectedEventType === "Mehendi") {
+      setBudget("price");
+    } else if (selectedEventType === "Mayra/Bhaat") {
+      setBudget("price");
+    } else if (selectedEventType === "Musical/Vedic Pheras") {
+      setBudget("price");
+    } else if (selectedEventType === "Sangeet") {
+      setBudget("price");
+    } else if (selectedEventType === "House Party") {
+      setBudget("singerCumGuitarist");
+    } else if (selectedEventType === "Ticketing Concert") {
+      setBudget("ticketingConcertBudget");
+    } else if (selectedEventType === "Virtual") {
+      setBudget("singerCumGuitarist");
+    }
+  }, [selectedSortOption, artists, selectedEventType]);
 
   const parsePrice = (priceString) => {
     return parseInt(priceString.replace(/,/g, ""), 10);
@@ -200,6 +227,19 @@ function ArtistFilter() {
       matchesMaxBudget
     );
   });
+
+  const handleClearFilter = () => {
+    setSelectedCategory("All Artist Types");
+    setSelectedGenre([]);
+    setSelectedLocation("All Locations");
+    setSelectedEventType("All Event Types");
+    setSelectedLanguage([]);
+    setSelectedInstrument([]);
+    setSelectedGender("All");
+    setSelectedSortOption("Low to High");
+    setSelectedMinBudget("");
+    setSelectedMaxBudget("");
+  };
 
   const handleCopyLink = () => {
     const currentURL = window.location.href;
@@ -494,6 +534,7 @@ function ArtistFilter() {
               </Select>
             </FormControl>
           </div>
+          <br />
           <Button
             onClick={handleCopyLink}
             className="p-2 px-3 border-[1px] border-gray
@@ -501,6 +542,14 @@ function ArtistFilter() {
                          mt-2 cursor-pointer hover:bg-primary hover:text-white"
           >
             Filter Link
+          </Button>
+          <Button
+            onClick={handleClearFilter}
+            className="p-2 px-3 border-[1px] border-gray
+                        text-primary bg-white w-auto text-center
+                         mt-2 cursor-pointer hover:bg-primary hover:text-white"
+          >
+            Clear Filter
           </Button>
         </div>
       </div>
@@ -510,6 +559,10 @@ function ArtistFilter() {
         ) : filteredArtists.length > 0 ? (
           <ArtistList
             artists={filteredArtists}
+            selectedEventType={
+              selectedEventType === "All Event Types" ? "" : selectedEventType
+            }
+            budget={budget}
             heading={`${selectedCategory} - ${selectedGenre.join(
               ", "
             )} - ${selectedLocation} - ${selectedEventType} - ${selectedLanguage.join(

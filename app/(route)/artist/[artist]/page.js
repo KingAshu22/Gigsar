@@ -1,43 +1,54 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import ArtistDetail from "./_components/ArtistDetail";
-import ArtistSuggestionList from "./_components/ArtistSuggestionList";
 import axios from "axios";
+import ArtistPricing from "./_components/ArtistPricing";
+import { Spinner } from "./_components/Spinner";
 
 function ArtistDetails({ params }) {
-  const [artist, setArtist] = useState();
+  const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getArtist();
   }, []);
-  const getArtist = () => {
+
+  const getArtist = async () => {
     setLoading(true);
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API}/artist/artistName/` + params.artist)
-      .then((response) => {
-        setArtist(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching artists:", error);
-        setLoading(false);
-      });
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/artist/artistName/` + params.artist
+      );
+      setArtist(response.data);
+    } catch (error) {
+      console.error("Error fetching artist:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <div className="p-5 md:px-10">
-      <h2 className="font-bold text-[22px]">Artist Details</h2>
+      <h2 className="font-bold text-2xl mb-5 text-gray-800">Artist Details</h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 ">
-        {/* Artist Detail  */}
-        <div className=" col-span-3">
-          {artist && <ArtistDetail artist={artist} />}
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <Spinner />
         </div>
-        {/* Artist Suggestion  */}
-        <div>
-          <ArtistSuggestionList artist={artist} />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Artist Detail */}
+          <div className="col-span-3">
+            {artist ? (
+              <ArtistDetail artist={artist} />
+            ) : (
+              <p className="text-gray-500">Artist details not available.</p>
+            )}
+          </div>
+          {/* Artist Pricing */}
+          <div>{artist ? <ArtistPricing artist={artist} /> : null}</div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

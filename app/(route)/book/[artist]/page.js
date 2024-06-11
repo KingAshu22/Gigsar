@@ -1,7 +1,9 @@
 "use client";
 
 import { useSearchParams, useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import Script from "next/script";
 import {
   Select,
   SelectContent,
@@ -13,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatToIndianNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -21,65 +23,165 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import cities from "@/lib/cities";
 import soundSystems from "./components/soundSystems";
 import addOns from "./components/addOns";
+
+const eventTypeMapping = {
+  Corporate: "corporateBudget",
+  College: "collegeBudget",
+  Wedding: "price",
+  Reception: "price",
+  Haldi: "price",
+  Mehendi: "price",
+  "Mayra/Bhaat": "price",
+  "Musical/Vedic Pheras": "price",
+  Sangeet: "price",
+  "House Party": "singerCumGuitaristBudget",
+  "Ticketing Concert": "ticketingConcertBudget",
+  Virtual: "singerCumGuitaristBudget",
+};
 
 function BookArtistPage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const inputRef = useRef(null);
 
-  const artist = decodeURIComponent(params.artist); // Decode the URL-encoded artist name
+  const artistName = params.artist.replace(/-/g, " ");
+  const [artist, setArtist] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [event, setEvent] = useState("");
+  const [priceName, setPriceName] = useState("");
   const [date, setDate] = useState(null);
   const [location, setLocation] = useState("");
   const [guestCount, setGuestCount] = useState("");
-  const [filteredCities, setFilteredCities] = useState([]);
   const [selectedSoundSystem, setSelectedSoundSystem] = useState(null);
-  const [selectedAddOns, setSelectedAddOns] = useState(null);
+  const [selectedAddOns, setSelectedAddOns] = useState([]);
+  const [artistPrice, setArtistPrice] = useState("");
+
+  useEffect(() => {
+    getArtist();
+  }, []);
 
   useEffect(() => {
     const eventParam = searchParams.get("event");
-
     if (eventParam) {
       setEvent(eventParam);
     }
   }, [searchParams]);
 
-  const handleLocationChange = (e) => {
-    const query = e.target.value;
-    setLocation(query);
-    if (query.length > 0) {
-      const filtered = cities.filter((city) =>
-        city.toLowerCase().startsWith(query.toLowerCase())
+  useEffect(() => {
+    if (artist && event) {
+      const priceName = eventTypeMapping[event] || "";
+      setPriceName(priceName);
+      setArtistPrice(artist[priceName]);
+    }
+  }, [artist, event]);
+
+  const getArtist = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/artist/artistName/` + params.artist
       );
-      setFilteredCities(filtered);
-    } else {
-      setFilteredCities([]);
+      setArtist(response.data);
+    } catch (error) {
+      console.error("Error fetching artist:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (inputRef.current) {
+      const initAutocomplete = () => {
+        const autocomplete = new google.maps.places.Autocomplete(
+          inputRef.current,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (place.geometry) {
+            setLocation(place.formatted_address);
+          }
+        });
+      };
+
+      if (typeof google !== "undefined" && google.maps) {
+        initAutocomplete();
+      }
+    }
+  }, [location]);
+
   const handleGuestsChange = (value) => {
-    const selectedGuests = value;
-    console.log(selectedGuests);
-    setGuestCount(selectedGuests);
-    // Find the sound system that matches the selected guest count
-    const system = soundSystems.find(
-      (system) => system.guests === selectedGuests
-    );
+    setGuestCount(value);
+    const system = soundSystems.find((system) => system.guests === value);
     if (system) {
-      // Set the selected sound system based on the matched system's ID
       setSelectedSoundSystem(system.id);
     } else {
-      // If no matching system is found, reset the selected sound system
       setSelectedSoundSystem(null);
     }
   };
 
+  const handleAddOnsChange = (id) => {
+    setSelectedAddOns((prev) =>
+      prev.includes(id)
+        ? prev.filter((addOnId) => addOnId !== id)
+        : [...prev, id]
+    );
+  };
+
+  const calculatePrices = () => {
+    const soundSystem = soundSystems.find(
+      (system) => system.id === selectedSoundSystem
+    );
+    const addOnPrices = selectedAddOns.map(
+      (id) => parseFloat(addOns.find((addOn) => addOn.id === id)?.price) || 0
+    );
+
+    const soundSystemPrice = soundSystem ? parseFloat(soundSystem.price) : 0;
+    const addOnsTotalPrice = addOnPrices.reduce(
+      (total, price) => total + price,
+      0
+    );
+    const subtotal =
+      parseFloat(artistPrice) + soundSystemPrice + addOnsTotalPrice;
+
+    const gst = Number.isFinite(subtotal) ? (subtotal * 18) / 100 : 0;
+    const total = Number.isFinite(subtotal) ? subtotal + gst : 0;
+
+    return { subtotal, gst, total };
+  };
+
+  const { subtotal, gst, total } = calculatePrices();
+
   return (
     <div className="container mx-auto p-4">
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        onLoad={() => {
+          if (inputRef.current) {
+            const autocomplete = new google.maps.places.Autocomplete(
+              inputRef.current,
+              {
+                types: ["(cities)"],
+              }
+            );
+
+            autocomplete.addListener("place_changed", () => {
+              const place = autocomplete.getPlace();
+              if (place.geometry) {
+                setLocation(place.formatted_address);
+              }
+            });
+          }
+        }}
+      />
       <h1 className="text-3xl font-bold mb-4 text-center">
-        Book {artist} for {event} Event
+        Book <span className="capitalize">{artist?.name}</span> for {event}{" "}
+        Event
       </h1>
       <div className="flex flex-col md:flex-row md:space-x-4">
         <div className="mb-4 flex-1">
@@ -89,27 +191,12 @@ function BookArtistPage() {
               id="location"
               type="text"
               value={location}
-              onChange={handleLocationChange}
+              ref={inputRef}
               autoComplete="off"
               className="w-full"
               placeholder="Enter city name"
+              onChange={(e) => setLocation(e.target.value)}
             />
-            {filteredCities.length > 0 && (
-              <ul className="absolute z-10 bg-white border border-gray-200 w-full max-h-60 overflow-y-auto mt-1 rounded-md shadow-lg">
-                {filteredCities.map((city, index) => (
-                  <li
-                    key={index}
-                    onClick={() => {
-                      setLocation(city);
-                      setFilteredCities([]);
-                    }}
-                    className="cursor-pointer p-2 hover:bg-gray-100"
-                  >
-                    {city}
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
         </div>
         <div className="mb-4 flex-1">
@@ -192,30 +279,113 @@ function BookArtistPage() {
         </div>
       </div>
       <div className="mt-8">
-        <Label htmlFor="soundSystem" className="block mb-2">
+        <Label htmlFor="addOns" className="block mb-2">
           Any Add On?
         </Label>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {addOns.map((system) => (
+          {addOns.map((addOn) => (
             <div
-              key={system.id}
+              key={addOn.id}
               className={`p-4 border rounded-lg cursor-pointer ${
-                selectedAddOns === system.id
+                selectedAddOns.includes(addOn.id)
                   ? "border-primary"
                   : "border-gray-300"
               }`}
-              onClick={() => setSelectedAddOns(system.id)}
+              onClick={() => handleAddOnsChange(addOn.id)}
             >
-              <h2 className="text-xl font-bold mb-2">{system.name}</h2>
+              <h2 className="text-xl font-bold mb-2">{addOn.name}</h2>
               <p
                 className="text-sm mb-4"
-                dangerouslySetInnerHTML={{ __html: system.specs }}
+                dangerouslySetInnerHTML={{ __html: addOn.specs }}
               ></p>
               <p className="text-lg font-semibold text-primary">
-                Price: {system.price}/-
+                Price: {addOn.price}/-
               </p>
+              <div className="mt-2">
+                <input
+                  type="checkbox"
+                  checked={selectedAddOns.includes(addOn.id)}
+                  onChange={() => handleAddOnsChange(addOn.id)}
+                />
+                <label className="ml-2">{addOn.name}</label>
+              </div>
             </div>
           ))}
+        </div>
+      </div>
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Pricing Details</h2>
+        <div className="bg-gray-100 p-4 rounded-lg">
+          <div className="grid grid-cols-1 gap-4">
+            {/* Artist Price */}
+            <div className="flex justify-between">
+              <p className="text-lg">
+                <span className="font-bold">Artist Price:</span>
+              </p>
+              <p className="text-lg">₹{formatToIndianNumber(artistPrice)}</p>
+            </div>
+
+            {/* Sound System Price */}
+            {selectedSoundSystem && (
+              <div className="flex justify-between">
+                <p className="text-lg">
+                  <span className="font-bold">Sound System Price:</span>
+                </p>
+                <p className="text-lg">
+                  ₹
+                  {formatToIndianNumber(
+                    soundSystems.find(
+                      (system) => system.id === selectedSoundSystem
+                    )?.price || 0
+                  )}
+                </p>
+              </div>
+            )}
+
+            {/* Add-Ons Price */}
+            <div className="flex justify-between">
+              <p className="text-lg">
+                <span className="font-bold">Add-Ons Price:</span>
+              </p>
+              <p className="text-lg">
+                ₹
+                {formatToIndianNumber(
+                  selectedAddOns
+                    .map(
+                      (id) =>
+                        addOns.find((addOn) => addOn.id === id)?.price || 0
+                    )
+                    .reduce((total, price) => total + price, 0)
+                )}
+              </p>
+            </div>
+
+            {/* Subtotal */}
+            <div className="flex justify-between">
+              <p className="text-lg">
+                <span className="font-bold">Subtotal:</span>
+              </p>
+              <p className="text-lg">₹{formatToIndianNumber(subtotal)}</p>
+            </div>
+
+            {/* GST */}
+            <div className="flex justify-between">
+              <p className="text-lg">
+                <span className="font-bold">GST (18%):</span>
+              </p>
+              <p className="text-lg">₹{formatToIndianNumber(Math.ceil(gst))}</p>
+            </div>
+
+            {/* Total */}
+            <div className="flex justify-between">
+              <p className="text-xl font-bold">
+                <span className="text-primary">Total:</span>
+              </p>
+              <p className="text-xl font-bold">
+                ₹{formatToIndianNumber(Math.ceil(total))}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

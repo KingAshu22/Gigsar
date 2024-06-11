@@ -64,7 +64,7 @@ function ArtistDetail({ artist }) {
   }, []);
 
   const handleBookClick = (event, price) => {
-    router.push(`/book/${artist.name}?event=${event}`);
+    router.push(`/book/${artist.linkid}?event=${event}`);
   };
 
   const renderPricing = () => {

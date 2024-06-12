@@ -58,6 +58,7 @@ function BookArtistPage() {
   const [selectedAddOns, setSelectedAddOns] = useState([]);
   const [artistPrice, setArtistPrice] = useState("");
   const [showSpecs, setShowSpecs] = useState({}); // State to manage specs visibility
+  const [currentStep, setCurrentStep] = useState(1); // State to manage current step
 
   useEffect(() => {
     getArtist();
@@ -162,6 +163,14 @@ function BookArtistPage() {
     setShowSpecs((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const nextStep = () => {
+    setCurrentStep((prevStep) => prevStep + 1);
+  };
+
+  const prevStep = () => {
+    setCurrentStep((prevStep) => prevStep - 1);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <Script
@@ -188,9 +197,11 @@ function BookArtistPage() {
         Book <span className="capitalize">{artist?.name}</span> for {event}{" "}
         Event
       </h1>
-      <div className="flex flex-col md:flex-row md:space-x-4">
-        <div className="mb-4 flex-1">
-          <Label htmlFor="location">Event Location</Label>
+      {currentStep === 1 && (
+        <div>
+          <Label htmlFor="location" className="text-lg">
+            Event Location
+          </Label>
           <div className="relative">
             <Input
               id="location"
@@ -204,8 +215,12 @@ function BookArtistPage() {
             />
           </div>
         </div>
-        <div className="mb-4 flex-1">
-          <Label htmlFor="date">Event Date</Label>
+      )}
+      {currentStep === 2 && (
+        <div>
+          <Label htmlFor="date" className="text-lg">
+            Event Date
+          </Label>
           <br />
           <Popover>
             <PopoverTrigger asChild>
@@ -230,8 +245,12 @@ function BookArtistPage() {
             </PopoverContent>
           </Popover>
         </div>
-        <div className="mb-4 flex-1">
-          <Label htmlFor="guests">Number of Guests</Label>
+      )}
+      {currentStep === 3 && (
+        <div>
+          <Label htmlFor="guests" className="text-lg">
+            Number of Guests
+          </Label>
           <Select onValueChange={handleGuestsChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Number of Guests?" />
@@ -247,174 +266,218 @@ function BookArtistPage() {
             </SelectContent>
           </Select>
         </div>
-      </div>
-      <div className="mt-8">
-        <Label htmlFor="soundSystem" className="block mb-2">
-          Select Sound System
-        </Label>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {soundSystems.map((system) => (
-            <div
-              key={system.id}
-              className={`p-4 border rounded-lg cursor-pointer ${
-                selectedSoundSystem === system.id
-                  ? "bg-primary text-white"
-                  : "border-gray-300"
-              }`}
-              onClick={() => setSelectedSoundSystem(system.id)}
-            >
-              <h2 className="text-xl font-bold mb-2">{system.name}</h2>
-              {showSpecs[system.id] && (
-                <p
-                  className={`text-sm rounded p-1 mb-0 ${
-                    selectedSoundSystem === system.id
-                      ? "bg-red-600"
-                      : "bg-gray-200"
-                  }`}
-                  dangerouslySetInnerHTML={{ __html: system.specs }}
-                ></p>
-              )}
-              <button
-                onClick={() => toggleSpecs(system.id)}
-                className={`flex items-center justify-between  p-2 rounded-lg w-full transition-colors duration-200 ${
+      )}
+      {currentStep === 4 && (
+        <div>
+          <Label htmlFor="soundSystem" className="block mb-2 text-xl">
+            Select Sound System
+          </Label>
+          <p className="p-2 text-lg">
+            Based on your Guest Count ({guestCount}) we suggest you{" "}
+            {soundSystems[selectedSoundSystem - 1].name} Sound System, If you
+            still want to change the sound system then select an appropriate
+            Sound System.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {soundSystems.map((system) => (
+              <div
+                key={system.id}
+                className={`p-4 border rounded-lg cursor-pointer ${
                   selectedSoundSystem === system.id
-                    ? "bg-red-600 hover:bg-red-900 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
+                    ? "bg-primary text-white"
+                    : "border-gray-300"
                 }`}
+                onClick={() => setSelectedSoundSystem(system.id)}
               >
-                <span>
-                  {showSpecs[system.id] ? "Hide Specs" : "Show Specs"}
-                </span>
-                {showSpecs[system.id] ? (
-                  <ChevronUp className="ml-2" />
-                ) : (
-                  <ChevronDown className="ml-2" />
+                <h2 className="text-xl font-bold mb-2">{system.name}</h2>
+                {showSpecs[system.id] && (
+                  <p
+                    className={`text-sm rounded p-1 mb-0 ${
+                      selectedSoundSystem === system.id
+                        ? "bg-red-600"
+                        : "bg-gray-200"
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: system.specs }}
+                  ></p>
                 )}
-              </button>
-              <p className="text-sm mb-1">
-                <span className="font-bold">Suitable Guest Count:</span>{" "}
-                {system.guests}
-              </p>
-              <p className="text-sm mb-1">
-                <span className="font-bold">Suitable Event Type:</span>{" "}
-                {system.suitable}
-              </p>
-              <p className="text-lg font-semibold text-primary">
-                Price: {system.price}/-
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mt-8">
-        <Label htmlFor="addOns" className="block mb-2">
-          Any Add On?
-        </Label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {addOns.map((addOn) => (
-            <div
-              key={addOn.id}
-              className={`p-4 border rounded-lg cursor-pointer ${
-                selectedAddOns.includes(addOn.id)
-                  ? "border-primary"
-                  : "border-gray-300"
-              }`}
-              onClick={() => handleAddOnsChange(addOn.id)}
-            >
-              <h2 className="text-xl font-bold mb-2">{addOn.name}</h2>
-              <p
-                className="text-sm mb-4"
-                dangerouslySetInnerHTML={{ __html: addOn.specs }}
-              ></p>
-              <p className="text-lg font-semibold text-primary">
-                Price: {addOn.price}/-
-              </p>
-              <div className="mt-2">
-                <input
-                  type="checkbox"
-                  checked={selectedAddOns.includes(addOn.id)}
-                  onChange={() => handleAddOnsChange(addOn.id)}
-                />
-                <label className="ml-2">{addOn.name}</label>
+                <button
+                  onClick={() => toggleSpecs(system.id)}
+                  className={`flex items-center justify-between  p-2 rounded-lg w-full transition-colors duration-200 ${
+                    selectedSoundSystem === system.id
+                      ? "bg-red-600 hover:bg-red-900 text-white"
+                      : "bg-gray-200 hover:bg-gray-300"
+                  }`}
+                >
+                  <span>
+                    {showSpecs[system.id] ? "Hide Specs" : "Show Specs"}
+                  </span>
+                  {showSpecs[system.id] ? (
+                    <ChevronUp className="ml-2" />
+                  ) : (
+                    <ChevronDown className="ml-2" />
+                  )}
+                </button>
+                <p className="text-sm mb-1">
+                  <span className="font-bold">Suitable Guest Count:</span>{" "}
+                  {system.guests}
+                </p>
+                <p className="text-sm mb-1">
+                  <span className="font-bold">Suitable Event Type:</span>{" "}
+                  {system.suitable}
+                </p>
+                <p
+                  className={`text-lg font-semibold ${
+                    selectedSoundSystem === system.id
+                      ? "text-white"
+                      : "text-primary"
+                  }`}
+                >
+                  Price: {formatToIndianNumber(system.price)}/-
+                </p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Pricing Details</h2>
-        <div className="bg-gray-100 p-4 rounded-lg">
-          <div className="grid grid-cols-1 gap-4">
-            {/* Artist Price */}
-            <div className="flex justify-between">
-              <p className="text-lg">
-                <span className="font-bold">Artist Price:</span>
-              </p>
-              <p className="text-lg">₹{formatToIndianNumber(artistPrice)}</p>
-            </div>
-
-            {/* Sound System Price */}
-            {selectedSoundSystem && (
+      )}
+      {currentStep === 5 && (
+        <div>
+          <Label htmlFor="addOns" className="block mb-2 text-lg">
+            Any Add On?
+          </Label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {addOns.map((addOn) => (
+              <div
+                key={addOn.id}
+                className={`p-4 border rounded-lg cursor-pointer ${
+                  selectedAddOns.includes(addOn.id)
+                    ? "bg-primary text-white"
+                    : "border-gray-300"
+                }`}
+                onClick={() => handleAddOnsChange(addOn.id)}
+              >
+                <h2 className="text-xl font-bold mb-2">{addOn.name}</h2>
+                <p
+                  className="text-sm mb-4"
+                  dangerouslySetInnerHTML={{ __html: addOn.specs }}
+                ></p>
+                <p
+                  className={`text-lg font-semibold ${
+                    selectedAddOns.includes(addOn.id)
+                      ? "text-white"
+                      : "text-primary"
+                  }`}
+                >
+                  Price: {formatToIndianNumber(addOn.price)}/-
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {currentStep === 6 && (
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Pricing Details</h2>
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <div className="grid grid-cols-1 gap-4">
+              {/* Artist Price */}
               <div className="flex justify-between">
                 <p className="text-lg">
-                  <span className="font-bold">Sound System Price:</span>
+                  <span className="font-bold">Artist Price:</span>
+                </p>
+                <p className="text-lg">₹{formatToIndianNumber(artistPrice)}</p>
+              </div>
+
+              {/* Sound System Price */}
+              {selectedSoundSystem && (
+                <div className="flex justify-between">
+                  <p className="text-lg">
+                    <span className="font-bold">Sound System Price:</span>
+                  </p>
+                  <p className="text-lg">
+                    ₹
+                    {formatToIndianNumber(
+                      soundSystems.find(
+                        (system) => system.id === selectedSoundSystem
+                      )?.price || 0
+                    )}
+                  </p>
+                </div>
+              )}
+
+              {/* Add-Ons Price */}
+              <div className="flex justify-between">
+                <p className="text-lg">
+                  <span className="font-bold">Add-Ons Price:</span>
                 </p>
                 <p className="text-lg">
                   ₹
                   {formatToIndianNumber(
-                    soundSystems.find(
-                      (system) => system.id === selectedSoundSystem
-                    )?.price || 0
+                    selectedAddOns
+                      .map(
+                        (id) =>
+                          addOns.find((addOn) => addOn.id === id)?.price || 0
+                      )
+                      .reduce((total, price) => total + price, 0)
                   )}
                 </p>
               </div>
-            )}
 
-            {/* Add-Ons Price */}
-            <div className="flex justify-between">
-              <p className="text-lg">
-                <span className="font-bold">Add-Ons Price:</span>
-              </p>
-              <p className="text-lg">
-                ₹
-                {formatToIndianNumber(
-                  selectedAddOns
-                    .map(
-                      (id) =>
-                        addOns.find((addOn) => addOn.id === id)?.price || 0
-                    )
-                    .reduce((total, price) => total + price, 0)
-                )}
-              </p>
-            </div>
+              {/* Subtotal */}
+              <div className="flex justify-between">
+                <p className="text-lg">
+                  <span className="font-bold">Subtotal:</span>
+                </p>
+                <p className="text-lg">₹{formatToIndianNumber(subtotal)}</p>
+              </div>
 
-            {/* Subtotal */}
-            <div className="flex justify-between">
-              <p className="text-lg">
-                <span className="font-bold">Subtotal:</span>
-              </p>
-              <p className="text-lg">₹{formatToIndianNumber(subtotal)}</p>
-            </div>
+              {/* GST */}
+              <div className="flex justify-between">
+                <p className="text-lg">
+                  <span className="font-bold">GST (18%):</span>
+                </p>
+                <p className="text-lg">
+                  ₹{formatToIndianNumber(Math.ceil(gst))}
+                </p>
+              </div>
 
-            {/* GST */}
-            <div className="flex justify-between">
-              <p className="text-lg">
-                <span className="font-bold">GST (18%):</span>
-              </p>
-              <p className="text-lg">₹{formatToIndianNumber(Math.ceil(gst))}</p>
-            </div>
-
-            {/* Total */}
-            <div className="flex justify-between">
-              <p className="text-xl font-bold">
-                <span className="text-primary">Total:</span>
-              </p>
-              <p className="text-xl font-bold">
-                ₹{formatToIndianNumber(Math.ceil(total))}
-              </p>
+              {/* Total */}
+              <div className="flex justify-between">
+                <p className="text-xl font-bold">
+                  <span className="text-primary">Total:</span>
+                </p>
+                <p className="text-xl font-bold">
+                  ₹{formatToIndianNumber(Math.ceil(total))}
+                </p>
+              </div>
             </div>
           </div>
         </div>
+      )}
+
+      <div className="flex justify-between mt-4">
+        {currentStep > 1 && (
+          <Button
+            className="border-2 border-black"
+            variant="secondary"
+            onClick={prevStep}
+          >
+            Back
+          </Button>
+        )}
+        <div className="flex-grow"></div> {/* Add this line */}
+        <Button
+          className="bg-primary text-white"
+          variant="primary"
+          onClick={nextStep}
+          disabled={
+            (currentStep === 1 && !location) ||
+            (currentStep === 2 && !date) ||
+            (currentStep === 3 && !guestCount) ||
+            (currentStep === 4 && !selectedSoundSystem)
+          }
+        >
+          Next
+        </Button>
       </div>
     </div>
   );

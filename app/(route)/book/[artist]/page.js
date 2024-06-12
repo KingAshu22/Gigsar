@@ -465,19 +465,21 @@ function BookArtistPage() {
           </Button>
         )}
         <div className="flex-grow"></div> {/* Add this line */}
-        <Button
-          className="bg-primary text-white"
-          variant="primary"
-          onClick={nextStep}
-          disabled={
-            (currentStep === 1 && !location) ||
-            (currentStep === 2 && !date) ||
-            (currentStep === 3 && !guestCount) ||
-            (currentStep === 4 && !selectedSoundSystem)
-          }
-        >
-          Next
-        </Button>
+        {currentStep < 6 && (
+          <Button
+            className="bg-primary text-white"
+            variant="primary"
+            onClick={nextStep}
+            disabled={
+              (currentStep === 1 && !location) ||
+              (currentStep === 2 && !date) ||
+              (currentStep === 3 && !guestCount) ||
+              (currentStep === 4 && !selectedSoundSystem)
+            }
+          >
+            Next
+          </Button>
+        )}
       </div>
     </div>
   );

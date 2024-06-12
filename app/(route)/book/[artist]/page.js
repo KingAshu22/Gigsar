@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { cn, formatToIndianNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -57,6 +57,7 @@ function BookArtistPage() {
   const [selectedSoundSystem, setSelectedSoundSystem] = useState(null);
   const [selectedAddOns, setSelectedAddOns] = useState([]);
   const [artistPrice, setArtistPrice] = useState("");
+  const [showSpecs, setShowSpecs] = useState({}); // State to manage specs visibility
 
   useEffect(() => {
     getArtist();
@@ -157,6 +158,10 @@ function BookArtistPage() {
 
   const { subtotal, gst, total } = calculatePrices();
 
+  const toggleSpecs = (id) => {
+    setShowSpecs((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
   return (
     <div className="container mx-auto p-4">
       <Script
@@ -247,22 +252,45 @@ function BookArtistPage() {
         <Label htmlFor="soundSystem" className="block mb-2">
           Select Sound System
         </Label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {soundSystems.map((system) => (
             <div
               key={system.id}
               className={`p-4 border rounded-lg cursor-pointer ${
                 selectedSoundSystem === system.id
-                  ? "border-primary"
+                  ? "bg-primary text-white"
                   : "border-gray-300"
               }`}
               onClick={() => setSelectedSoundSystem(system.id)}
             >
               <h2 className="text-xl font-bold mb-2">{system.name}</h2>
-              <p
-                className="text-sm mb-4"
-                dangerouslySetInnerHTML={{ __html: system.specs }}
-              ></p>
+              {showSpecs[system.id] && (
+                <p
+                  className={`text-sm rounded p-1 mb-0 ${
+                    selectedSoundSystem === system.id
+                      ? "bg-red-600"
+                      : "bg-gray-200"
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: system.specs }}
+                ></p>
+              )}
+              <button
+                onClick={() => toggleSpecs(system.id)}
+                className={`flex items-center justify-between  p-2 rounded-lg w-full transition-colors duration-200 ${
+                  selectedSoundSystem === system.id
+                    ? "bg-red-600 hover:bg-red-900 text-white"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
+              >
+                <span>
+                  {showSpecs[system.id] ? "Hide Specs" : "Show Specs"}
+                </span>
+                {showSpecs[system.id] ? (
+                  <ChevronUp className="ml-2" />
+                ) : (
+                  <ChevronDown className="ml-2" />
+                )}
+              </button>
               <p className="text-sm mb-1">
                 <span className="font-bold">Suitable Guest Count:</span>{" "}
                 {system.guests}

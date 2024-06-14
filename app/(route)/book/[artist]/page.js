@@ -14,7 +14,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+} from "lucide-react";
 import { cn, formatToIndianNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -278,7 +284,7 @@ function BookArtistPage() {
             still want to change the sound system then select an appropriate
             Sound System.
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {soundSystems.map((system) => (
               <div
                 key={system.id}
@@ -332,7 +338,7 @@ function BookArtistPage() {
                       : "text-primary"
                   }`}
                 >
-                  Price: {formatToIndianNumber(system.price)}/-
+                  Price: ₹ {formatToIndianNumber(system.price)}/-
                 </p>
               </div>
             ))}
@@ -367,7 +373,7 @@ function BookArtistPage() {
                       : "text-primary"
                   }`}
                 >
-                  Price: {formatToIndianNumber(addOn.price)}/-
+                  Price: ₹ {formatToIndianNumber(addOn.price)}/-
                 </p>
               </div>
             ))}
@@ -391,7 +397,10 @@ function BookArtistPage() {
               {selectedSoundSystem && (
                 <div className="flex justify-between">
                   <p className="text-lg">
-                    <span className="font-bold">Sound System Price:</span>
+                    <span className="font-bold">
+                      Sound System Price (
+                      {soundSystems[selectedSoundSystem - 1].name}):
+                    </span>
                   </p>
                   <p className="text-lg">
                     ₹
@@ -457,11 +466,11 @@ function BookArtistPage() {
       <div className="flex justify-between mt-4">
         {currentStep > 1 && (
           <Button
-            className="border-2 border-black"
+            className="border-2 border-gray-300 text-gray-700"
             variant="secondary"
             onClick={prevStep}
           >
-            Back
+            <ChevronLeft /> Back
           </Button>
         )}
         <div className="flex-grow"></div> {/* Add this line */}
@@ -477,7 +486,7 @@ function BookArtistPage() {
               (currentStep === 4 && !selectedSoundSystem)
             }
           >
-            Next
+            Next <ChevronRight />
           </Button>
         )}
       </div>

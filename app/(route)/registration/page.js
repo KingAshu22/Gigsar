@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "react-cropper-custom/dist/index.css";
 import "./modal.css"; // Import CSS for modal styles
 import { Textarea } from "@/components/ui/textarea";
@@ -14,9 +14,12 @@ import { useRouter } from "next/navigation";
 import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
 import { useUser } from "@clerk/nextjs";
+import Script from "next/script";
 
 const ArtistRegistration = () => {
   const { user } = useUser();
+
+  const inputRef = useRef(null);
 
   const [artistName, setArtistName] = useState();
   const [profilePic, setProfilePic] = useState("");
@@ -71,6 +74,30 @@ const ArtistRegistration = () => {
       setEmail(user.emailAddresses[0].emailAddress);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      const initAutocomplete = () => {
+        const autocomplete = new google.maps.places.Autocomplete(
+          inputRef.current,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (place.geometry) {
+            setLocation(place.formatted_address);
+          }
+        });
+      };
+
+      if (typeof google !== "undefined" && google.maps) {
+        initAutocomplete();
+      }
+    }
+  }, [location]);
 
   const formatArtistName = (name) => {
     return name.toLowerCase().replace(/ /g, "-");
@@ -328,6 +355,26 @@ const ArtistRegistration = () => {
 
   return (
     <div className="container mx-auto p-5">
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        onLoad={() => {
+          if (inputRef.current) {
+            const autocomplete = new google.maps.places.Autocomplete(
+              inputRef.current,
+              {
+                types: ["(cities)"],
+              }
+            );
+
+            autocomplete.addListener("place_changed", () => {
+              const place = autocomplete.getPlace();
+              if (place.geometry) {
+                setLocation(place.formatted_address);
+              }
+            });
+          }
+        }}
+      />
       <h1 className="text-xl font-bold mb-4">Artist Registration</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -417,6 +464,8 @@ const ArtistRegistration = () => {
             type="text"
             id="location"
             value={location}
+            autoComplete="off"
+            ref={inputRef}
             onChange={(e) => setLocation(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required

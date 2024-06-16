@@ -15,6 +15,7 @@ import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
 import { useUser } from "@clerk/nextjs";
 import Script from "next/script";
+import SearchList from "@/app/_components/SearchList";
 
 const ArtistRegistration = () => {
   const { user } = useUser();
@@ -471,6 +472,7 @@ const ArtistRegistration = () => {
             required
           />
         </div>
+
         <div className="mb-4">
           <label
             htmlFor="artistType"
@@ -487,8 +489,25 @@ const ArtistRegistration = () => {
           >
             <option value="">Select Artist Type</option>
             <option value="singer-band">Singer/Live Band</option>
-            <option value="Musician">Musician</option>
-            <option value="DJ">DJ</option>
+            <option value="musician">Musician</option>
+            <option value="dj">DJ</option>
+            <option value="comedian">Comedian</option>
+            <option value="actor">Actor</option>
+            <option value="magician">Magician</option>
+            <option value="dancer">Dancer</option>
+            <option value="anchor">Anchor</option>
+            <option value="foreign-artist">Foreign Artist</option>
+            <option value="event-manager">Event Manager</option>
+            <option value="wedding-planner">Wedding Planner</option>
+            <option value="artist-manager">Artist Manager</option>
+            <option value="rapper">Rapper</option>
+            <option value="voice-over-artist">Voice over Artist</option>
+            <option value="session-artist">Session Artist (Musician)</option>
+            <option value="music-composer">Music Composer</option>
+            <option value="lyricist">Lyricist</option>
+            <option value="master-mixing-engineer">
+              Master Mixing Engineer
+            </option>
           </select>
         </div>
 
@@ -827,21 +846,9 @@ const ArtistRegistration = () => {
           <label className="block text-sm font-medium text-gray-700">
             Genre
           </label>
-          <div className="grid sm:grid-cols-3 grid-cols-2 gap-4">
-            {genreOptions.map((option) => (
-              <div key={option}>
-                <input
-                  type="checkbox"
-                  id={option}
-                  value={option}
-                  onChange={handleGenreChange}
-                  className="mr-2"
-                />
-                <label htmlFor={option}>{option}</label>
-              </div>
-            ))}
-          </div>
+          <SearchList selectedGenres={genres} setSelectedGenres={setGenres} />
         </div>
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             Language Speaks

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import genreOptions from "../(route)/registration/constants/genres";
+import { topGenres } from "../(route)/registration/constants/topGenres";
 
 const SearchList = ({ selectedGenres, setSelectedGenres }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -9,7 +10,9 @@ const SearchList = ({ selectedGenres, setSelectedGenres }) => {
   };
 
   const handleSelectGenre = (genre) => {
-    setSelectedGenres([...selectedGenres, genre]);
+    if (!selectedGenres.includes(genre)) {
+      setSelectedGenres([...selectedGenres, genre]);
+    }
     setSearchTerm("");
   };
 
@@ -19,12 +22,18 @@ const SearchList = ({ selectedGenres, setSelectedGenres }) => {
     );
   };
 
-  const filteredGenres = genreOptions.filter((genre) =>
-    genre.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredGenres = genreOptions.filter(
+    (genre) =>
+      genre.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !selectedGenres.includes(genre)
+  );
+
+  const filteredTopGenres = topGenres.filter(
+    (genre) => !selectedGenres.includes(genre)
   );
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 p-4">
       <div className="mb-2">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Selected Genres:
@@ -37,6 +46,7 @@ const SearchList = ({ selectedGenres, setSelectedGenres }) => {
             >
               {genre}
               <button
+                type="button"
                 className="ml-2 text-white hover:text-gray-300"
                 onClick={() => handleRemoveGenre(genre)}
               >
@@ -46,11 +56,30 @@ const SearchList = ({ selectedGenres, setSelectedGenres }) => {
           ))}
         </div>
       </div>
+
+      <div className="mb-2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Top Genres:
+        </label>
+        <div className="flex flex-wrap">
+          {filteredTopGenres.map((genre, index) => (
+            <button
+              type="button"
+              key={index}
+              onClick={() => handleSelectGenre(genre)}
+              className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300"
+            >
+              {genre}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <input
         type="text"
         value={searchTerm}
         onChange={handleChange}
-        placeholder="Type a genre"
+        placeholder="Search for your genre..."
         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       {searchTerm && (

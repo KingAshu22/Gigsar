@@ -42,7 +42,7 @@ const SearchList = ({ selectedGenres, setSelectedGenres }) => {
           {selectedGenres.map((genre, index) => (
             <div
               key={index}
-              className="bg-blue-500 text-white px-3 py-1 m-1 rounded-full flex items-center"
+              className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center"
             >
               {genre}
               <button

@@ -35,7 +35,7 @@ export const topGenres = [
   "Punjabi Tappe",
   "Bhangara",
   "Ravindra Sangeet",
-  "Odia",
+  "Odissi / Odia / Odissa",
   "Devotional/Bhajan",
   "Hip Hop",
   "Tamil",

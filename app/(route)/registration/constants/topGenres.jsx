@@ -16,6 +16,8 @@ export const topGenres = [
   "Karaoke",
   "English Retro",
   "Indie",
+  "Indie Pop",
+  "Soul",
   "English Blues",
   "Blues",
   "Classical",
@@ -49,4 +51,5 @@ export const topGenres = [
   "Punk",
   "Funk",
   "Rap",
+  "Indian Filmi Pop",
 ];

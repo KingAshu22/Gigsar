@@ -16,6 +16,8 @@ import { HashLoader } from "react-spinners";
 import { useUser } from "@clerk/nextjs";
 import Script from "next/script";
 import SearchList from "@/app/_components/SearchList";
+import { topGenres } from "./constants/topGenres";
+import topInstruments from "./constants/topInstruments";
 
 const ArtistRegistration = () => {
   const { user } = useUser();
@@ -842,12 +844,13 @@ const ArtistRegistration = () => {
           </div>
         )}
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Genre
-          </label>
-          <SearchList selectedGenres={genres} setSelectedGenres={setGenres} />
-        </div>
+        <SearchList
+          type="Genre"
+          list={genreOptions}
+          topList={topGenres}
+          selectedItems={genres}
+          setSelectedItems={setGenres}
+        />
 
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
@@ -898,25 +901,13 @@ const ArtistRegistration = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Which Instruments do you play
-          </label>
-          <div className="grid sm:grid-cols-3 grid-cols-2 gap-4">
-            {instrumentOptions.map((option) => (
-              <div key={option}>
-                <input
-                  type="checkbox"
-                  id={option}
-                  value={option}
-                  onChange={handleInstrumentChange}
-                  className="mr-2"
-                />
-                <label htmlFor={option}>{option}</label>
-              </div>
-            ))}
-          </div>
-        </div>
+        <SearchList
+          type="Instruments"
+          list={instrumentOptions}
+          topList={topInstruments}
+          selectedItems={instruments}
+          setSelectedItems={setInstruments}
+        />
         <div className="mb-4">
           <label
             htmlFor="performanceTime"

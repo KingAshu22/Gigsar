@@ -323,7 +323,6 @@ const ArtistRegistration = () => {
         singerPlusGuitaristBudget,
         ticketingConcertBudget,
         genres,
-        languages,
         originalSongName,
         performanceTime,
         instruments,
@@ -852,7 +851,7 @@ const ArtistRegistration = () => {
           setSelectedItems={setGenres}
         />
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             Language Speaks
           </label>
@@ -870,7 +869,7 @@ const ArtistRegistration = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
         <div className="mb-4">
           <label
             htmlFor="originalSong"

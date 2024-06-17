@@ -514,7 +514,7 @@ const ArtistRegistration = () => {
 
         {/* Gallery Image Uploaders */}
         <div className="mb-4">
-          <h3>Upload Gallery Images</h3>
+          <p className="text-sm">Gallery Images</p>
           <div className="gallery-uploader-container grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center">
             {[...Array(9)].map((_, index) => (
               <div key={index} className="flex flex-col items-center">
@@ -522,7 +522,7 @@ const ArtistRegistration = () => {
                   htmlFor={`galleryImage${index + 1}`}
                   className="block text-sm font-medium text-gray-700 text-center"
                 >
-                  Upload Gallery Image {index + 1}
+                  Image {index + 1}
                 </label>
                 <PhotoUploader
                   id={`galleryImage${index + 1}`}
@@ -540,7 +540,8 @@ const ArtistRegistration = () => {
               htmlFor="youtubeLink"
               className="block text-sm font-medium text-gray-700"
             >
-              Wedding/Private Event Videos Youtube Link:
+              Wedding/Private Event Videos{" "}
+              <span className="text-gray-500">(Youtube Link)</span>:
             </label>
             {weddingLink.map((link, index) => (
               <div key={index}>
@@ -554,7 +555,11 @@ const ArtistRegistration = () => {
               </div>
             ))}
           </div>
-          <Button type="button" className="" onClick={addMoreWedding}>
+          <Button
+            type="button"
+            className="bg-gray-500 mt-4"
+            onClick={addMoreWedding}
+          >
             Add More Link
           </Button>
         </div>
@@ -565,7 +570,8 @@ const ArtistRegistration = () => {
               htmlFor="youtubeLink"
               className="block text-sm font-medium text-gray-700"
             >
-              Corporate Event Videos Youtube Link:
+              Corporate Event Videos{" "}
+              <span className="text-gray-500">(Youtube Link)</span>:
             </label>
             {corporateLink.map((link, index) => (
               <div key={index}>
@@ -579,7 +585,11 @@ const ArtistRegistration = () => {
               </div>
             ))}
           </div>
-          <Button type="button" className="" onClick={addMoreCorporate}>
+          <Button
+            type="button"
+            className="bg-gray-500 mt-4"
+            onClick={addMoreCorporate}
+          >
             Add More Link
           </Button>
         </div>
@@ -590,7 +600,8 @@ const ArtistRegistration = () => {
               htmlFor="youtubeLink"
               className="block text-sm font-medium text-gray-700"
             >
-              College Event Videos Youtube Link:
+              College Event Videos{" "}
+              <span className="text-gray-500">(Youtube Link)</span>:
             </label>
             {collegeLink.map((link, index) => (
               <div key={index}>
@@ -604,7 +615,11 @@ const ArtistRegistration = () => {
               </div>
             ))}
           </div>
-          <Button type="button" className="" onClick={addMoreCollege}>
+          <Button
+            type="button"
+            className="bg-gray-500 mt-4"
+            onClick={addMoreCollege}
+          >
             Add More Link
           </Button>
         </div>
@@ -615,7 +630,8 @@ const ArtistRegistration = () => {
               htmlFor="youtubeLink"
               className="block text-sm font-medium text-gray-700"
             >
-              Ticketing Concert Videos Youtube Link:
+              Ticketing Concert Videos{" "}
+              <span className="text-gray-500">(Youtube Link)</span>:
             </label>
             {concertLink.map((link, index) => (
               <div key={index}>
@@ -629,7 +645,11 @@ const ArtistRegistration = () => {
               </div>
             ))}
           </div>
-          <Button type="button" className="" onClick={addMoreConcert}>
+          <Button
+            type="button"
+            className="bg-gray-500 mt-4"
+            onClick={addMoreConcert}
+          >
             Add More Link
           </Button>
         </div>
@@ -640,7 +660,8 @@ const ArtistRegistration = () => {
               htmlFor="youtubeLink"
               className="block text-sm font-medium text-gray-700"
             >
-              Original Videos Youtube Link:
+              Original Videos{" "}
+              <span className="text-gray-500">(Youtube Link)</span>:
             </label>
             {originalLink.map((link, index) => (
               <div key={index}>
@@ -654,7 +675,11 @@ const ArtistRegistration = () => {
               </div>
             ))}
           </div>
-          <Button type="button" className="" onClick={addMoreOriginal}>
+          <Button
+            type="button"
+            className="bg-gray-500 mt-4"
+            onClick={addMoreOriginal}
+          >
             Add More Link
           </Button>
         </div>
@@ -665,7 +690,8 @@ const ArtistRegistration = () => {
               htmlFor="youtubeLink"
               className="block text-sm font-medium text-gray-700"
             >
-              Bollywood Playback Videos Youtube Link:
+              Bollywood Playback Videos{" "}
+              <span className="text-gray-500">(Youtube Link)</span>:
             </label>
             {bollywoodLink.map((link, index) => (
               <div key={index}>
@@ -679,7 +705,11 @@ const ArtistRegistration = () => {
               </div>
             ))}
           </div>
-          <Button type="button" className="" onClick={addMoreBollywood}>
+          <Button
+            type="button"
+            className="bg-gray-500 mt-4"
+            onClick={addMoreBollywood}
+          >
             Add More Link
           </Button>
         </div>
@@ -690,7 +720,8 @@ const ArtistRegistration = () => {
               htmlFor="youtubeLink"
               className="block text-sm font-medium text-gray-700"
             >
-              Cover Videos Youtube Link:
+              Cover Videos <span className="text-gray-500">(Youtube Link)</span>
+              :
             </label>
             {coverLink.map((link, index) => (
               <div key={index}>
@@ -704,30 +735,22 @@ const ArtistRegistration = () => {
               </div>
             ))}
           </div>
-          <Button type="button" className="" onClick={addMoreCover}>
+          <Button
+            type="button"
+            className="bg-gray-500 mt-4"
+            onClick={addMoreCover}
+          >
             Add More Link
           </Button>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Event Types
-          </label>
-          <div className="grid grid-cols-3 gap-4">
-            {eventTypesOptions.map((option) => (
-              <div className="" key={option}>
-                <input
-                  type="checkbox"
-                  id={option}
-                  value={option}
-                  onChange={handleEventTypeChange}
-                  className="mr-2"
-                />
-                <label htmlFor={option}>{option}</label>
-              </div>
-            ))}
-          </div>
-        </div>
+        <SearchList
+          type="Event Types"
+          list={eventTypesOptions}
+          topList={eventTypesOptions}
+          selectedItems={eventTypes}
+          setSelectedItems={setEventTypes}
+        />
 
         {eventTypes.includes("Corporate") && (
           <div className="mb-4">

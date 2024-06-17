@@ -81,8 +81,8 @@ const SearchList = ({
       )}
 
       <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Top {type}:
+        <label className="block text-sm font-medium text-gray-400 mb-1">
+          Suggestions:
         </label>
         <div className="flex flex-wrap">
           {filteredTopItems.map((item, index) => (

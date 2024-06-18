@@ -35,7 +35,7 @@ const SearchList = ({
   );
 
   return (
-    <div className="mt-4 p-4">
+    <div className="mt-4">
       <div className="mb-2">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Selected {type}:

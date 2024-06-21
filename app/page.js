@@ -26,9 +26,6 @@ export default function Home() {
       {/* Hero Section  */}
       <Hero />
 
-      {/* Search bar + Categories  */}
-      {/* <CategorySearch /> */}
-
       {/* Popular Artists List  */}
       <ArtistFilter />
     </div>

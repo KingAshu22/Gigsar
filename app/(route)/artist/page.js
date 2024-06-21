@@ -16,6 +16,8 @@ import {
 import ArtistList from "@/app/_components/ArtistList";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import CategorySearch from "@/app/_components/CategorySearch";
+import { HashLoader } from "react-spinners";
 
 function ArtistFilter() {
   const searchParams = useSearchParams();
@@ -42,6 +44,7 @@ function ArtistFilter() {
   const [selectedMinBudget, setSelectedMinBudget] = useState("");
   const [selectedMaxBudget, setSelectedMaxBudget] = useState("");
   const [sortedArtists, setSortedArtists] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const params = Object.fromEntries(filterParams.entries());
@@ -214,6 +217,9 @@ function ArtistFilter() {
       selectedMaxBudget === "" ||
       parsePrice(artist.price) <=
         parseInt(selectedMaxBudget.replace(/,/g, ""), 10);
+    const matchesSearchQuery =
+      searchQuery === "" ||
+      artist.name.toLowerCase().includes(searchQuery.toLowerCase());
 
     return (
       matchesCategory &&
@@ -224,7 +230,8 @@ function ArtistFilter() {
       matchesInstrument &&
       matchesGender &&
       matchesMinBudget &&
-      matchesMaxBudget
+      matchesMaxBudget &&
+      matchesSearchQuery
     );
   });
 
@@ -239,6 +246,7 @@ function ArtistFilter() {
     setSelectedSortOption("Low to High");
     setSelectedMinBudget("");
     setSelectedMaxBudget("");
+    setSearchQuery("");
   };
 
   const handleCopyLink = () => {
@@ -262,7 +270,7 @@ function ArtistFilter() {
 
   const theme = createTheme({
     typography: {
-      fontFamily: '"Your Custom Font", sans-serif',
+      fontFamily: '"Poppins", sans-serif',
     },
   });
 
@@ -344,6 +352,10 @@ function ArtistFilter() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <CategorySearch
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
       <div className="mt-5 mx-5">
         <h3>Filters</h3>
         <div className="mt-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 xl:grid-cols-10 gap-4">
@@ -555,7 +567,10 @@ function ArtistFilter() {
       </div>
       <div className="mt-5">
         {loading ? (
-          <p>Loading...</p>
+          <div className="flex flex-col items-center justify-center mt-5 mb-10">
+            <HashLoader color="#dc2626" size={140} />
+            <p>Trying to fetch Artist For You...</p>
+          </div>
         ) : filteredArtists.length > 0 ? (
           <ArtistList
             artists={filteredArtists}
@@ -572,7 +587,21 @@ function ArtistFilter() {
             )} - ${selectedMinBudget} to ${selectedMaxBudget}`}
           />
         ) : (
-          <p>No artists found.</p>
+          <div className="flex flex-col items-center justify-center mt-5 mb-10">
+            <iframe
+              src="https://lottie.host/embed/f80e4ade-7644-4084-af3b-5803515f68d0/wH0EK30DCR.json"
+              style={{ width: "300px", height: "300px", border: "none" }}
+            ></iframe>
+            <p>No artist found as per your filter, try any other filter</p>
+            <Button
+              onClick={handleClearFilter}
+              className="p-2 px-3 border-[1px] border-gray
+                    text-primary bg-white w-auto text-center
+                     mt-2 cursor-pointer hover:bg-primary hover:text-white"
+            >
+              Clear Filter
+            </Button>
+          </div>
         )}
       </div>
     </ThemeProvider>

@@ -32,7 +32,7 @@ function Header() {
     {
       id: 2,
       name: "Registration",
-      path: "/registration",
+      path: "/artist-dashboard",
     },
     // {
     //   id: 3,

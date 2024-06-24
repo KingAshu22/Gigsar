@@ -3,16 +3,20 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Head from "next/head";
+import Image from "next/image";
 
 export default function SignIn() {
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(Array(6).fill(""));
   const [showOtpSection, setShowOtpSection] = useState(false);
   const [OTPlessSignin, setOTPlessSignin] = useState(null);
+  const [returnUrl, setReturnUrl] = useState("");
   const [error, setError] = useState("");
   const [isVerified, setIsVerified] = useState(false);
-  const [userInfo, setUserInfo] = useState({});
-  const [returnUrl, setReturnUrl] = useState("/artist-dashboard");
+  const [countryCode, setCountryCode] = useState("+91");
+  const [countryFlag, setCountryFlag] = useState("");
+  const [timer, setTimer] = useState(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -27,6 +31,16 @@ export default function SignIn() {
   }, [searchParams]);
 
   useEffect(() => {
+    fetch("https://ipapi.co/json/")
+      .then((response) => response.json())
+      .then((data) => {
+        const countryCode = data.country_calling_code;
+        const countryFlag = `https://flagicons.lipis.dev/flags/4x3/${data.country.toLowerCase()}.svg`;
+        setCountryCode(countryCode);
+        setCountryFlag(countryFlag);
+      })
+      .catch((error) => console.error("Error fetching IP data:", error));
+
     const script = document.createElement("script");
     script.src = "https://otpless.com/v2/headless.js";
     script.id = "otpless-sdk";
@@ -50,30 +64,46 @@ export default function SignIn() {
     };
     document.head.appendChild(script);
 
-    // Clean up function to remove the script when the component unmounts
     return () => {
       document.head.removeChild(script);
     };
-  }, []);
+  }, [router, returnUrl]);
+
+  const startTimer = () => {
+    setIsButtonDisabled(true);
+    setTimer(120);
+    const countdown = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer === 1) {
+          clearInterval(countdown);
+          setIsButtonDisabled(false);
+          return 0;
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+  };
 
   const handlePhoneAuth = () => {
     if (OTPlessSignin) {
       OTPlessSignin.initiate({
         channel: "PHONE",
         phone,
-        countryCode: "+91",
+        countryCode,
       });
       setShowOtpSection(true);
+      startTimer();
     }
   };
 
   const handleVerifyOTP = () => {
     if (OTPlessSignin) {
+      const otpCode = otp.join("");
       OTPlessSignin.verify({
         channel: "PHONE",
         phone,
-        otp,
-        countryCode: "+91",
+        otp: otpCode,
+        countryCode,
       })
         .then((response) => {
           console.log("Verification Response:", response);
@@ -89,6 +119,18 @@ export default function SignIn() {
           console.error("Error verifying OTP:", error);
           setError("OTP is incorrect. Please try again.");
         });
+    }
+  };
+
+  const handleOtpChange = (e, index) => {
+    const { value } = e.target;
+    if (/^\d*$/.test(value)) {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+      if (value && index < otp.length - 1) {
+        document.getElementById(`otp-input-${index + 1}`).focus();
+      }
     }
   };
 
@@ -112,19 +154,35 @@ export default function SignIn() {
             >
               Mobile Number
             </label>
-            <input
-              type="text"
-              id="mobile-input"
-              placeholder="Enter mobile number"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+            <div className="flex items-center space-x-2">
+              {countryFlag && (
+                <Image
+                  src={countryFlag}
+                  alt="Country Flag"
+                  width={25}
+                  height={25}
+                />
+              )}
+              <span className="text-lg">{countryCode}</span>
+              <input
+                type="text"
+                id="mobile-input"
+                placeholder="Enter mobile number"
+                className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
             <button
               onClick={handlePhoneAuth}
-              className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+              className={
+                isButtonDisabled
+                  ? "w-full mt-4 px-4 py-2 bg-primary opacity-75 text-white rounded-lg hover:bg-red-800 transition duration-200"
+                  : "w-full mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-red-800 transition duration-200"
+              }
+              disabled={isButtonDisabled}
             >
-              Request OTP
+              {isButtonDisabled ? `Resend OTP in ${timer}s` : "Send OTP"}
             </button>
           </div>
 
@@ -136,14 +194,19 @@ export default function SignIn() {
               >
                 OTP
               </label>
-              <input
-                type="text"
-                id="otp-input"
-                placeholder="Enter OTP"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
+              <div className="flex space-x-2">
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    id={`otp-input-${index}`}
+                    maxLength="1"
+                    className="w-12 px-4 py-2 border rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(e, index)}
+                  />
+                ))}
+              </div>
               <button
                 onClick={handleVerifyOTP}
                 className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"

@@ -165,7 +165,7 @@ export default function SignIn() {
               )}
               <span className="text-lg">{countryCode}</span>
               <input
-                type="text"
+                type="number"
                 id="mobile-input"
                 placeholder="Enter mobile number"
                 className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

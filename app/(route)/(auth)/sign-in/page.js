@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default function SignIn() {
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState(Array(6).fill(""));
+  const [otp, setOtp] = useState("");
   const [showOtpSection, setShowOtpSection] = useState(false);
   const [OTPlessSignin, setOTPlessSignin] = useState(null);
   const [returnUrl, setReturnUrl] = useState("");
@@ -96,17 +96,15 @@ export default function SignIn() {
 
   const handleVerifyOTP = () => {
     if (OTPlessSignin) {
-      const otpCode = otp.join("");
       OTPlessSignin.verify({
         channel: "PHONE",
         phone,
-        otp: otpCode,
+        otp,
         countryCode,
       })
         .then((response) => {
           console.log("Verification Response:", response);
           if (response.success && response.response.requestID) {
-            setIsVerified(true);
           } else {
             setError(
               "OTP is incorrect. Please try again or Session storage issue"
@@ -117,18 +115,6 @@ export default function SignIn() {
           console.error("Error verifying OTP:", error);
           setError("OTP is incorrect. Please try again.");
         });
-    }
-  };
-
-  const handleOtpChange = (e, index) => {
-    const { value } = e.target;
-    if (/^\d*$/.test(value)) {
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-      if (value && index < otp.length - 1) {
-        document.getElementById(`otp-input-${index + 1}`).focus();
-      }
     }
   };
 
@@ -189,19 +175,15 @@ export default function SignIn() {
               >
                 OTP
               </label>
-              <div className="flex space-x-2">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    id={`otp-input-${index}`}
-                    maxLength="1"
-                    className="w-12 px-4 py-2 border rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-green-500"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(e, index)}
-                  />
-                ))}
-              </div>
+              <input
+                type="text"
+                id="otp-input"
+                placeholder="Enter OTP"
+                maxLength={6}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
               <button
                 onClick={handleVerifyOTP}
                 className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"

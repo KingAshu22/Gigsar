@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Head from "next/head";
 import Image from "next/image";
 
 export default function SignIn() {
@@ -12,7 +11,6 @@ export default function SignIn() {
   const [OTPlessSignin, setOTPlessSignin] = useState(null);
   const [returnUrl, setReturnUrl] = useState("");
   const [error, setError] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
   const [countryCode, setCountryCode] = useState("+91");
   const [countryFlag, setCountryFlag] = useState("");
   const [timer, setTimer] = useState(0);
@@ -136,15 +134,12 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Head>
-        <title>Sign In</title>
-      </Head>
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">
-          Sign In to {returnUrl}
+        <h2 className="text-3xl font-bold mb-6 text-center text-primary">
+          Sign In
         </h2>
         <p className="text-center text-gray-500 mb-8">
-          Sign in to access your artist dashboard
+          Sign in to access your dashboard
         </p>
         <div className="space-y-6">
           <div id="mobile-section">

@@ -19,9 +19,13 @@ const ArtistRegistration = () => {
   const [artistName, setArtistName] = useState();
   const [profilePic, setProfilePic] = useState("");
   const [gender, setGender] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
+  const [contactNumber, setContactNumber] = useState(
+    "" || "+" + sessionStorage?.getItem("mobile")
+  );
   const [email, setEmail] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(
+    "" || sessionStorage?.getItem("city")
+  );
   const [artistType, setArtistType] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -145,7 +149,6 @@ const ArtistRegistration = () => {
             id="artistName"
             value={artistName}
             required
-            readOnly
             onChange={(e) => setArtistName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
@@ -203,7 +206,6 @@ const ArtistRegistration = () => {
             type="email"
             id="email"
             value={email}
-            readOnly
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required

@@ -11,24 +11,36 @@ import {
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useUser } from "@clerk/clerk-react";
 import { useRouter } from "next/navigation";
 import { HashLoader } from "react-spinners";
+import withAuth from "@/lib/withAuth";
 
-export default function Home() {
-  const { user } = useUser();
+function ArtistDashboard() {
   const router = useRouter();
 
+  const [mobileNumber, setMobileNumber] = useState("");
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileCompletion, setProfileCompletion] = useState(0);
   const [sortedLinks, setSortedLinks] = useState([]);
 
   useEffect(() => {
-    if (user) {
+    // Debug: Check session storage
+    const storedNumber = sessionStorage?.getItem("mobile");
+    console.log("Stored Number:", storedNumber);
+
+    if (storedNumber !== undefined) {
+      setMobileNumber(JSON?.parse(storedNumber));
+    } else {
+      router.push("/sign-in");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mobileNumber) {
       getArtist();
     }
-  }, [user]);
+  }, [mobileNumber]);
 
   useEffect(() => {
     if (!loading) {
@@ -39,11 +51,12 @@ export default function Home() {
 
   const getArtist = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API}/artist/clerkId/${user.id}`
+        `${process.env.NEXT_PUBLIC_API}/artist/contact/+${mobileNumber}`
       );
 
-      if (response.data && response.data.clerkId === user.id) {
+      if (response.data) {
         setArtist(response.data);
         calculateProfileCompletion(response.data);
         sortLinks(response.data);
@@ -240,3 +253,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default withAuth(ArtistDashboard);

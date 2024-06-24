@@ -10,9 +10,21 @@ export default function SignIn() {
   const [showOtpSection, setShowOtpSection] = useState(false);
   const [OTPlessSignin, setOTPlessSignin] = useState(null);
   const [error, setError] = useState("");
+  const [isVerified, setIsVerified] = useState(false);
+  const [userInfo, setUserInfo] = useState({});
+  const [returnUrl, setReturnUrl] = useState("/artist-dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl");
+
+  useEffect(() => {
+    const rawReturnUrl =
+      searchParams.get("redirect_url") || "/artist-dashboard";
+    if (typeof window !== "undefined") {
+      const returnUrlPath = new URL(rawReturnUrl, window.location.origin)
+        .pathname;
+      setReturnUrl(returnUrlPath);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -22,7 +34,14 @@ export default function SignIn() {
     script.onload = () => {
       if (typeof window.OTPless !== "undefined") {
         const callback = (userinfo) => {
-          console.log(userinfo);
+          console.log("OTPless callback userinfo:", userinfo);
+          const authExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000;
+          const mobile = userinfo.identities[0].identityValue;
+          const city = userinfo.network.ipLocation.city.name;
+          sessionStorage.setItem("authExpiry", authExpiry.toString());
+          sessionStorage.setItem("mobile", mobile.toString());
+          sessionStorage.setItem("city", city.toString());
+          router.push(returnUrl);
         };
 
         const instance = new window.OTPless(callback);
@@ -30,6 +49,11 @@ export default function SignIn() {
       }
     };
     document.head.appendChild(script);
+
+    // Clean up function to remove the script when the component unmounts
+    return () => {
+      document.head.removeChild(script);
+    };
   }, []);
 
   const handlePhoneAuth = () => {
@@ -52,21 +76,17 @@ export default function SignIn() {
         countryCode: "+91",
       })
         .then((response) => {
-          if (response.success) {
-            const user = { phone };
-            sessionStorage.setItem("user", JSON.stringify(user));
-            sessionStorage.setItem("authToken", response.token);
-            sessionStorage.setItem(
-              "authExpiry",
-              Date.now() + 7 * 24 * 60 * 60 * 1000
-            );
-
-            router.push(returnUrl);
+          console.log("Verification Response:", response);
+          if (response.success && response.response.requestID) {
+            setIsVerified(true);
           } else {
-            setError("OTP is incorrect. Please try again.");
+            setError(
+              "OTP is incorrect. Please try again or Session storage issue"
+            );
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error("Error verifying OTP:", error);
           setError("OTP is incorrect. Please try again.");
         });
     }
@@ -82,7 +102,7 @@ export default function SignIn() {
           Sign In to {returnUrl}
         </h2>
         <p className="text-center text-gray-500 mb-8">
-          Sign in to access your artist dashboard {returnUrl}
+          Sign in to access your artist dashboard
         </p>
         <div className="space-y-6">
           <div id="mobile-section">

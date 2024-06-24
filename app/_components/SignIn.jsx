@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Head from "next/head";
@@ -12,7 +10,7 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl");
+  const returnUrl = searchParams.get("returnUrl") || "/artist"; // Get returnUrl from query params
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -53,7 +51,9 @@ export default function SignIn() {
       })
         .then((response) => {
           if (response.success) {
-            const user = { phone };
+            const user = {
+              phone,
+            };
             sessionStorage.setItem("user", JSON.stringify(user));
             sessionStorage.setItem("authToken", response.token);
             sessionStorage.setItem(
@@ -79,10 +79,10 @@ export default function SignIn() {
       </Head>
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">
-          Sign In to {returnUrl}
+          Sign In
         </h2>
         <p className="text-center text-gray-500 mb-8">
-          Sign in to access your artist dashboard {returnUrl}
+          Sign in to access your artist dashboard
         </p>
         <div className="space-y-6">
           <div id="mobile-section">

@@ -15,6 +15,7 @@ export default function SignIn() {
   const [countryFlag, setCountryFlag] = useState("");
   const [timer, setTimer] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [showVerifiedGif, setShowVerifiedGif] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -105,6 +106,10 @@ export default function SignIn() {
         .then((response) => {
           console.log("Verification Response:", response);
           if (response.success && response.response.requestID) {
+            setShowVerifiedGif(true);
+            setTimeout(() => {
+              router.push(returnUrl);
+            }, 2000);
           } else {
             setError(
               "OTP is incorrect. Please try again or Session storage issue"
@@ -119,85 +124,94 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center text-primary">
-          Sign In
-        </h2>
-        <p className="text-center text-gray-500 mb-8">
-          Sign in to access your dashboard
-        </p>
-        <div className="space-y-6">
-          <div id="mobile-section">
-            <label
-              htmlFor="mobile-input"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Mobile Number
-            </label>
-            <div className="flex items-center space-x-2">
-              {countryFlag && (
-                <Image
-                  src={countryFlag}
-                  alt="Country Flag"
-                  width={25}
-                  height={25}
-                />
-              )}
-              <span className="text-lg">{countryCode}</span>
-              <input
-                type="number"
-                id="mobile-input"
-                placeholder="Enter mobile number"
-                className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
-            <button
-              onClick={handlePhoneAuth}
-              className={
-                isButtonDisabled
-                  ? "w-full mt-4 px-4 py-2 bg-primary opacity-75 text-white rounded-lg hover:bg-red-800 transition duration-200"
-                  : "w-full mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-red-800 transition duration-200"
-              }
-              disabled={isButtonDisabled}
-            >
-              {isButtonDisabled ? `Resend OTP in ${timer}s` : "Send OTP"}
-            </button>
-          </div>
-
-          {showOtpSection && (
-            <div id="otp-section">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      {showVerifiedGif ? (
+        <div className="flex items-center justify-center">
+          <iframe
+            src="https://lottie.host/embed/8f945e15-2e77-4ecf-83e6-1bcac057d48e/mOdz91JUPl.json"
+            style={{ width: "300px", height: "300px", border: "none" }}
+          ></iframe>
+        </div>
+      ) : (
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+          <h2 className="text-3xl font-bold mb-6 text-center text-primary">
+            Sign In
+          </h2>
+          <p className="text-center text-gray-500 mb-8">
+            Sign in to access your dashboard
+          </p>
+          <div className="space-y-6">
+            <div id="mobile-section">
               <label
-                htmlFor="otp-input"
+                htmlFor="mobile-input"
                 className="block text-sm font-medium text-gray-700"
               >
-                OTP
+                Mobile Number
               </label>
-              <input
-                type="text"
-                id="otp-input"
-                placeholder="Enter OTP"
-                maxLength={6}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
+              <div className="flex items-center space-x-2">
+                {countryFlag && (
+                  <Image
+                    src={countryFlag}
+                    alt="Country Flag"
+                    width={25}
+                    height={25}
+                  />
+                )}
+                <span className="text-lg">{countryCode}</span>
+                <input
+                  type="number"
+                  id="mobile-input"
+                  placeholder="Enter mobile number"
+                  className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
               <button
-                onClick={handleVerifyOTP}
-                className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+                onClick={handlePhoneAuth}
+                className={
+                  isButtonDisabled
+                    ? "w-full mt-4 px-4 py-2 bg-primary opacity-75 text-white rounded-lg hover:bg-red-800 transition duration-200"
+                    : "w-full mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-red-800 transition duration-200"
+                }
+                disabled={isButtonDisabled}
               >
-                Verify OTP
+                {isButtonDisabled ? `Resend OTP in ${timer}s` : "Send OTP"}
               </button>
             </div>
-          )}
 
-          {error && (
-            <div className="mt-4 text-red-500 text-center">{error}</div>
-          )}
+            {showOtpSection && (
+              <div id="otp-section">
+                <label
+                  htmlFor="otp-input"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  OTP
+                </label>
+                <input
+                  type="text"
+                  id="otp-input"
+                  placeholder="Enter OTP"
+                  maxLength={6}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+                <button
+                  onClick={handleVerifyOTP}
+                  className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+                >
+                  Verify OTP
+                </button>
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-4 text-red-500 text-center">{error}</div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

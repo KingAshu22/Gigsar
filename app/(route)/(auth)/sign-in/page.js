@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import Lottie from "react-lottie";
+import * as animationData from "../../../../public/verified.json";
 
 export default function SignIn() {
   const [phone, setPhone] = useState("");
@@ -109,7 +111,7 @@ export default function SignIn() {
             setShowVerifiedGif(true);
             setTimeout(() => {
               router.push(returnUrl);
-            }, 2000);
+            }, 20000);
           } else {
             setError(
               "OTP is incorrect. Please try again or Session storage issue"
@@ -123,14 +125,20 @@ export default function SignIn() {
     }
   };
 
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       {showVerifiedGif ? (
         <div className="flex items-center justify-center">
-          <iframe
-            src="https://lottie.host/embed/8f945e15-2e77-4ecf-83e6-1bcac057d48e/mOdz91JUPl.json"
-            style={{ width: "300px", height: "300px", border: "none" }}
-          ></iframe>
+          <Lottie options={defaultOptions} height={300} width={300} />
         </div>
       ) : (
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">

@@ -111,7 +111,7 @@ export default function SignIn() {
             setShowVerifiedGif(true);
             setTimeout(() => {
               router.push(returnUrl);
-            }, 20000);
+            }, 2000);
           } else {
             setError(
               "OTP is incorrect. Please try again or Session storage issue"

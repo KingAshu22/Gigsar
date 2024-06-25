@@ -313,22 +313,13 @@ const ArtistRegistration = () => {
         title="Artist Registered"
         description={`${artistName}'s Basic Details has been saved successfully. Continue in Artist Dashboard to add more details about you`}
       >
-        <div className="flex justify-between">
-          {/* <button
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            type="button"
-            onClick={() =>
-              router.push(`/artist/${formatArtistName(artistName)}`)
-            }
-          >
-            View Page
-          </button> */}
+        <div className="flex justify-center">
           <button
             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             type="button"
             onClick={() => router.push("/artist-dashboard")}
           >
-            Home Page
+            Dashboard
           </button>
         </div>
       </Modal>

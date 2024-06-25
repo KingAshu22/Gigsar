@@ -312,7 +312,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreWedding}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -340,7 +340,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreCorporate}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -368,7 +368,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreCollege}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -396,7 +396,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreConcert}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -424,7 +424,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreOriginal}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -452,7 +452,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreBollywood}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -478,7 +478,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreCover}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 

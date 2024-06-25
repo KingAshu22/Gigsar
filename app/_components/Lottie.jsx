@@ -1,6 +1,10 @@
 import Lottie from "react-lottie";
 
-export default function LottieImg({ animationData }) {
+export default function LottieImg({
+  animationData,
+  height = 300,
+  width = 300,
+}) {
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -9,5 +13,5 @@ export default function LottieImg({ animationData }) {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  return <Lottie options={defaultOptions} height={300} width={300} />;
+  return <Lottie options={defaultOptions} height={height} width={width} />;
 }

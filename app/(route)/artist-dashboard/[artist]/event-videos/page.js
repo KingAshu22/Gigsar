@@ -312,7 +312,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreWedding}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -340,7 +340,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreCorporate}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -368,7 +368,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreCollege}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -396,7 +396,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreConcert}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -424,7 +424,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreOriginal}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -452,7 +452,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreBollywood}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -478,7 +478,7 @@ const EditArtist = ({ params }) => {
                 ))}
               </div>
               <Button type="button" className="" onClick={addMoreCover}>
-                Add More Link
+                Add Link
               </Button>
             </div>
 
@@ -527,8 +527,7 @@ const EditArtist = ({ params }) => {
             title="Event Videos Updated"
             description={`${artistName}'s Event Videos has been successfully updated.`}
           >
-            <div className="flex justify-between">
-              <div className="inline-flex justify-center py-2 px-4"></div>
+            <div className="flex justify-center">
               <button
                 className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 type="button"

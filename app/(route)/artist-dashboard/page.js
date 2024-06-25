@@ -18,6 +18,8 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { HashLoader } from "react-spinners";
 import withAuth from "@/lib/withAuth";
+import * as animationData from "../../../public/Processing.json";
+import LottieImg from "@/app/_components/Lottie";
 
 function ArtistDashboard() {
   const router = useRouter();
@@ -130,7 +132,7 @@ function ArtistDashboard() {
     const links = [
       {
         field: "gallery",
-        href: `${artist?.linkid}/gallery`,
+        href: `/artist-dashboard/${artist?.linkid}/gallery`,
         icon: <Images className="size-10" />,
         title: artist?.gallery?.length === 0 ? "Gallery" : "Edit Gallery",
         description:
@@ -141,7 +143,7 @@ function ArtistDashboard() {
       },
       {
         field: "events",
-        href: `${artist?.linkid}/event-videos`,
+        href: `/artist-dashboard/${artist?.linkid}/event-videos`,
         icon: <Clapperboard className="size-10" />,
         title:
           artist?.events?.length === 0 ? "Event Videos" : "Edit Event Videos",
@@ -153,7 +155,7 @@ function ArtistDashboard() {
       },
       {
         field: "eventsType",
-        href: `${artist?.linkid}/event-type`,
+        href: `/artist-dashboard/${artist?.linkid}/event-type`,
         icon: <TicketCheck className="size-10" />,
         title: artist?.eventsType
           ? "Edit Event Type & Budget"
@@ -165,7 +167,7 @@ function ArtistDashboard() {
       },
       {
         field: "genre",
-        href: `${artist?.linkid}/genre`,
+        href: `/artist-dashboard/${artist?.linkid}/genre`,
         icon: <Music className="size-10" />,
         title: artist?.genre ? "Edit Genre" : "Genre",
         description: artist?.genre ? "Edit your Genre" : "Select your Genre",
@@ -173,7 +175,7 @@ function ArtistDashboard() {
       },
       {
         field: "instruments",
-        href: `${artist?.linkid}/instruments`,
+        href: `/artist-dashboard/${artist?.linkid}/instruments`,
         icon: <Drum className="size-10" />,
         title: artist?.instruments ? "Edit Instruments" : "Add Instruments",
         description: artist?.instruments
@@ -183,7 +185,7 @@ function ArtistDashboard() {
       },
       {
         field: "otherDetails",
-        href: `${artist?.linkid}/other-details`,
+        href: `/artist-dashboard/${artist?.linkid}/other-details`,
         icon: <BookUser className="size-10" />,
         title: "Other Details",
         description: "Add/Edit Your Other Details",
@@ -264,11 +266,27 @@ function ArtistDashboard() {
       ) : (
         <div className="mb-5">
           <div className="flex justify-between items-center">
-            <p className="text-lg md:text-xl text-green-600">
+            <p className="text-lg md:text-xl text-green-600 font-bold">
               Profile Completed!
             </p>
-            <p className="text-lg md:text-xl">100%</p>
+            <p className="text-lg md:text-xl font-bold">
+              Status: {artist.isPending ? "Pending" : "Live"}
+            </p>
           </div>
+          {artist.isPending && (
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg flex flex-row items-center">
+              <LottieImg
+                animationData={animationData}
+                width={150}
+                height={150}
+              />
+              <p className="mt-4 ml-4 text-lg">
+                Your data is currently being processed and verified. We
+                appreciate your patience as we ensure everything is in order.
+                Your status will be updated shortly.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -296,7 +314,7 @@ function ArtistDashboard() {
       </div>
 
       {profileCompletion === 100 && (
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
           <Link href="/calendar">
             <Card>
               <CardHeader className="flex flex-col sm:flex-row sm:items-center">

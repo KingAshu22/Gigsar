@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import Lottie from "react-lottie";
 import * as animationData from "../../../../public/verified.json";
+import LottieImg from "@/app/_components/Lottie";
 
 export default function SignIn() {
   const [phone, setPhone] = useState("");
@@ -13,7 +13,7 @@ export default function SignIn() {
   const [OTPlessSignin, setOTPlessSignin] = useState(null);
   const [returnUrl, setReturnUrl] = useState("");
   const [error, setError] = useState("");
-  const [countryCode, setCountryCode] = useState("+91");
+  const [countryCode, setCountryCode] = useState("");
   const [countryFlag, setCountryFlag] = useState("");
   const [timer, setTimer] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -125,20 +125,11 @@ export default function SignIn() {
     }
   };
 
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       {showVerifiedGif ? (
         <div className="flex items-center justify-center">
-          <Lottie options={defaultOptions} height={300} width={300} />
+          <LottieImg animationData={animationData} />
         </div>
       ) : (
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">

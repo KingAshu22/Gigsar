@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   BadgePlus,
+  BookUser,
   CalendarDays,
-  TriangleAlert,
-  UserRound,
+  Clapperboard,
+  Drum,
+  Images,
+  Music,
+  TicketCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,10 +26,12 @@ function ArtistDashboard() {
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileCompletion, setProfileCompletion] = useState(0);
-  const [sortedLinks, setSortedLinks] = useState([]);
+  const [sortedLinks, setSortedLinks] = useState({
+    pending: [],
+    completed: [],
+  });
 
   useEffect(() => {
-    // Debug: Check session storage
     const storedNumber = sessionStorage?.getItem("mobile");
     console.log("Stored Number:", storedNumber);
 
@@ -45,7 +51,9 @@ function ArtistDashboard() {
   useEffect(() => {
     if (!loading) {
       const progressBar = document.getElementById("progress-bar");
-      progressBar.style.width = `${profileCompletion}%`;
+      if (progressBar) {
+        progressBar.style.width = `${profileCompletion}%`;
+      }
     }
   }, [loading, profileCompletion]);
 
@@ -111,7 +119,7 @@ function ArtistDashboard() {
       ? 1
       : 0;
 
-    const totalFields = requiredFields.length + 1; // +1 for the group of optional fields
+    const totalFields = requiredFields.length + 1;
     const filledFields = filledRequiredFields + filledOptionalFields;
 
     const completionPercentage = Math.round((filledFields / totalFields) * 100);
@@ -123,6 +131,7 @@ function ArtistDashboard() {
       {
         field: "gallery",
         href: `${artist?.linkid}/gallery`,
+        icon: <Images className="size-10" />,
         title: artist?.gallery?.length === 0 ? "Gallery" : "Edit Gallery",
         description:
           artist?.gallery?.length === 0
@@ -133,6 +142,7 @@ function ArtistDashboard() {
       {
         field: "events",
         href: `${artist?.linkid}/event-videos`,
+        icon: <Clapperboard className="size-10" />,
         title:
           artist?.events?.length === 0 ? "Event Videos" : "Edit Event Videos",
         description:
@@ -144,6 +154,7 @@ function ArtistDashboard() {
       {
         field: "eventsType",
         href: `${artist?.linkid}/event-type`,
+        icon: <TicketCheck className="size-10" />,
         title: artist?.eventsType
           ? "Edit Event Type & Budget"
           : "Event Type & Budget",
@@ -155,6 +166,7 @@ function ArtistDashboard() {
       {
         field: "genre",
         href: `${artist?.linkid}/genre`,
+        icon: <Music className="size-10" />,
         title: artist?.genre ? "Edit Genre" : "Genre",
         description: artist?.genre ? "Edit your Genre" : "Select your Genre",
         completed: !!artist?.genre,
@@ -162,7 +174,8 @@ function ArtistDashboard() {
       {
         field: "instruments",
         href: `${artist?.linkid}/instruments`,
-        title: artist?.instruments ? "Edit Instruments" : " Add Instruments",
+        icon: <Drum className="size-10" />,
+        title: artist?.instruments ? "Edit Instruments" : "Add Instruments",
         description: artist?.instruments
           ? "Edit your Instruments"
           : "Select your Instruments",
@@ -171,6 +184,7 @@ function ArtistDashboard() {
       {
         field: "otherDetails",
         href: `${artist?.linkid}/other-details`,
+        icon: <BookUser className="size-10" />,
         title: "Other Details",
         description: "Add/Edit Your Other Details",
         completed: !!(
@@ -187,9 +201,10 @@ function ArtistDashboard() {
       },
     ];
 
-    // Sort: Incomplete links first, then complete links
-    const sortedLinks = links.sort((a, b) => a.completed - b.completed);
-    setSortedLinks(sortedLinks);
+    const pendingLinks = links.filter((link) => !link.completed);
+    const completedLinks = links.filter((link) => link.completed);
+
+    setSortedLinks({ pending: pendingLinks, completed: completedLinks });
   };
 
   if (loading) {
@@ -207,49 +222,96 @@ function ArtistDashboard() {
       </h1>
       <Separator className="bg-gray-400 my-5" />
 
+      {profileCompletion < 100 ? (
+        <>
+          <div className="mb-5">
+            <div className="flex justify-between items-center">
+              <p className="text-lg md:text-xl">Profile Completion</p>
+              <p className="text-lg md:text-xl">{profileCompletion}%</p>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+              <div
+                id="progress-bar"
+                className="bg-primary h-full rounded-full transition-all duration-500"
+                style={{ width: `0%` }}
+              ></div>
+            </div>
+          </div>
+
+          <div className="mb-5">
+            <h2 className="text-xl md:text-2xl font-bold mb-3">
+              Pending Tasks
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {sortedLinks.pending.map((link) => (
+                <Link key={link.field} href={link.href}>
+                  <Card>
+                    <CardHeader className="flex flex-col sm:flex-row sm:items-center">
+                      {link.icon}
+                      <div className="ml-0 sm:ml-4 mt-2 sm:mt-0">
+                        <CardTitle>{link.title}</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="mt-2 sm:mt-4">
+                      <p>{link.description}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="mb-5">
+          <div className="flex justify-between items-center">
+            <p className="text-lg md:text-xl text-green-600">
+              Profile Completed!
+            </p>
+            <p className="text-lg md:text-xl">100%</p>
+          </div>
+        </div>
+      )}
+
       <div className="mb-5">
-        <div className="flex justify-between items-center">
-          <p className="text-lg md:text-xl">Profile Completion</p>
-          <p className="text-lg md:text-xl">{profileCompletion}%</p>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-          <div
-            id="progress-bar"
-            className="bg-primary h-full rounded-full transition-all duration-500"
-            style={{ width: `0%` }}
-          ></div>
+        <h2 className="text-xl md:text-2xl font-bold mb-3">
+          {profileCompletion === 100 ? "Edit Data" : "Completed Tasks"}
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {sortedLinks.completed.map((link) => (
+            <Link key={link.field} href={link.href}>
+              <Card>
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center">
+                  {link.icon}
+                  <div className="ml-0 sm:ml-4 mt-2 sm:mt-0">
+                    <CardTitle>{link.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="mt-2 sm:mt-4">
+                  <p>{link.description}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
-        <Link href="/calendar">
-          <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-              <CardTitle>Calendar</CardTitle>
-              <CalendarDays className="hidden sm:block" />
-            </CardHeader>
-            <CardContent>
-              <p>Manage Your Calendar</p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
-        {sortedLinks.map((link) => (
-          <Link key={link.field} href={link.href}>
+      {profileCompletion === 100 && (
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
+          <Link href="/calendar">
             <Card>
-              <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle>{link.title}</CardTitle>
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center">
                 <CalendarDays className="hidden sm:block" />
+                <div className="ml-0 sm:ml-4 mt-2 sm:mt-0">
+                  <CardTitle>Calendar</CardTitle>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p>{link.description}</p>
+              <CardContent className="mt-2 sm:mt-4">
+                <p>Manage Your Calendar</p>
               </CardContent>
             </Card>
           </Link>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

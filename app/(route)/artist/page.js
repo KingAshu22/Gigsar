@@ -18,6 +18,8 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import CategorySearch from "@/app/_components/CategorySearch";
 import { HashLoader } from "react-spinners";
+import * as animationData from "../../../public/cat.json";
+import LottieImg from "@/app/_components/Lottie";
 
 function ArtistFilter() {
   const searchParams = useSearchParams();
@@ -588,10 +590,7 @@ function ArtistFilter() {
           />
         ) : (
           <div className="flex flex-col items-center justify-center mt-5 mb-10">
-            <iframe
-              src="https://lottie.host/embed/f80e4ade-7644-4084-af3b-5803515f68d0/wH0EK30DCR.json"
-              style={{ width: "300px", height: "300px", border: "none" }}
-            ></iframe>
+            <LottieImg animationData={animationData} />
             <p>No artist found as per your filter, try any other filter</p>
             <Button
               onClick={handleClearFilter}

@@ -99,3 +99,21 @@ body {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+.desktop {
+  display: none;
+}
+
+.mobile {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .desktop {
+    display: block;
+  }
+
+  .mobile {
+    display: none;
+  }
+}

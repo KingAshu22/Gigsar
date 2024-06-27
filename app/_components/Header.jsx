@@ -26,13 +26,18 @@ function Header() {
     },
     {
       id: 2,
-      name: "Artist",
+      name: "Artist Search",
       path: "/artist",
     },
     {
-      id: 2,
-      name: "Registration",
+      id: 3,
+      name: "Artist Login",
       path: "/artist-dashboard",
+    },
+    {
+      id: 4,
+      name: "User Login",
+      path: "/user-dashboard",
     },
     // {
     //   id: 3,

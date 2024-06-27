@@ -21,9 +21,7 @@ const EditArtist = ({ params }) => {
       setId(artistData._id);
       setArtistName(artistData.name);
 
-      const galleryLinks = artistData.gallery.map((item) => item.link);
-
-      setGalleryLink(galleryLinks);
+      setGalleryLink(artistData.gallery.map((item) => item.link));
     } catch (error) {
       console.error("Error fetching artists:", error);
     } finally {

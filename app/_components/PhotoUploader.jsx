@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Dropzone from "react-dropzone";
 import { Cropper, getCroppedImg } from "react-cropper-custom";
 import "react-cropper-custom/dist/index.css";
@@ -11,15 +11,21 @@ import {
 } from "@aws-sdk/client-s3";
 import { nanoid } from "nanoid";
 import { fromBase64 } from "@aws-sdk/util-base64";
-import { Upload } from "lucide-react";
 
-const PhotoUploader = ({ artistName, setProfilePic }) => {
+const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const [cropData, setCropData] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showCroppedImage, setShowCroppedImage] = useState(false);
-  const [awsLink, setAwsLink] = useState(null);
+  const [awsLink, setAwsLink] = useState(initialImageLink);
+
+  useEffect(() => {
+    if (initialImageLink && initialImageLink.length > 1) {
+      setShowCroppedImage(true);
+      setCropData(initialImageLink);
+    }
+  }, [initialImageLink]);
 
   const onFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -59,6 +65,7 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
         setProfilePic(location);
         setShowModal(false);
         setShowCroppedImage(true);
+        setAwsLink(location);
       };
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -107,11 +114,11 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
       const putObjectCommand = new PutObjectCommand(uploadParams);
       await s3Client.send(putObjectCommand);
 
-      setAwsLink(
-        `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`
-      );
+      const awsImageUrl = `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`;
 
-      return `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`;
+      setAwsLink(awsImageUrl);
+
+      return awsImageUrl;
     } catch (error) {
       console.error("Error uploading image:", error);
       throw error;
@@ -132,6 +139,7 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
       setCropData(null);
       setShowModal(false);
       setShowCroppedImage(false);
+      setAwsLink(null);
     } catch (error) {
       console.error("Error deleting image:", error);
     }
@@ -174,7 +182,9 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
               <section className="bg-gray-200 rounded-lg p-4 pt-8 pb-8 text-center max-w-36">
                 <div {...getRootProps()}>
                   <input {...getInputProps()} />
-                  <Upload className="justify-center w-20 h-20" />
+                  <p>
+                    Drag & drop Image to upload here or click to upload image.
+                  </p>
                 </div>
               </section>
             )}
@@ -205,7 +215,6 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
       {showModal && imageSrc && (
         <div className="modal-overlay">
           <div className="modal flex flex-col gap-4">
-            <h3>Crop</h3>
             <Cropper
               src={imageSrc}
               width={300}
@@ -222,7 +231,7 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
             />
-            <div className="mt-8 flex justify-between">
+            <div className="flex justify-between">
               <button
                 className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 type="button"

@@ -98,7 +98,7 @@ const EditArtist = ({ params }) => {
           <h1 className="text-xl font-bold mb-4">Instruments</h1>
           <form onSubmit={handleSubmit}>
             <SearchList
-              type="Event Types"
+              type="Instruments"
               list={instrumentOptions}
               topList={topInstruments}
               selectedItems={instruments}

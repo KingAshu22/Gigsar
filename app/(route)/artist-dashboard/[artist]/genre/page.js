@@ -102,7 +102,7 @@ const EditArtist = ({ params }) => {
           <h1 className="text-xl font-bold mb-4">Genre</h1>
           <form onSubmit={handleSubmit}>
             <SearchList
-              type="Event Types"
+              type="Genre"
               list={genreOptions}
               topList={topGenres}
               selectedItems={genres}

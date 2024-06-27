@@ -15,7 +15,7 @@ import { fromBase64 } from "@aws-sdk/util-base64";
 const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const [cropData, setCropData] = useState(null);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [showCroppedImage, setShowCroppedImage] = useState(false);
   const [awsLink, setAwsLink] = useState(initialImageLink);
@@ -31,10 +31,11 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
     const file = acceptedFiles[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         setImageSrc(reader.result);
         setShowModal(true);
-        setCropData(reader.result);
+        const croppedImg = await getCroppedImg(imageSrc, reader.result);
+        setCropData(croppedImg);
       };
       reader.readAsDataURL(file);
     }
@@ -44,6 +45,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
     try {
       const croppedImg = await getCroppedImg(imageSrc, croppedArea);
       setCropData(croppedImg);
+      setZoom(0);
     } catch (e) {
       console.error(e);
     }

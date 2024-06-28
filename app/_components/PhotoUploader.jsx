@@ -19,6 +19,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
   const [showModal, setShowModal] = useState(false);
   const [showCroppedImage, setShowCroppedImage] = useState(false);
   const [awsLink, setAwsLink] = useState(initialImageLink);
+  const [isFirstDrop, setIsFirstDrop] = useState(true);
 
   useEffect(() => {
     if (initialImageLink && initialImageLink.length > 1) {
@@ -34,18 +35,26 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
       reader.onloadend = async () => {
         setImageSrc(reader.result);
         setShowModal(true);
-        const croppedImg = await getCroppedImg(imageSrc, reader.result);
-        setCropData(croppedImg);
+        if (isFirstDrop) {
+          handleImageZoom();
+          setIsFirstDrop(false);
+        }
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleImageZoom = async () => {
+    setZoom(2);
+    setTimeout(() => {
+      setZoom(1);
+    }, 500);
   };
 
   const onCropComplete = async (croppedArea) => {
     try {
       const croppedImg = await getCroppedImg(imageSrc, croppedArea);
       setCropData(croppedImg);
-      setZoom(0);
     } catch (e) {
       console.error(e);
     }
@@ -66,6 +75,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
         const location = await uploadProfileToS3(imageData);
         setProfilePic(location);
         setShowModal(false);
+        setIsFirstDrop(true);
         setShowCroppedImage(true);
         setAwsLink(location);
       };
@@ -127,8 +137,15 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
     }
   };
 
-  const handleSave = () => {
-    handleProfileUpload(cropData);
+  const handleSave = async () => {
+    if (cropData === null || cropData === undefined) {
+      await handleImageZoom();
+      setTimeout(() => {
+        handleProfileUpload(cropData);
+      }, 1000);
+    } else {
+      handleProfileUpload(cropData);
+    }
   };
 
   const handleDeleteImage = async () => {

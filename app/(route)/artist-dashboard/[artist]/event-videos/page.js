@@ -11,69 +11,6 @@ import ReactPlayer from "react-player/lazy";
 
 const EditArtist = ({ params }) => {
   const [id, setId] = useState();
-
-  const getArtist = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API}/artist/artistName/` + params.artist
-      );
-      const artistData = response.data;
-
-      setId(artistData._id);
-      setArtistName(artistData.name);
-
-      const weddingLink = artistData.events
-        .filter((event) => event.name === "Wedding Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const corporateLink = artistData.events
-        .filter((event) => event.name === "Corporate Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const collegeLink = artistData.events
-        .filter((event) => event.name === "College Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const concertLink = artistData.events
-        .filter((event) => event.name === "Ticketing Concert Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const originalLink = artistData.events
-        .filter((event) => event.name === "Original Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const bollywoodLink = artistData.events
-        .filter((event) => event.name === "Bollywood Playback Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const coverLink = artistData.events
-        .filter((event) => event.name === "Cover Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      setWeddingLink(weddingLink);
-      setCorporateLink(corporateLink);
-      setCollegeLink(collegeLink);
-      setConcertLink(concertLink);
-      setOriginalLink(originalLink);
-      setBollywoodLink(bollywoodLink);
-      setCoverLink(coverLink);
-    } catch (error) {
-      console.error("Error fetching artists:", error);
-    } finally {
-      // Reset loading state
-      setTimeout(() => {
-        setFetchData(false);
-      }, 1000);
-    }
-  };
-
   const [artistName, setArtistName] = useState();
   const [weddingLink, setWeddingLink] = useState([""]);
   const [corporateLink, setCorporateLink] = useState([""]);
@@ -89,152 +26,59 @@ const EditArtist = ({ params }) => {
   const [fetchData, setFetchData] = useState(true);
   const router = useRouter();
 
+  const extractLinks = (artistData, eventName) => {
+    return artistData.events
+      .filter((event) => event.name === eventName)
+      .map((event) => event.links)
+      .flat();
+  };
+
+  const getArtist = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/artist/artistName/` + params.artist
+      );
+      const artistData = response.data;
+
+      setId(artistData._id);
+      setArtistName(artistData.name);
+
+      setWeddingLink(extractLinks(artistData, "Wedding Videos"));
+      setCorporateLink(extractLinks(artistData, "Corporate Videos"));
+      setCollegeLink(extractLinks(artistData, "College Videos"));
+      setConcertLink(extractLinks(artistData, "Ticketing Concert Videos"));
+      setOriginalLink(extractLinks(artistData, "Original Videos"));
+      setBollywoodLink(extractLinks(artistData, "Bollywood Playback Videos"));
+      setCoverLink(extractLinks(artistData, "Cover Videos"));
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+    } finally {
+      setTimeout(() => {
+        setFetchData(false);
+      }, 1000);
+    }
+  };
+
   useEffect(() => {
     getArtist();
   }, []);
 
-  // Function to add more input fields
-  const addMoreWedding = () => {
-    setWeddingLink((prevLinks) => [...prevLinks, ""]);
+  const addMoreLinks = (setter) => {
+    setter((prevLinks) => [...prevLinks, ""]);
   };
 
-  const addMoreCorporate = () => {
-    setCorporateLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreCollege = () => {
-    setCollegeLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreConcert = () => {
-    setConcertLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreOriginal = () => {
-    setOriginalLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreBollywood = () => {
-    setBollywoodLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreCover = () => {
-    setCoverLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  // Function to extract video ID from YouTube link
   const extractVideoId = (link) => {
-    // Regular expression to match YouTube video ID
     const regex =
       /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|shorts\/))([a-zA-Z0-9_-]{11})/;
     const match = link.match(regex);
     return match ? match[1] : null;
   };
 
-  // Function to handle input change
-  const handleWeddingChange = (index, value) => {
+  const handleLinkChange = (index, value, links, setter) => {
     const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...weddingLink];
-      updatedLinks[index] = videoId;
-      setWeddingLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...weddingLink];
-      updatedLinks[index] = "";
-      setWeddingLink(updatedLinks);
-    }
-  };
-
-  const handleCorporateChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...corporateLink];
-      updatedLinks[index] = videoId;
-      setCorporateLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...corporateLink];
-      updatedLinks[index] = "";
-      setCorporateLink(updatedLinks);
-    }
-  };
-
-  const handleCollegeChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...collegeLink];
-      updatedLinks[index] = videoId;
-      setCollegeLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...collegeLink];
-      updatedLinks[index] = "";
-      setCollegeLink(updatedLinks);
-    }
-  };
-
-  const handleConcertChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...concertLink];
-      updatedLinks[index] = videoId;
-      setConcertLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...concertLink];
-      updatedLinks[index] = "";
-      setConcertLink(updatedLinks);
-    }
-  };
-
-  const handleOriginalChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...originalLink];
-      updatedLinks[index] = videoId;
-      setOriginalLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...originalLink];
-      updatedLinks[index] = "";
-      setOriginalLink(updatedLinks);
-    }
-  };
-
-  const handleBollywoodChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...bollywoodLink];
-      updatedLinks[index] = videoId;
-      setBollywoodLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...bollywoodLink];
-      updatedLinks[index] = "";
-      setBollywoodLink(updatedLinks);
-    }
-  };
-
-  const handleCoverChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...coverLink];
-      updatedLinks[index] = videoId;
-      setCoverLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...coverLink];
-      updatedLinks[index] = "";
-      setCoverLink(updatedLinks);
-    }
+    const updatedLinks = [...links];
+    updatedLinks[index] = videoId || "";
+    setter(updatedLinks);
   };
 
   const handleSubmit = async (e) => {
@@ -248,7 +92,6 @@ const EditArtist = ({ params }) => {
     try {
       setShowConfirmationModal(false);
       setIsLoading(true);
-      // Handle the submission of form data
       const formData = {
         weddingLink,
         corporateLink,
@@ -259,17 +102,15 @@ const EditArtist = ({ params }) => {
         coverLink,
       };
 
-      const response = axios.post(
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API}/edit-event-videos/${id}`,
         formData,
         { withCredentials: true }
       );
     } catch (error) {
-      // Handle error
       console.error("Error submitting form:", error);
       setError(error.message || "An error occurred during submission.");
     } finally {
-      // Reset loading state
       setTimeout(() => {
         setIsLoading(false);
         setSuccess(true);
@@ -287,251 +128,75 @@ const EditArtist = ({ params }) => {
         </div>
       ) : (
         <div className="container mx-auto p-5">
-          <h1 className="text-xl font-bold mb-4">Event Videos</h1>
+          <h1 className="text-2xl font-bold mb-4 text-primary">Event Videos</h1>
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Wedding/Private Event Videos Youtube Link:
-                </label>
-                {weddingLink.map((link, index) => (
-                  <div key={index} className="mb-4">
-                    {link.length > 1 && (
-                      <ReactPlayer
-                        url={`https://www.youtube.com/watch?v=${link}`}
-                        width="480px"
-                        height="270px"
+            {[
+              [
+                "Wedding/Private Event Videos Youtube Link:",
+                weddingLink,
+                setWeddingLink,
+              ],
+              [
+                "Corporate Event Videos Youtube Link:",
+                corporateLink,
+                setCorporateLink,
+              ],
+              [
+                "College Event Videos Youtube Link:",
+                collegeLink,
+                setCollegeLink,
+              ],
+              [
+                "Ticketing Concert Videos Youtube Link:",
+                concertLink,
+                setConcertLink,
+              ],
+              ["Original Videos Youtube Link:", originalLink, setOriginalLink],
+              [
+                "Bollywood Playback Videos Youtube Link:",
+                bollywoodLink,
+                setBollywoodLink,
+              ],
+              ["Cover Videos Youtube Link:", coverLink, setCoverLink],
+            ].map(([label, links, setter], idx) => (
+              <div className="mb-20" key={idx}>
+                <div>
+                  <label className="block text-lg mb-2 font-bold text-gray-700">
+                    {label}
+                  </label>
+                  {links.map((link, index) => (
+                    <div key={index} className="mb-4">
+                      {link.length > 1 && (
+                        <ReactPlayer
+                          url={`https://www.youtube.com/watch?v=${link}`}
+                          width="480px"
+                          height="270px"
+                        />
+                      )}
+                      <input
+                        type="text"
+                        value={link}
+                        autoComplete="off"
+                        className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        onChange={(e) =>
+                          handleLinkChange(index, e.target.value, links, setter)
+                        }
                       />
-                    )}
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      autoComplete="off"
-                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleWeddingChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
+                <Button type="button" onClick={() => addMoreLinks(setter)}>
+                  Add Link
+                </Button>
+                <hr
+                  className="mt-4"
+                  style={{
+                    borderWidth: "1px",
+                    borderColor: "#f44336",
+                  }}
+                />
               </div>
-              <Button type="button" className="" onClick={addMoreWedding}>
-                Add Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Corporate Event Videos Youtube Link:
-                </label>
-                {corporateLink.map((link, index) => (
-                  <div key={index} className="mb-4">
-                    {link.length > 1 && (
-                      <ReactPlayer
-                        url={`https://www.youtube.com/watch?v=${link}`}
-                        width="480px"
-                        height="270px"
-                      />
-                    )}
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      autoComplete="off"
-                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleCorporateChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreCorporate}>
-                Add Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  College Event Videos Youtube Link:
-                </label>
-                {collegeLink.map((link, index) => (
-                  <div key={index} className="mb-4">
-                    {link.length > 1 && (
-                      <ReactPlayer
-                        url={`https://www.youtube.com/watch?v=${link}`}
-                        width="480px"
-                        height="270px"
-                      />
-                    )}
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      autoComplete="off"
-                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleCollegeChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreCollege}>
-                Add Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Ticketing Concert Videos Youtube Link:
-                </label>
-                {concertLink.map((link, index) => (
-                  <div key={index} className="mb-4">
-                    {link.length > 1 && (
-                      <ReactPlayer
-                        url={`https://www.youtube.com/watch?v=${link}`}
-                        width="480px"
-                        height="270px"
-                      />
-                    )}
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      autoComplete="off"
-                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleConcertChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreConcert}>
-                Add Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Original Videos Youtube Link:
-                </label>
-                {originalLink.map((link, index) => (
-                  <div key={index} className="mb-4">
-                    {link.length > 1 && (
-                      <ReactPlayer
-                        url={`https://www.youtube.com/watch?v=${link}`}
-                        width="480px"
-                        height="270px"
-                      />
-                    )}
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      autoComplete="off"
-                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleOriginalChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreOriginal}>
-                Add Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Bollywood Playback Videos Youtube Link:
-                </label>
-                {bollywoodLink.map((link, index) => (
-                  <div key={index} className="mb-4">
-                    {link.length > 1 && (
-                      <ReactPlayer
-                        url={`https://www.youtube.com/watch?v=${link}`}
-                        width="480px"
-                        height="270px"
-                      />
-                    )}
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      autoComplete="off"
-                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleBollywoodChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreBollywood}>
-                Add Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Cover Videos Youtube Link:
-                </label>
-                {coverLink.map((link, index) => (
-                  <div key={index} className="mb-4">
-                    {link.length > 1 && (
-                      <ReactPlayer
-                        url={`https://www.youtube.com/watch?v=${link}`}
-                        width="480px"
-                        height="270px"
-                      />
-                    )}
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      autoComplete="off"
-                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) => handleCoverChange(index, e.target.value)}
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreCover}>
-                Add Link
-              </Button>
-            </div>
-
+            ))}
             <button
               type="submit"
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -539,7 +204,7 @@ const EditArtist = ({ params }) => {
               Update
             </button>
           </form>
-          {/* Confirmation modal */}
+
           <Modal
             isOpen={showConfirmationModal}
             onClose={() => setShowConfirmationModal(false)}
@@ -580,10 +245,9 @@ const EditArtist = ({ params }) => {
             <div className="flex justify-center">
               <button
                 className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                type="button"
-                onClick={() => router.push("/artist-dashboard")}
+                onClick={() => router.push("/")}
               >
-                Dashboard
+                Go Back to Home
               </button>
             </div>
           </Modal>

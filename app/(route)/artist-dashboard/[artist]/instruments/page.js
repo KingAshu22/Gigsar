@@ -95,7 +95,9 @@ const EditArtist = ({ params }) => {
         </div>
       ) : (
         <div className="container mx-auto p-5">
-          <h1 className="text-xl font-bold mb-4">Instruments</h1>
+          <h1 className="text-xl font-bold mb-4">
+            Which instruments do you play?
+          </h1>
           <form onSubmit={handleSubmit}>
             <SearchList
               type="Instruments"

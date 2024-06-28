@@ -76,6 +76,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
         setProfilePic(location);
         setShowModal(false);
         setIsFirstDrop(true);
+        setZoom(1);
         setShowCroppedImage(true);
         setAwsLink(location);
       };

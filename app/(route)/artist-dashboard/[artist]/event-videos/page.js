@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
+import ReactPlayer from "react-player/lazy";
 
 const EditArtist = ({ params }) => {
   const [id, setId] = useState();
@@ -125,7 +126,7 @@ const EditArtist = ({ params }) => {
   const extractVideoId = (link) => {
     // Regular expression to match YouTube video ID
     const regex =
-      /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|shorts\/))([a-zA-Z0-9_-]{11})/;
     const match = link.match(regex);
     return match ? match[1] : null;
   };
@@ -297,13 +298,20 @@ const EditArtist = ({ params }) => {
                   Wedding/Private Event Videos Youtube Link:
                 </label>
                 {weddingLink.map((link, index) => (
-                  <div key={index}>
+                  <div key={index} className="mb-4">
+                    {link.length > 1 && (
+                      <ReactPlayer
+                        url={`https://www.youtube.com/watch?v=${link}`}
+                        width="480px"
+                        height="270px"
+                      />
+                    )}
                     <input
                       type="text"
                       id={`youtubeLink-${index}`}
                       value={link}
                       autoComplete="off"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       onChange={(e) =>
                         handleWeddingChange(index, e.target.value)
                       }
@@ -325,13 +333,20 @@ const EditArtist = ({ params }) => {
                   Corporate Event Videos Youtube Link:
                 </label>
                 {corporateLink.map((link, index) => (
-                  <div key={index}>
+                  <div key={index} className="mb-4">
+                    {link.length > 1 && (
+                      <ReactPlayer
+                        url={`https://www.youtube.com/watch?v=${link}`}
+                        width="480px"
+                        height="270px"
+                      />
+                    )}
                     <input
                       type="text"
-                      autoComplete="off"
                       id={`youtubeLink-${index}`}
                       value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      autoComplete="off"
+                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       onChange={(e) =>
                         handleCorporateChange(index, e.target.value)
                       }
@@ -353,13 +368,20 @@ const EditArtist = ({ params }) => {
                   College Event Videos Youtube Link:
                 </label>
                 {collegeLink.map((link, index) => (
-                  <div key={index}>
+                  <div key={index} className="mb-4">
+                    {link.length > 1 && (
+                      <ReactPlayer
+                        url={`https://www.youtube.com/watch?v=${link}`}
+                        width="480px"
+                        height="270px"
+                      />
+                    )}
                     <input
                       type="text"
-                      autoComplete="off"
                       id={`youtubeLink-${index}`}
                       value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      autoComplete="off"
+                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       onChange={(e) =>
                         handleCollegeChange(index, e.target.value)
                       }
@@ -381,13 +403,20 @@ const EditArtist = ({ params }) => {
                   Ticketing Concert Videos Youtube Link:
                 </label>
                 {concertLink.map((link, index) => (
-                  <div key={index}>
+                  <div key={index} className="mb-4">
+                    {link.length > 1 && (
+                      <ReactPlayer
+                        url={`https://www.youtube.com/watch?v=${link}`}
+                        width="480px"
+                        height="270px"
+                      />
+                    )}
                     <input
                       type="text"
-                      autoComplete="off"
                       id={`youtubeLink-${index}`}
                       value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      autoComplete="off"
+                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       onChange={(e) =>
                         handleConcertChange(index, e.target.value)
                       }
@@ -409,13 +438,20 @@ const EditArtist = ({ params }) => {
                   Original Videos Youtube Link:
                 </label>
                 {originalLink.map((link, index) => (
-                  <div key={index}>
+                  <div key={index} className="mb-4">
+                    {link.length > 1 && (
+                      <ReactPlayer
+                        url={`https://www.youtube.com/watch?v=${link}`}
+                        width="480px"
+                        height="270px"
+                      />
+                    )}
                     <input
                       type="text"
-                      autoComplete="off"
                       id={`youtubeLink-${index}`}
                       value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      autoComplete="off"
+                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       onChange={(e) =>
                         handleOriginalChange(index, e.target.value)
                       }
@@ -437,13 +473,20 @@ const EditArtist = ({ params }) => {
                   Bollywood Playback Videos Youtube Link:
                 </label>
                 {bollywoodLink.map((link, index) => (
-                  <div key={index}>
+                  <div key={index} className="mb-4">
+                    {link.length > 1 && (
+                      <ReactPlayer
+                        url={`https://www.youtube.com/watch?v=${link}`}
+                        width="480px"
+                        height="270px"
+                      />
+                    )}
                     <input
                       type="text"
-                      autoComplete="off"
                       id={`youtubeLink-${index}`}
                       value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      autoComplete="off"
+                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       onChange={(e) =>
                         handleBollywoodChange(index, e.target.value)
                       }
@@ -465,13 +508,20 @@ const EditArtist = ({ params }) => {
                   Cover Videos Youtube Link:
                 </label>
                 {coverLink.map((link, index) => (
-                  <div key={index}>
+                  <div key={index} className="mb-4">
+                    {link.length > 1 && (
+                      <ReactPlayer
+                        url={`https://www.youtube.com/watch?v=${link}`}
+                        width="480px"
+                        height="270px"
+                      />
+                    )}
                     <input
                       type="text"
-                      autoComplete="off"
                       id={`youtubeLink-${index}`}
                       value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      autoComplete="off"
+                      className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       onChange={(e) => handleCoverChange(index, e.target.value)}
                     />
                   </div>

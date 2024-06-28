@@ -221,9 +221,6 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
             >
               x
             </button>
-            <label className="block text-sm font-medium text-gray-700">
-              Profile Pic
-            </label>
             <img
               src={cropData}
               alt="Cropped Image"

@@ -233,7 +233,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
         </>
       )}
       {showModal && imageSrc && (
-        <div className="modal-overlay">
+        <div className="modal-overlay z-20">
           <div className="modal flex flex-col gap-4">
             <Cropper
               src={imageSrc}

@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { AlignJustify, CircleUserRound } from "lucide-react";
 import {
   Popover,
@@ -9,14 +9,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import useAuth from "@/lib/hook";
 
 function Header() {
-  const { user } = useUser();
   const [isMounted, setIsMounted] = useState(false);
+  const isAuthenticated = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const handleSignOut = useCallback(() => {
+    sessionStorage.removeItem("mobile");
+    sessionStorage.removeItem("authExpiry");
+    router.replace("/sign-in");
+  }, [router]);
 
   const Menu = [
     {
@@ -39,11 +47,6 @@ function Header() {
       name: "User Login",
       path: "/user-dashboard",
     },
-    // {
-    //   id: 3,
-    //   name: "Contact Us",
-    //   path: "/",
-    // },
   ];
 
   return (
@@ -63,10 +66,10 @@ function Header() {
         </ul>
       </div>
       {isMounted && (
-        <div className="md:hidden flex items-center gap-8 md:justify-end">
-          <Popover>
+        <div className="flex items-center gap-8 md:justify-end">
+          <Popover className="md:hidden">
             <PopoverTrigger asChild>
-              <Button variant="ghost" className="p-0">
+              <Button variant="ghost" className="p-0 md:hidden">
                 <AlignJustify className="w-6 h-6" />
               </Button>
             </PopoverTrigger>
@@ -82,13 +85,23 @@ function Header() {
               </ul>
             </PopoverContent>
           </Popover>
-          <div className="md:hidden">
-            {user ? (
-              <UserButton afterSignOutUrl="/sign-in" />
-            ) : (
-              <Link href="/sign-in">
-                <CircleUserRound className="w-6 h-6" />
-              </Link>
+          <div>
+            {isAuthenticated && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" className="p-0">
+                    <CircleUserRound className="w-6 h-6" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="p-4">
+                    <p>Are you sure you want to sign out?</p>
+                    <Button onClick={handleSignOut} className="mt-2">
+                      Sign Out
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             )}
           </div>
         </div>

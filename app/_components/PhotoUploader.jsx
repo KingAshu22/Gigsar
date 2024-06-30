@@ -159,6 +159,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
       setCropData(null);
       setShowModal(false);
       setShowCroppedImage(false);
+      setProfilePic(null);
       setAwsLink(null);
     } catch (error) {
       console.error("Error deleting image:", error);
@@ -187,6 +188,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
 
     // Send delete object command to S3
     await s3Client.send(deleteCommand);
+    console.log("Image Deleted Successfully");
   };
 
   return (

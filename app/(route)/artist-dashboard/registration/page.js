@@ -15,7 +15,7 @@ const ArtistRegistration = () => {
 
   const inputRef = useRef(null);
 
-  const clerkId = user?.id;
+  const expiryTime = sessionStorage?.getItem("authExpiry");
   const [artistName, setArtistName] = useState();
   const [profilePic, setProfilePic] = useState("");
   const [gender, setGender] = useState("");
@@ -83,7 +83,7 @@ const ArtistRegistration = () => {
       setIsLoading(true);
       // Handle the submission of form data
       const formData = {
-        clerkId,
+        expiryTime,
         artistName,
         profilePic,
         gender,

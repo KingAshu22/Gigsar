@@ -23,7 +23,6 @@ function Header() {
   const handleSignOut = useCallback(() => {
     sessionStorage.removeItem("mobile");
     sessionStorage.removeItem("authExpiry");
-    router.replace("/sign-in");
   }, [router]);
 
   const Menu = [

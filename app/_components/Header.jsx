@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlignJustify, CircleUserRound } from "lucide-react";
+import { AlignJustify, LogOut } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import useAuth from "@/lib/hook";
 
-function Header() {
+const Header = () => {
   const [isMounted, setIsMounted] = useState(false);
   const isAuthenticated = useAuth();
   const router = useRouter();
@@ -23,29 +23,14 @@ function Header() {
   const handleSignOut = useCallback(() => {
     sessionStorage.removeItem("mobile");
     sessionStorage.removeItem("authExpiry");
+    window.dispatchEvent(new Event("storage")); // Trigger storage event manually
   }, [router]);
 
   const Menu = [
-    {
-      id: 1,
-      name: "Home",
-      path: "/",
-    },
-    {
-      id: 2,
-      name: "Artist Search",
-      path: "/artist",
-    },
-    {
-      id: 3,
-      name: "Artist Login",
-      path: "/artist-dashboard",
-    },
-    {
-      id: 4,
-      name: "User Login",
-      path: "/user-dashboard",
-    },
+    { id: 1, name: "Home", path: "/" },
+    { id: 2, name: "Artist Search", path: "/artist" },
+    { id: 3, name: "Artist Login", path: "/artist-dashboard" },
+    { id: 4, name: "User Login", path: "/user-dashboard" },
   ];
 
   return (
@@ -89,7 +74,7 @@ function Header() {
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" className="p-0">
-                    <CircleUserRound className="w-6 h-6" />
+                    <LogOut className="w-6 h-6" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent>
@@ -107,6 +92,6 @@ function Header() {
       )}
     </div>
   );
-}
+};
 
 export default Header;

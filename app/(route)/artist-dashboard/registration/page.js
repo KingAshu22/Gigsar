@@ -29,6 +29,7 @@ const ArtistRegistration = () => {
   const [artistType, setArtistType] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isValid, setIsValid] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
@@ -60,6 +61,7 @@ const ArtistRegistration = () => {
           const place = autocomplete.getPlace();
           if (place.geometry) {
             setLocation(place.formatted_address);
+            setIsValid(true);
           }
         });
       };
@@ -276,29 +278,48 @@ const ArtistRegistration = () => {
         </button>
       </form>
       {/* Confirmation modal */}
-      <Modal
-        isOpen={showConfirmationModal}
-        onClose={() => setShowConfirmationModal(false)}
-        title="Are you sure you want to submit the form?"
-        description={`This will create a profile for ${artistName}`}
-      >
-        <div className="flex justify-between">
-          <button
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            type="button"
-            onClick={() => setShowConfirmationModal(false)}
-          >
-            Cancel
-          </button>
-          <button
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            type="button"
-            onClick={handleConfirmSubmit}
-          >
-            Submit
-          </button>
-        </div>
-      </Modal>
+      {isValid ? (
+        <Modal
+          isOpen={showConfirmationModal}
+          onClose={() => setShowConfirmationModal(false)}
+          title="Are you sure you want to submit the form?"
+          description={`This will create a profile for ${artistName}`}
+        >
+          <div className="flex justify-between">
+            <button
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              type="button"
+              onClick={() => setShowConfirmationModal(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              type="button"
+              onClick={handleConfirmSubmit}
+            >
+              Submit
+            </button>
+          </div>
+        </Modal>
+      ) : (
+        <Modal
+          isOpen={showConfirmationModal}
+          onClose={() => setShowConfirmationModal(false)}
+          title="Please select correct option of your city"
+          description="Please select correct option of your city name from the option. Manual City names are not acceptable. If there is any error please contact us at +917021630747"
+        >
+          <div className="flex justify-between">
+            <button
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              type="button"
+              onClick={() => setShowConfirmationModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </Modal>
+      )}
 
       <Modal isOpen={isLoading} title="Submitting Form...">
         <div className="flex justify-center items-center">

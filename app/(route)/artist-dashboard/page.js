@@ -220,7 +220,7 @@ function ArtistDashboard() {
   return (
     <div className="p-5 md:p-10">
       <h1 className="text-2xl md:text-4xl font-bold mb-5">
-        Welcome Back, <span className="text-primary">{artist?.name} 👋</span>
+        Welcome, <span className="text-primary">{artist?.name} 👋</span>
       </h1>
       <Separator className="bg-gray-400 my-5" />
 
@@ -247,7 +247,7 @@ function ArtistDashboard() {
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {sortedLinks.pending.map((link) => (
                 <Link key={link.field} href={link.href}>
-                  <Card>
+                  <Card className="bg-primary text-white">
                     <CardHeader className="flex flex-col sm:flex-row sm:items-center">
                       {link.icon}
                       <div className="ml-0 sm:ml-4 mt-2 sm:mt-0">
@@ -275,11 +275,12 @@ function ArtistDashboard() {
           </div>
           {artist.isPending && (
             <div className="mt-4 p-4 bg-gray-100 rounded-lg flex flex-row items-center">
-              <LottieImg
-                animationData={animationData}
-                width={150}
-                height={150}
-              />
+              <div className="w-1/2 flex justify-center">
+                <LottieImg
+                  animationData={animationData}
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </div>
               <p className="mt-4 ml-4 text-lg">
                 Your data is currently being processed and verified. We
                 appreciate your patience as we ensure everything is in order.

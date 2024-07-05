@@ -128,6 +128,15 @@ const EditArtist = ({ params }) => {
         </div>
       ) : (
         <div className="container mx-auto p-5">
+          <Button
+            className="mb-2"
+            onClick={() => {
+              router.push("/artist-dashboard");
+            }}
+          >
+            Back to Dashboard
+          </Button>
+          <hr className="mb-10" />
           <h1 className="text-2xl font-bold mb-4 text-primary">Event Videos</h1>
           <form onSubmit={handleSubmit}>
             {[

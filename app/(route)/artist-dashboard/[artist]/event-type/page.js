@@ -8,6 +8,7 @@ import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
 import SearchList from "@/app/_components/SearchList";
 import eventTypesOptions from "@/constants/eventTypes";
+import { Button } from "@/components/ui/button";
 
 const EditArtist = ({ params }) => {
   const [id, setId] = useState();
@@ -126,6 +127,15 @@ const EditArtist = ({ params }) => {
         </div>
       ) : (
         <div className="container mx-auto p-5">
+          <Button
+            className="mb-2"
+            onClick={() => {
+              router.push("/artist-dashboard");
+            }}
+          >
+            Back to Dashboard
+          </Button>
+          <hr className="mb-10" />
           <h1 className="text-xl font-bold mb-4">Event Types & Budget</h1>
           <form onSubmit={handleSubmit}>
             <SearchList

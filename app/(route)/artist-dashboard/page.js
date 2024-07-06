@@ -20,6 +20,7 @@ import { HashLoader } from "react-spinners";
 import withAuth from "@/lib/withAuth";
 import * as animationData from "../../../public/Processing.json";
 import LottieImg from "@/app/_components/Lottie";
+import { Button } from "@/components/ui/button";
 
 function ArtistDashboard() {
   const router = useRouter();
@@ -274,18 +275,28 @@ function ArtistDashboard() {
             </p>
           </div>
           {artist.isPending && (
-            <div className="mt-4 p-4 bg-gray-100 rounded-lg flex flex-row items-center">
-              <div className="w-1/2 flex justify-center">
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg flex flex-col md:flex-row items-center">
+              <div className="w-full md:w-1/2 flex justify-center">
                 <LottieImg
                   animationData={animationData}
                   style={{ width: "100%", height: "auto" }}
                 />
               </div>
-              <p className="mt-4 ml-4 text-lg">
-                Your data is currently being processed and verified. We
-                appreciate your patience as we ensure everything is in order.
-                Your status will be updated shortly.
-              </p>
+              <div className="w-full md:w-1/2 flex flex-col items-center md:items-start mt-4 md:mt-0">
+                <p className="text-lg text-justify md:text-left">
+                  Your data is currently being processed and verified. We
+                  appreciate your patience as we ensure everything is in order.
+                  Your status will be updated shortly.
+                </p>
+                <Button
+                  className="mt-4"
+                  onClick={() => {
+                    router.push(`/artist-dashboard/${artist.linkid}`);
+                  }}
+                >
+                  View Profile
+                </Button>
+              </div>
             </div>
           )}
         </div>

@@ -11,28 +11,6 @@ import { Button } from "@/components/ui/button";
 
 const EditArtist = ({ params }) => {
   const [id, setId] = useState();
-
-  const getArtist = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API}/artist/artistName/` + params.artist
-      );
-      const artistData = response.data;
-
-      setId(artistData._id);
-      setArtistName(artistData.name);
-
-      setGalleryLink(artistData.gallery.map((item) => item.link));
-    } catch (error) {
-      console.error("Error fetching artists:", error);
-    } finally {
-      // Reset loading state
-      setTimeout(() => {
-        setFetchData(false);
-      }, 1000);
-    }
-  };
-
   const [artistName, setArtistName] = useState();
   const [galleryLink, setGalleryLink] = useState([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -42,9 +20,28 @@ const EditArtist = ({ params }) => {
   const [fetchData, setFetchData] = useState(true);
   const router = useRouter();
 
+  const getArtist = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/artist/artistName/${params.artist}`
+      );
+      const artistData = response.data;
+
+      setId(artistData._id);
+      setArtistName(artistData.name);
+      setGalleryLink(artistData.gallery.map((item) => item.link));
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+    } finally {
+      setTimeout(() => {
+        setFetchData(false);
+      }, 1000);
+    }
+  };
+
   useEffect(() => {
     getArtist();
-  }, []);
+  }, [params.artist]);
 
   const handleGalleryUpload = (link, index) => {
     setGalleryLink((prevLinks) => {
@@ -54,7 +51,7 @@ const EditArtist = ({ params }) => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setShowConfirmationModal(true);
     setError(null);
@@ -65,25 +62,21 @@ const EditArtist = ({ params }) => {
     try {
       setShowConfirmationModal(false);
       setIsLoading(true);
-      // Handle the submission of form data
-      const formData = {
-        galleryLink,
-      };
 
-      const response = axios.post(
+      const formData = { galleryLink };
+      await axios.post(
         `${process.env.NEXT_PUBLIC_API}/edit-gallery/${id}`,
         formData,
         { withCredentials: true }
       );
+
+      setSuccess(true);
     } catch (error) {
-      // Handle error
       console.error("Error submitting form:", error);
       setError(error.message || "An error occurred during submission.");
     } finally {
-      // Reset loading state
       setTimeout(() => {
         setIsLoading(false);
-        setSuccess(true);
       }, 3000);
     }
   };
@@ -139,7 +132,7 @@ const EditArtist = ({ params }) => {
               Update
             </button>
           </form>
-          {/* Confirmation modal */}
+
           <Modal
             isOpen={showConfirmationModal}
             onClose={() => setShowConfirmationModal(false)}
@@ -175,7 +168,7 @@ const EditArtist = ({ params }) => {
             isOpen={success}
             onClose={() => setSuccess(false)}
             title="Gallery Images Updated"
-            description={`${artistName}'s Gallery Images has been Updated`}
+            description={`${artistName}'s Gallery Images have been updated`}
           >
             <div className="flex justify-center">
               <button

@@ -10,8 +10,8 @@ import { HashLoader } from "react-spinners";
 import ReactPlayer from "react-player/lazy";
 
 const EditArtist = ({ params }) => {
-  const [id, setId] = useState();
-  const [artistName, setArtistName] = useState();
+  const [id, setId] = useState("");
+  const [artistName, setArtistName] = useState("");
   const [weddingLink, setWeddingLink] = useState([""]);
   const [corporateLink, setCorporateLink] = useState([""]);
   const [collegeLink, setCollegeLink] = useState([""]);
@@ -19,6 +19,8 @@ const EditArtist = ({ params }) => {
   const [originalLink, setOriginalLink] = useState([""]);
   const [bollywoodLink, setBollywoodLink] = useState([""]);
   const [coverLink, setCoverLink] = useState([""]);
+  const [cafeLink, setCafeLink] = useState([""]);
+  const [houseLink, setHouseLink] = useState([""]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -50,9 +52,12 @@ const EditArtist = ({ params }) => {
       setOriginalLink(extractLinks(artistData, "Original Videos"));
       setBollywoodLink(extractLinks(artistData, "Bollywood Playback Videos"));
       setCoverLink(extractLinks(artistData, "Cover Videos"));
+      setCafeLink(extractLinks(artistData, "Cafe/Clubs Videos"));
+      setHouseLink(extractLinks(artistData, "House Party Videos"));
     } catch (error) {
-      console.error("Error fetching artists:", error);
+      console.error("Error fetching artist:", error);
     } finally {
+      console.log(houseLink);
       setTimeout(() => {
         setFetchData(false);
       }, 1000);
@@ -61,7 +66,7 @@ const EditArtist = ({ params }) => {
 
   useEffect(() => {
     getArtist();
-  }, []);
+  }, [params.artist]);
 
   const addMoreLinks = (setter) => {
     setter((prevLinks) => [...prevLinks, ""]);
@@ -81,7 +86,7 @@ const EditArtist = ({ params }) => {
     setter(updatedLinks);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setShowConfirmationModal(true);
     setError(null);
@@ -100,23 +105,41 @@ const EditArtist = ({ params }) => {
         originalLink,
         bollywoodLink,
         coverLink,
+        cafeLink,
+        houseLink,
       };
 
-      const response = await axios.post(
+      await axios.post(
         `${process.env.NEXT_PUBLIC_API}/edit-event-videos/${id}`,
         formData,
         { withCredentials: true }
       );
+      setSuccess(true);
     } catch (error) {
       console.error("Error submitting form:", error);
       setError(error.message || "An error occurred during submission.");
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-        setSuccess(true);
       }, 3000);
     }
   };
+
+  const eventTypes = [
+    ["Wedding/Private Event Videos Youtube Link:", weddingLink, setWeddingLink],
+    ["Corporate Event Videos Youtube Link:", corporateLink, setCorporateLink],
+    ["College Event Videos Youtube Link:", collegeLink, setCollegeLink],
+    ["Ticketing Concert Videos Youtube Link:", concertLink, setConcertLink],
+    ["Original Videos Youtube Link:", originalLink, setOriginalLink],
+    [
+      "Bollywood Playback Videos Youtube Link:",
+      bollywoodLink,
+      setBollywoodLink,
+    ],
+    ["Cover Videos Youtube Link:", coverLink, setCoverLink],
+    ["Cafe/Clubs Videos Youtube Link:", cafeLink, setCafeLink],
+    ["House Party Event Videos Youtube Link:", houseLink, setHouseLink],
+  ];
 
   return (
     <>
@@ -139,35 +162,7 @@ const EditArtist = ({ params }) => {
           <hr className="mb-10" />
           <h1 className="text-2xl font-bold mb-4 text-primary">Event Videos</h1>
           <form onSubmit={handleSubmit}>
-            {[
-              [
-                "Wedding/Private Event Videos Youtube Link:",
-                weddingLink,
-                setWeddingLink,
-              ],
-              [
-                "Corporate Event Videos Youtube Link:",
-                corporateLink,
-                setCorporateLink,
-              ],
-              [
-                "College Event Videos Youtube Link:",
-                collegeLink,
-                setCollegeLink,
-              ],
-              [
-                "Ticketing Concert Videos Youtube Link:",
-                concertLink,
-                setConcertLink,
-              ],
-              ["Original Videos Youtube Link:", originalLink, setOriginalLink],
-              [
-                "Bollywood Playback Videos Youtube Link:",
-                bollywoodLink,
-                setBollywoodLink,
-              ],
-              ["Cover Videos Youtube Link:", coverLink, setCoverLink],
-            ].map(([label, links, setter], idx) => (
+            {eventTypes.map(([label, links, setter], idx) => (
               <div className="mb-20" key={idx}>
                 <div>
                   <label className="block text-lg mb-2 font-bold text-gray-700">
@@ -176,11 +171,21 @@ const EditArtist = ({ params }) => {
                   {links.map((link, index) => (
                     <div key={index} className="mb-4">
                       {link.length > 1 && (
-                        <ReactPlayer
-                          url={`https://www.youtube.com/watch?v=${link}`}
-                          width="480px"
-                          height="270px"
-                        />
+                        <>
+                          <ReactPlayer
+                            url={`https://www.youtube.com/watch?v=${link}`}
+                            width="480px"
+                            height="270px"
+                            class="desktop"
+                          />
+
+                          <ReactPlayer
+                            url={`https://www.youtube.com/watch?v=${link}`}
+                            width="240px"
+                            height="135px"
+                            class="mobile"
+                          />
+                        </>
                       )}
                       <input
                         type="text"
@@ -249,7 +254,7 @@ const EditArtist = ({ params }) => {
             isOpen={success}
             onClose={() => setSuccess(false)}
             title="Event Videos Updated"
-            description={`${artistName}'s Event Videos has been successfully updated.`}
+            description={`${artistName}'s Event Videos have been successfully updated.`}
           >
             <div className="flex justify-center">
               <button

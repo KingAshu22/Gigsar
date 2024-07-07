@@ -11,6 +11,7 @@ import {
   Images,
   Music,
   TicketCheck,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -132,6 +133,19 @@ function ArtistDashboard() {
   const sortLinks = (artist) => {
     const links = [
       {
+        field: "basicDetails",
+        href: `/artist-dashboard/${artist?.linkid}/basic-details`,
+        icon: <User className="size-10" />,
+        title: "Basic Details",
+        description: "Edit Your Basic Details",
+        completed: !!(
+          artist?.profilePic ||
+          artist?.location ||
+          artist?.artistType ||
+          artist?.email
+        ),
+      },
+      {
         field: "gallery",
         href: `/artist-dashboard/${artist?.linkid}/gallery`,
         icon: <Images className="size-10" />,
@@ -191,13 +205,9 @@ function ArtistDashboard() {
         title: "Other Details",
         description: "Add/Edit Your Other Details",
         completed: !!(
-          artist?.original ||
           artist?.time ||
-          artist?.awards ||
           artist?.instagram ||
           artist?.facebook ||
-          artist?.youtube ||
-          artist?.spotify ||
           artist?.training ||
           artist?.blog
         ),

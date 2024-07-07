@@ -1,7 +1,5 @@
 "use client";
 import Hero from "./_components/Hero";
-import CategorySearch from "./_components/CategorySearch";
-import ArtistList from "./_components/ArtistList";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ArtistFilter from "./(route)/artist/page";

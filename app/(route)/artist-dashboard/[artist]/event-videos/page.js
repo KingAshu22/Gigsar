@@ -181,8 +181,8 @@ const EditArtist = ({ params }) => {
 
                           <ReactPlayer
                             url={`https://www.youtube.com/watch?v=${link}`}
-                            width="240px"
-                            height="135px"
+                            width="312px"
+                            height="175.5px"
                             class="mobile"
                           />
                         </>

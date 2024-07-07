@@ -16,12 +16,15 @@ import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { formatToIndianNumber } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import Modal from "@/app/_components/Modal";
 
 function ArtistDetail({ artist }) {
   const router = useRouter();
   const [eventName, setEventName] = useState("");
   const [eventInfo, setEventInfo] = useState("");
   const [selectedEventType, setSelectedEventType] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -176,6 +179,16 @@ function ArtistDetail({ artist }) {
     );
   };
 
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedImage(null);
+    setModalOpen(false);
+  };
+
   return (
     <div className="container mx-auto p-5">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -185,7 +198,8 @@ function ArtistDetail({ artist }) {
             width={200}
             height={200}
             alt={artist.name}
-            className="border rounded-lg w-full h-auto object-cover"
+            className="border rounded-lg w-full h-auto object-cover cursor-pointer"
+            onClick={() => openModal(artist.profilePic)}
           />
         </div>
         <div className="col-span-2 flex flex-col gap-4">
@@ -238,7 +252,8 @@ function ArtistDetail({ artist }) {
                 width={200}
                 height={200}
                 alt={artist.name}
-                className="border rounded-lg object-cover"
+                className="border rounded-lg object-cover cursor-pointer"
+                onClick={() => openModal(link.link)}
               />
             </div>
           ))}
@@ -271,6 +286,22 @@ function ArtistDetail({ artist }) {
           dangerouslySetInnerHTML={{ __html: artist.blog }}
         ></div>
       </div>
+
+      {/* Modal for Gallery Images */}
+      <Modal isOpen={modalOpen} onClose={closeModal} title="Gallery Image">
+        <div className="flex justify-center">
+          <Image
+            src={selectedImage}
+            width={400}
+            height={400}
+            alt="Selected Image"
+            className="border rounded-lg object-contain"
+          />
+        </div>
+        <div className="flex justify-center mt-4">
+          <Button onClick={closeModal}>Close</Button>
+        </div>
+      </Modal>
     </div>
   );
 }

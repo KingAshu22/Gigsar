@@ -1,4 +1,3 @@
-"use client";
 import { Button } from "@/components/ui/button";
 import {
   BadgeIndianRupee,
@@ -16,7 +15,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { formatToIndianNumber } from "@/lib/utils";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 function ArtistDetail({ artist }) {
   const router = useRouter();
@@ -107,8 +106,7 @@ function ArtistDetail({ artist }) {
                 className="mt-3 rounded-full"
                 onClick={() => handleBookClick("Wedding Event", artist.price)}
               >
-                Book {artist.name} for Wedding Event at ₹{" "}
-                {formatToIndianNumber(artist.price)}
+                Book
               </Button>
             </div>
             <hr />
@@ -127,8 +125,7 @@ function ArtistDetail({ artist }) {
                   handleBookClick("Corporate Event", artist.corporateBudget)
                 }
               >
-                Book {artist.name} for Corporate Event at ₹{" "}
-                {formatToIndianNumber(artist.corporateBudget)}
+                Book
               </Button>
             </div>
             <hr />
@@ -147,8 +144,7 @@ function ArtistDetail({ artist }) {
                   handleBookClick("College Event", artist.collegeBudget)
                 }
               >
-                Book {artist.name} for College Event at ₹{" "}
-                {formatToIndianNumber(artist.collegeBudget)}
+                Book
               </Button>
             </div>
             <hr />
@@ -170,8 +166,7 @@ function ArtistDetail({ artist }) {
                   )
                 }
               >
-                Book {artist.name} for House/Private Event at ₹{" "}
-                {formatToIndianNumber(artist.singerCumGuitaristBudget)}
+                Book
               </Button>
             </div>
             <hr />
@@ -182,8 +177,8 @@ function ArtistDetail({ artist }) {
   };
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-3 border p-5 mt-5 rounded-lg shadow-lg gap-5">
+    <div className="container mx-auto p-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="flex justify-center md:justify-start">
           <Image
             src={artist.profilePic}
@@ -234,7 +229,21 @@ function ArtistDetail({ artist }) {
         <div className="space-y-2">{renderPricing()}</div>
       </div>
       <div className="p-5 border rounded-lg mt-5 shadow-lg">
-        <h2 className="font-bold text-2xl text-gray-800 mb-4">Videos</h2>
+        <h2 className="font-bold text-2xl text-primary mb-4">Gallery</h2>
+        <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-20">
+          {artist.gallery.map((link, index) => (
+            <div key={index} className="w-full">
+              <Image
+                src={link.link}
+                width={200}
+                height={200}
+                alt={artist.name}
+                className="border rounded-lg object-cover"
+              />
+            </div>
+          ))}
+        </div>
+        <h2 className="font-bold text-2xl text-primary mb-4">Videos</h2>
         <div className="space-y-6">
           {artist.events.map((event, index) => (
             <div key={index}>
@@ -262,7 +271,7 @@ function ArtistDetail({ artist }) {
           dangerouslySetInnerHTML={{ __html: artist.blog }}
         ></div>
       </div>
-    </>
+    </div>
   );
 }
 

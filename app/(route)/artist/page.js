@@ -437,14 +437,14 @@ function ArtistFilter() {
           </div>
         ) : filteredArtists.length > 0 ? (
           <>
-            <Button
-              className="fixed left-3 bg-primary text-white py-2 px-4 rounded shadow-lg flex items-center z-50"
+            <button
+              className="fixed left-3 ml-0 bg-primary text-white py-2 px-4 rounded shadow-lg flex items-center z-50"
               onClick={() => {
                 setFilterOpen(true);
               }}
             >
               <Filter className="mr-2" /> Filter
-            </Button>
+            </button>
             <ArtistList
               artists={filteredArtists}
               selectedEventType={

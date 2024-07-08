@@ -299,6 +299,7 @@ function ArtistFilter() {
     setSelectedMinBudget("");
     setSelectedMaxBudget("");
     setSearchQuery("");
+    setFilterOpen(false);
   };
 
   const handleCopyLink = () => {
@@ -437,7 +438,7 @@ function ArtistFilter() {
         ) : filteredArtists.length > 0 ? (
           <>
             <Button
-              className="fixed bg-primary text-white py-2 px-4 rounded shadow-lg flex items-center z-50"
+              className="fixed left-3 bg-primary text-white py-2 px-4 rounded shadow-lg flex items-center z-50"
               onClick={() => {
                 setFilterOpen(true);
               }}

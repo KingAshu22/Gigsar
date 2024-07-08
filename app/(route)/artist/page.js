@@ -438,7 +438,7 @@ function ArtistFilter() {
         ) : filteredArtists.length > 0 ? (
           <>
             <button
-              className="fixed left-3 ml-0 bg-primary text-white py-2 px-4 rounded shadow-lg flex items-center z-50"
+              className="fixed left-0 ml-0 bg-primary text-white py-2 px-4 rounded shadow-lg flex items-center z-50"
               onClick={() => {
                 setFilterOpen(true);
               }}

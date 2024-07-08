@@ -567,7 +567,7 @@ function ArtistFilter() {
                       setFilterOpen(false);
                     }}
                   >
-                    Close
+                    Apply Filter
                   </Button>
                 </div>
               </div>

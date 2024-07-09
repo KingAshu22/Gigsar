@@ -7,11 +7,7 @@ import { HashLoader } from "react-spinners";
 import * as animationData from "../../../public/cat.json";
 import LottieImg from "@/app/_components/Lottie";
 import { budgetOptions } from "./budget";
-import SearchList from "@/app/_components/SearchList";
-import SingleSearch from "@/app/_components/SingleSearch";
-import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
-import Modal from "@/app/_components/Modal";
+import FilterPanel from "@/app/_components/Filter";
 
 function ArtistFilter() {
   const searchParams = useSearchParams();
@@ -31,7 +27,6 @@ function ArtistFilter() {
   const [languages, setLanguages] = useState([]);
   const [instruments, setInstruments] = useState([]);
   const [genders, setGenders] = useState(["All"]);
-  const [filterOpen, setFilterOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All Artist Types");
   const [selectedGenre, setSelectedGenre] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("All Locations");
@@ -299,7 +294,6 @@ function ArtistFilter() {
     setSelectedMinBudget("");
     setSelectedMaxBudget("");
     setSearchQuery("");
-    setFilterOpen(false);
   };
 
   const handleCopyLink = () => {
@@ -328,252 +322,54 @@ function ArtistFilter() {
 
   return (
     <div className="flex flex-col lg:flex-row p-4">
-      <div className="desktop w-full lg:w-1/4 lg:sticky lg:top-4 lg:h-full overflow-y-auto max-h-screen">
-        <div className="bg-white p-4 rounded shadow-md mb-4">
-          <h2 className="text-xl font-bold mb-2">Filter</h2>
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Search</label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by Artist Name..."
-            />
-          </div>
-          <SingleSearch
-            type="Artist Type"
-            list={categories}
-            topList={categories}
-            selectedItem={selectedCategory}
-            setSelectedItem={setSelectedCategory}
-            showSearch={false}
-          />
-          <SearchList
-            type="Genre"
-            list={genres}
-            topList={topGenres}
-            selectedItems={selectedGenre}
-            setSelectedItems={setSelectedGenre}
-          />
-          <SingleSearch
-            type="Event Type"
-            list={eventsTypes}
-            topList={topEventTypes}
-            selectedItem={selectedEventType}
-            setSelectedItem={setSelectedEventType}
-            showSearch={false}
-          />
-          <SearchList
-            type="Language"
-            list={languages}
-            topList={topLanguages}
-            selectedItems={selectedLanguage}
-            setSelectedItems={setSelectedLanguage}
-          />
-          <SearchList
-            type="Instruments"
-            list={instruments}
-            topList={topInstruments}
-            selectedItems={selectedInstrument}
-            setSelectedItems={setSelectedInstrument}
-          />
-          <SingleSearch
-            type="Gender"
-            list={genders}
-            topList={genders}
-            selectedItem={selectedGender}
-            setSelectedItem={setSelectedGender}
-            showSearch={false}
-          />
-          <SingleSearch
-            type="Sort By Budget"
-            list={["Low to High", "High to Low"]}
-            topList={["Low to High", "High to Low"]}
-            selectedItem={selectedSortOption}
-            setSelectedItem={setSelectedSortOption}
-            showSearch={false}
-          />
-          <div className="flex gap-4 mb-4">
-            <div className="w-1/2">
-              <label className="block mb-2 font-semibold">Min Budget</label>
-              <input
-                type="number"
-                className="w-full p-2 border rounded"
-                value={selectedMinBudget}
-                onChange={(e) => setSelectedMinBudget(e.target.value)}
-                placeholder="0"
-              />
-            </div>
-            <div className="w-1/2">
-              <label className="block mb-2 font-semibold">Max Budget</label>
-              <input
-                type="number"
-                className="w-full p-2 border rounded"
-                value={selectedMaxBudget}
-                onChange={(e) => setSelectedMaxBudget(e.target.value)}
-                placeholder="100000"
-              />
-            </div>
-          </div>
-          <button
-            className="bg-blue-500 text-white py-2 px-4 rounded mb-4 w-full"
-            onClick={handleClearFilter}
-          >
-            Clear Filters
-          </button>
-          <button
-            className="bg-green-500 text-white py-2 px-4 rounded w-full"
-            onClick={handleCopyLink}
-          >
-            Copy Filters Link
-          </button>
-        </div>
-      </div>
+      <FilterPanel
+        className="desktop"
+        categories={categories}
+        topGenres={topGenres}
+        selectedGenre={selectedGenre}
+        setSelectedGenre={setSelectedGenre}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        genres={genres}
+        eventsTypes={eventsTypes}
+        topEventTypes={topEventTypes}
+        selectedEventType={selectedEventType}
+        setSelectedEventType={setSelectedEventType}
+        languages={languages}
+        topLanguages={topLanguages}
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={setSelectedLanguage}
+        instruments={instruments}
+        topInstruments={topInstruments}
+        selectedInstrument={selectedInstrument}
+        setSelectedInstrument={setSelectedInstrument}
+        genders={genders}
+        selectedGender={selectedGender}
+        setSelectedGender={setSelectedGender}
+        selectedSortOption={selectedSortOption}
+        setSelectedSortOption={setSelectedSortOption}
+        selectedMinBudget={selectedMinBudget}
+        setSelectedMinBudget={setSelectedMinBudget}
+        selectedMaxBudget={selectedMaxBudget}
+        setSelectedMaxBudget={setSelectedMaxBudget}
+        handleClearFilter={handleClearFilter}
+        handleCopyLink={handleCopyLink}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
       <div className="w-full lg:w-3/4">
         {loading ? (
           <div className="flex flex-col justify-center items-center h-full text-center">
             <HashLoader color="#dc2626" size={180} />
           </div>
         ) : filteredArtists.length > 0 ? (
-          <>
-            <button
-              className="fixed left-0 ml-0 bg-primary text-white py-2 px-4 rounded shadow-lg flex items-center z-50"
-              onClick={() => {
-                setFilterOpen(true);
-              }}
-            >
-              <Filter className="mr-2" /> Filter
-            </button>
-            <ArtistList
-              artists={filteredArtists}
-              selectedEventType={
-                selectedEventType === "All Event Types" ? "" : selectedEventType
-              }
-              budget={budget}
-            />
-            <Modal
-              isOpen={filterOpen}
-              onClose={() => {
-                setFilterOpen(false);
-              }}
-              title="Filter"
-            >
-              <div className="space-y-4">
-                <div className="mb-4">
-                  <label className="block mb-2 font-semibold">Search</label>
-                  <input
-                    type="text"
-                    className="w-full p-2 border rounded"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by Artist Name..."
-                  />
-                </div>
-                <SingleSearch
-                  type="Artist Type"
-                  list={categories}
-                  topList={categories}
-                  selectedItem={selectedCategory}
-                  setSelectedItem={setSelectedCategory}
-                  showSearch={false}
-                />
-                <SearchList
-                  type="Genre"
-                  list={genres}
-                  topList={topGenres}
-                  selectedItems={selectedGenre}
-                  setSelectedItems={setSelectedGenre}
-                />
-                <SingleSearch
-                  type="Event Type"
-                  list={eventsTypes}
-                  topList={topEventTypes}
-                  selectedItem={selectedEventType}
-                  setSelectedItem={setSelectedEventType}
-                  showSearch={false}
-                />
-                <SearchList
-                  type="Language"
-                  list={languages}
-                  topList={topLanguages}
-                  selectedItems={selectedLanguage}
-                  setSelectedItems={setSelectedLanguage}
-                />
-                <SearchList
-                  type="Instruments"
-                  list={instruments}
-                  topList={topInstruments}
-                  selectedItems={selectedInstrument}
-                  setSelectedItems={setSelectedInstrument}
-                />
-                <SingleSearch
-                  type="Gender"
-                  list={genders}
-                  topList={genders}
-                  selectedItem={selectedGender}
-                  setSelectedItem={setSelectedGender}
-                  showSearch={false}
-                />
-                <SingleSearch
-                  type="Sort By Budget"
-                  list={["Low to High", "High to Low"]}
-                  topList={["Low to High", "High to Low"]}
-                  selectedItem={selectedSortOption}
-                  setSelectedItem={setSelectedSortOption}
-                  showSearch={false}
-                />
-                <div className="flex gap-4 mb-4">
-                  <div className="w-1/2">
-                    <label className="block mb-2 font-semibold">
-                      Min Budget
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full p-2 border rounded"
-                      value={selectedMinBudget}
-                      onChange={(e) => setSelectedMinBudget(e.target.value)}
-                      placeholder="0"
-                    />
-                  </div>
-                  <div className="w-1/2">
-                    <label className="block mb-2 font-semibold">
-                      Max Budget
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full p-2 border rounded"
-                      value={selectedMaxBudget}
-                      onChange={(e) => setSelectedMaxBudget(e.target.value)}
-                      placeholder="100000"
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-center mt-4 gap-4">
-                  <Button
-                    className="bg-white border-primary border-2 text-primary rounded"
-                    onClick={handleClearFilter}
-                  >
-                    Clear Filters
-                  </Button>
-                  <Button
-                    className="bg-green-500 text-white rounded"
-                    onClick={handleCopyLink}
-                  >
-                    Copy Filters Link
-                  </Button>
-                  <Button
-                    className="bg-primary"
-                    onClick={() => {
-                      setFilterOpen(false);
-                    }}
-                  >
-                    Apply Filter
-                  </Button>
-                </div>
-              </div>
-            </Modal>
-          </>
+          <ArtistList
+            artists={filteredArtists}
+            selectedEventType={
+              selectedEventType === "All Event Types" ? "" : selectedEventType
+            }
+            budget={budget}
+          />
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <LottieImg animationData={animationData} width={400} height={400} />

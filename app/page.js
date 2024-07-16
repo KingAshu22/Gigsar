@@ -3,6 +3,7 @@ import Hero from "./_components/Hero";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ArtistFilter from "./(route)/artist/page";
+import MyBot from "./_components/MyBot";
 
 export default function Home() {
   const [artists, setArtists] = useState([]);
@@ -23,7 +24,7 @@ export default function Home() {
     <div>
       {/* Hero Section  */}
       <Hero />
-
+      <MyBot />
       {/* Popular Artists List  */}
       <ArtistFilter />
     </div>

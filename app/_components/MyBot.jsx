@@ -204,10 +204,7 @@ const MyBot = () => {
     },
     ask_event: {
       message: "Select your event type:",
-      checkboxes: {
-        items: ["Wedding", "Corprorate", "House Party", "Private", "Corporate"],
-        max: 1,
-      },
+      options: ["Wedding", "Corprorate", "House Party", "Private", "Corporate"],
       chatDisabled: true,
       function: (params) => setForm({ ...form, eventType: params.userInput }),
       path: "ask_city",

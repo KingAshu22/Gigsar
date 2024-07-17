@@ -20,8 +20,8 @@ const MyBot = () => {
   const options = {
     // Configurations Category
     theme: {
-      primaryColor: "#f44336",
-      secondaryColor: "#202124",
+      primaryColor: "#A020F0",
+      secondaryColor: "#f44336",
       fontFamily:
         "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', " +
         "'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', " +

@@ -71,6 +71,39 @@ const MyBot = () => {
       message: "OTP verified! Please enter your email:",
       function: (params) =>
         setForm((prevForm) => ({ ...prevForm, email: params.userInput })),
+      path: "selectArtistType",
+    },
+    selectArtistType: {
+      message: "Select Artist Type:",
+      options: ["Singer/Band", "Musician", "DJ"],
+      function: (params) =>
+        setForm((prevForm) => ({ ...prevForm, artistType: params.userInput })),
+      path: "selectEventType",
+    },
+    selectEventType: {
+      message: "Select Event Type:",
+      options: ["Wedding", "Corporate", "College", "House Party", "Private"],
+      function: (params) =>
+        setForm((prevForm) => ({ ...prevForm, eventType: params.userInput })),
+      path: "enterEventCity",
+    },
+    enterEventCity: {
+      message: "Enter Event City:",
+      function: (params) =>
+        setForm((prevForm) => ({ ...prevForm, eventCity: params.userInput })),
+      path: "selectBudget",
+    },
+    selectBudget: {
+      message: "Select Budget:",
+      options: [
+        "0-20,000",
+        "20,000-50,000",
+        "50,000-1,00,000",
+        "1,00,000-5,00,000",
+        "5,00,000-10,00,000",
+      ],
+      function: (params) =>
+        setForm((prevForm) => ({ ...prevForm, budget: params.userInput })),
       path: "end",
     },
     aboutGigsar: {
@@ -83,6 +116,10 @@ const MyBot = () => {
         <div style={formStyle}>
           <p>Name: {form.name}</p>
           <p>Email: {form.email}</p>
+          <p>Artist Type: {form.artistType}</p>
+          <p>Event Type: {form.eventType}</p>
+          <p>Event City: {form.eventCity}</p>
+          <p>Budget: {form.budget}</p>
         </div>
       ),
       options: ["Start Over"],

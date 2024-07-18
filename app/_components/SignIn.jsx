@@ -2,73 +2,97 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Head from "next/head";
 
+let OTPlessSigninInstance = null;
+
+export function initializeOTPless() {
+  const script = document.createElement("script");
+  script.src = "https://otpless.com/v2/headless.js";
+  script.id = "otpless-sdk";
+  script.setAttribute("data-appid", "P2E0047ZZJ3U12JSZ4TV");
+  script.onload = () => {
+    if (typeof window.OTPless !== "undefined") {
+      const callback = (userinfo) => {
+        console.log(userinfo);
+      };
+
+      OTPlessSigninInstance = new window.OTPless(callback);
+    }
+  };
+  document.head.appendChild(script);
+}
+
+export async function sendOtp(contactNumber) {
+  if (OTPlessSigninInstance) {
+    try {
+      await OTPlessSigninInstance.initiate({
+        channel: "PHONE",
+        phone: contactNumber,
+        countryCode: "+91",
+      });
+      return true;
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      return false;
+    }
+  }
+  return false;
+}
+
+export async function verifyOtp(contactNumber, otp) {
+  if (OTPlessSigninInstance) {
+    try {
+      const response = await OTPlessSigninInstance.verify({
+        channel: "PHONE",
+        phone: contactNumber,
+        otp,
+        countryCode: "+91",
+      });
+      if (response.success) {
+        return true;
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+    }
+  }
+  return false;
+}
+
 export default function SignIn() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [showOtpSection, setShowOtpSection] = useState(false);
-  const [OTPlessSignin, setOTPlessSignin] = useState(null);
   const [error, setError] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/artist"; // Get returnUrl from query params
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://otpless.com/v2/headless.js";
-    script.id = "otpless-sdk";
-    script.setAttribute("data-appid", "P2E0047ZZJ3U12JSZ4TV");
-    script.onload = () => {
-      if (typeof window.OTPless !== "undefined") {
-        const callback = (userinfo) => {
-          console.log(userinfo);
-        };
-
-        const instance = new window.OTPless(callback);
-        setOTPlessSignin(instance);
-      }
-    };
-    document.head.appendChild(script);
+    initializeOTPless();
   }, []);
 
-  const handlePhoneAuth = () => {
-    if (OTPlessSignin) {
-      OTPlessSignin.initiate({
-        channel: "PHONE",
-        phone,
-        countryCode: "+91",
-      });
+  const handlePhoneAuth = async () => {
+    const otpSent = await sendOtp(phone);
+    if (otpSent) {
       setShowOtpSection(true);
+    } else {
+      setError("Failed to send OTP. Please try again.");
     }
   };
 
-  const handleVerifyOTP = () => {
-    if (OTPlessSignin) {
-      OTPlessSignin.verify({
-        channel: "PHONE",
-        phone,
-        otp,
-        countryCode: "+91",
-      })
-        .then((response) => {
-          if (response.success) {
-            const user = {
-              phone,
-            };
-            sessionStorage.setItem("user", JSON.stringify(user));
-            sessionStorage.setItem("authToken", response.token);
-            sessionStorage.setItem(
-              "authExpiry",
-              Date.now() + 7 * 24 * 60 * 60 * 1000
-            );
+  const handleVerifyOTP = async () => {
+    const verified = await verifyOtp(phone, otp);
+    if (verified) {
+      const user = { phone };
+      sessionStorage.setItem("user", JSON.stringify(user));
+      sessionStorage.setItem("authToken", response.token);
+      sessionStorage.setItem(
+        "authExpiry",
+        Date.now() + 7 * 24 * 60 * 60 * 1000
+      );
 
-            router.push(returnUrl);
-          } else {
-            setError("OTP is incorrect. Please try again.");
-          }
-        })
-        .catch(() => {
-          setError("OTP is incorrect. Please try again.");
-        });
+      router.push(returnUrl);
+    } else {
+      setError("OTP is incorrect. Please try again.");
     }
   };
 

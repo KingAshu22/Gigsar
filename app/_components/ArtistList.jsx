@@ -45,7 +45,6 @@ function ArtistList({ artists, budget, selectedEventType }) {
                       <h2 className="font-bold">{artist.name}</h2>
                       <h2 className="text-primary text-sm">
                         ₹{" "}
-                        {/* Conditional rendering based on budget existence */}
                         {budget && artist[budget]
                           ? formatToIndianNumber(artist[budget])
                           : formatToIndianNumber(artist.price)}
@@ -72,8 +71,7 @@ function ArtistList({ artists, budget, selectedEventType }) {
                 </Link>
               );
             })
-          : // Skelton Effect
-            [1, 2, 3, 4, 5, 6].map((item, index) => (
+          : [1, 2, 3, 4, 5, 6].map((item, index) => (
               <div
                 className="h-[220px] bg-slate-200 
               w-full rounded-lg animate-pulse"

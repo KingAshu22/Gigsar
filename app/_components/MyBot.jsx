@@ -2,6 +2,7 @@ import { options } from "@/constants/chatBotOptions";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { sendOtp, verifyOtp, initializeOTPless } from "./SignIn";
 import axios from "axios";
+import ArtistFilter from "../(route)/artist/page";
 const ChatBot = lazy(() => import("react-chatbotify"));
 
 const MyBot = () => {
@@ -10,16 +11,68 @@ const MyBot = () => {
   const [contactNumber, setContactNumber] = useState("");
   const [email, setEmail] = useState("");
   const [artistType, setArtistType] = useState("");
+  const [artistOptions, setArtistOptions] = useState([]);
   const [eventsType, setEventsType] = useState("");
+  const [eventsOptions, setEventsOptions] = useState([]);
+  const [gender, setGender] = useState("");
+  const [genderOptions, setGenderOptions] = useState([]);
   const [eventDate, setEventDate] = useState("");
   const [eventCity, setEventCity] = useState("");
   const [budget, setBudget] = useState("");
   const [isSend, setIsSend] = useState(false);
+  const [artists, setArtists] = useState([]);
 
   useEffect(() => {
     setIsLoaded(true);
     initializeOTPless();
+    fetchArtists();
   }, []);
+
+  const fetchArtists = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/artist`);
+      const filteredArtists = response.data.filter(
+        (artist) => artist.showGigsar
+      );
+      setArtists(filteredArtists);
+      extractFilters(filteredArtists);
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+    }
+  };
+
+  const extractFilters = (artists) => {
+    const uniqueCategories = [
+      "All Artist Types",
+      ...new Set(artists.map((artist) => artist.artistType)),
+    ];
+    setArtistOptions(uniqueCategories);
+
+    const allEventTypes = artists.flatMap((artist) =>
+      artist.eventsType.split(", ")
+    );
+
+    // Calculate top 10 genres based on frequency
+    const eventsFrequency = allEventTypes.reduce((acc, eventsType) => {
+      acc[eventsType] = (acc[eventsType] || 0) + 1;
+      return acc;
+    }, {});
+    const sortedEventTypes = Object.entries(eventsFrequency)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([eventsType]) => eventsType);
+    const uniqueSortedEventTypes = [
+      "All Event Types",
+      ...new Set(sortedEventTypes),
+    ];
+    setEventsOptions(uniqueSortedEventTypes);
+
+    const uniqueGenders = [
+      "All",
+      ...new Set(artists.map((artist) => artist.gender)),
+    ];
+    setGenderOptions(uniqueGenders);
+  };
 
   const formStyle = {
     marginTop: 10,
@@ -100,14 +153,20 @@ const MyBot = () => {
       path: "verifyOTP",
     },
     verifyOTP: {
-      message: "Share your OTP sent to your Mobile Number",
+      message:
+        "Share your OTP sent to your Mobile Number, if your mobile number is incorrect please select Change Number option.",
+      options: ["Change Mobile Number"],
       path: async (params) => {
-        const status = await verifyOtp(contactNumber, params.userInput);
-        if (status) {
-          return "askEmail";
+        if (params.userInput === "Change Mobile Number") {
+          return "askNumber";
         } else {
-          await params.injectMessage("OTP is incorrect. Please try again.");
-          return "verifyOTP";
+          const status = await verifyOtp(contactNumber, params.userInput);
+          if (status) {
+            return "askEmail";
+          } else {
+            await params.injectMessage("OTP is incorrect. Please try again.");
+            return "verifyOTP";
+          }
         }
       },
     },
@@ -118,13 +177,19 @@ const MyBot = () => {
     },
     selectArtistType: {
       message: "Select Artist Type",
-      options: ["Singer-Band", "Musician", "DJ"],
+      options: artistOptions,
       function: (params) => setArtistType(params.userInput),
+      path: "artistGender",
+    },
+    artistGender: {
+      message: "Select Artist Gender",
+      options: genderOptions,
+      function: (params) => setGender(params.userInput),
       path: "selectEventType",
     },
     selectEventType: {
       message: "Select Event Type",
-      options: ["Wedding", "Corporate", "College", "Private", "House Party"],
+      options: eventsOptions,
       function: (params) => setEventsType(params.userInput),
       path: "enterEventCity",
     },
@@ -139,6 +204,7 @@ const MyBot = () => {
         <div>
           <input
             type="date"
+            placeholder="Select Event Date"
             onChange={(e) => setEventDate(e.target.value)}
             style={{
               width: "100%",
@@ -165,48 +231,67 @@ const MyBot = () => {
       message: "Select Budget:",
       options: [
         "0-20,000",
-        "20,000-50,000",
-        "50,000-1,00,000",
-        "1,00,000-5,00,000",
-        "5,00,000-10,00,000",
+        "20,000-1,000",
+        "1,000-10,00,000",
+        "10,00,000-20,00,000",
+        "20,00,000-50,00,000",
+        "50,00,000 +",
       ],
       function: (params) => setBudget(params.userInput),
       path: "end",
     },
-    aboutGigsar: {
-      message: "Gigsar is an Artist Search Engine and Booking Platform.",
-      chatDisabled: true,
-      path: "showOptions",
-    },
     end: {
-      message: "Thank you for providing your details!",
+      message: "Thanks for sharing the details, We will contact you soon.",
+      function: () => sendData(),
       render: (
         <div style={formStyle}>
-          <p>Name: {name}</p>
-          <p>Email: {email}</p>
-          <p>Contact: {contactNumber}</p>
-          <p>Event City: {eventCity}</p>
-          <p>Artist Type: {artistType}</p>
-          <p>Event Type: {eventsType}</p>
-          <p>Event Date: {eventDate}</p>
-          <p>Budget: {budget}</p>
+          <h2>Collected Data</h2>
+          <p>
+            <strong>Name:</strong> {name}
+          </p>
+          <p>
+            <strong>Contact Number:</strong> {contactNumber}
+          </p>
+          <p>
+            <strong>Email:</strong> {email}
+          </p>
+          <p>
+            <strong>Artist Type:</strong> {artistType}
+          </p>
+          <p>
+            <strong>Gender:</strong> {gender}
+          </p>
+          <p>
+            <strong>Event Type:</strong> {eventsType}
+          </p>
+          <p>
+            <strong>Event Date:</strong> {eventDate}
+          </p>
+          <p>
+            <strong>Event City:</strong> {eventCity}
+          </p>
+          <p>
+            <strong>Budget:</strong> {budget}
+          </p>
         </div>
       ),
-      function: sendData(),
-      options: ["Start Over"],
-      chatDisabled: true,
-      path: "start",
+      end: true,
+    },
+    aboutGigsar: {
+      message:
+        "Gigsar is an Artist booking platform, where you can book artists and find artist details based on your requirements.",
+      path: "showOptions",
     },
   };
 
   return (
-    <>
+    <div>
       {isLoaded && (
         <Suspense fallback={<div>Loading...</div>}>
           <ChatBot options={options} flow={flow} />
         </Suspense>
       )}
-    </>
+    </div>
   );
 };
 

@@ -4,6 +4,14 @@ import SearchList from "@/app/_components/SearchList";
 import { Button } from "@/components/ui/button";
 import Modal from "./Modal";
 import { Filter } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const FilterPanel = ({
   categories,
@@ -17,6 +25,8 @@ const FilterPanel = ({
   topEventTypes,
   selectedEventType,
   setSelectedEventType,
+  selectedDate,
+  setSelectedDate,
   languages,
   topLanguages,
   selectedLanguage,
@@ -79,6 +89,31 @@ const FilterPanel = ({
             setSelectedItem={setSelectedEventType}
             showSearch={false}
           />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={`w-full justify-start text-left font-normal
+                  ${!selectedDate && "text-muted-foreground"}
+                `}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? (
+                  format(selectedDate, "PPP")
+                ) : (
+                  <span>Event Date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           <SearchList
             type="Language"
             list={languages}
@@ -195,6 +230,31 @@ const FilterPanel = ({
             setSelectedItem={setSelectedEventType}
             showSearch={false}
           />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={`w-full justify-start text-left font-normal
+                  ${!selectedDate && "text-muted-foreground"}
+                `}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? (
+                  format(selectedDate, "PPP")
+                ) : (
+                  <span>Event Date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           <SearchList
             type="Language"
             list={languages}

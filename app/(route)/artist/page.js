@@ -31,6 +31,7 @@ function ArtistFilter() {
   const [selectedGenre, setSelectedGenre] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("All Locations");
   const [selectedEventType, setSelectedEventType] = useState("All Event Types");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
   const [selectedInstrument, setSelectedInstrument] = useState([]);
   const [selectedGender, setSelectedGender] = useState("All");
@@ -238,7 +239,7 @@ function ArtistFilter() {
       selectedGenre.every((genre) => artist.genre.split(", ").includes(genre));
     const matchesLocation =
       selectedLocation === "All Locations" ||
-      artist.location === selectedLocation;
+      artist.location.split(", ").includes(selectedLocation);
     const matchesEventType =
       selectedEventType === "All Event Types" ||
       artist.eventsType.split(", ").includes(selectedEventType);
@@ -267,6 +268,9 @@ function ArtistFilter() {
     const matchesSearchQuery =
       searchQuery === "" ||
       artist.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDate =
+      !selectedDate ||
+      !artist.busyDates.includes(new Date(selectedDate).toISOString());
 
     return (
       matchesCategory &&
@@ -278,7 +282,8 @@ function ArtistFilter() {
       matchesGender &&
       matchesMinBudget &&
       matchesMaxBudget &&
-      matchesSearchQuery
+      matchesSearchQuery &&
+      matchesDate
     );
   });
 
@@ -335,6 +340,8 @@ function ArtistFilter() {
         topEventTypes={topEventTypes}
         selectedEventType={selectedEventType}
         setSelectedEventType={setSelectedEventType}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
         languages={languages}
         topLanguages={topLanguages}
         selectedLanguage={selectedLanguage}

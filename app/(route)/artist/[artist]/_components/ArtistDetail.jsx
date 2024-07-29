@@ -65,7 +65,7 @@ function ArtistDetail({ artist }) {
     setEventInfo(eventInfoMapping[selectedEventType] || "");
   }, []);
 
-  const handleBookClick = (event, price) => {
+  const handleBookClick = (event) => {
     router.push(`/book/${artist.linkid}?event=${event}`);
   };
 
@@ -77,7 +77,7 @@ function ArtistDetail({ artist }) {
           <div className="flex justify-between items-center">
             <span className="text-gray-600">{`${eventName} Event:`}</span>
             <span className="font-medium text-gray-900 whitespace-nowrap">
-              ₹ {formatToIndianNumber(price)}
+              ₹ {formatToIndianNumber(price)}/-
             </span>
           </div>
           <p
@@ -87,7 +87,7 @@ function ArtistDetail({ artist }) {
           <hr />
           <Button
             className="mt-3 rounded-full"
-            onClick={() => handleBookClick(eventName, price)}
+            onClick={() => handleBookClick(eventName)}
           >
             Book {artist.name} for {eventName} at ₹{" "}
             {formatToIndianNumber(price)}
@@ -107,7 +107,7 @@ function ArtistDetail({ artist }) {
               </span>
               <Button
                 className="mt-3 rounded-full"
-                onClick={() => handleBookClick("Wedding Event", artist.price)}
+                onClick={() => handleBookClick("Wedding", artist.price)}
               >
                 Book
               </Button>
@@ -125,7 +125,7 @@ function ArtistDetail({ artist }) {
               <Button
                 className="mt-3 rounded-full"
                 onClick={() =>
-                  handleBookClick("Corporate Event", artist.corporateBudget)
+                  handleBookClick("Corporate", artist.corporateBudget)
                 }
               >
                 Book
@@ -143,9 +143,7 @@ function ArtistDetail({ artist }) {
               </span>
               <Button
                 className="mt-3 rounded-full"
-                onClick={() =>
-                  handleBookClick("College Event", artist.collegeBudget)
-                }
+                onClick={() => handleBookClick("College", artist.collegeBudget)}
               >
                 Book
               </Button>
@@ -164,7 +162,7 @@ function ArtistDetail({ artist }) {
                 className="mt-3 rounded-full"
                 onClick={() =>
                   handleBookClick(
-                    "House/Private Event",
+                    "House/Private",
                     artist.singerCumGuitaristBudget
                   )
                 }

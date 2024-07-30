@@ -90,6 +90,7 @@ const FilterPanel = ({
             showSearch={false}
           />
           <Popover>
+            <label className="block mb-2 font-semibold">Event Date</label>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
@@ -231,6 +232,7 @@ const FilterPanel = ({
             showSearch={false}
           />
           <Popover>
+            <label className="block mb-2 font-semibold">Event Date</label>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}

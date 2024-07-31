@@ -88,7 +88,7 @@ function ArtistFilter() {
     }
   };
 
-  const extractFilters = (artists) => {
+  const extractFilters = async (artists) => {
     const uniqueCategories = [
       "All Artist Types",
       ...new Set(artists.map((artist) => artist.artistType)),
@@ -115,6 +115,13 @@ function ArtistFilter() {
       ...new Set(artists.map((artist) => artist.location)),
     ];
     setLocations(uniqueLocations);
+
+    const response = await axios.get("https://ipapi.co/json/");
+    const { city } = response.data;
+
+    if (uniqueLocations.includes(city)) {
+      setSelectedLocation(city);
+    }
 
     const allEventTypes = artists.flatMap((artist) =>
       artist.eventsType.split(", ")
@@ -237,9 +244,9 @@ function ArtistFilter() {
     const matchesGenre =
       selectedGenre.length === 0 ||
       selectedGenre.every((genre) => artist.genre.split(", ").includes(genre));
-    const matchesLocation =
-      selectedLocation === "All Locations" ||
-      artist.location.split(", ").includes(selectedLocation);
+    // const matchesLocation =
+    //   selectedLocation === "All Locations" ||
+    //   artist.location.split(", ").includes(selectedLocation);
     const matchesEventType =
       selectedEventType === "All Event Types" ||
       artist.eventsType.split(", ").includes(selectedEventType);
@@ -275,7 +282,7 @@ function ArtistFilter() {
     return (
       matchesCategory &&
       matchesGenre &&
-      matchesLocation &&
+      // matchesLocation &&
       matchesEventType &&
       matchesLanguage &&
       matchesInstrument &&
@@ -285,6 +292,13 @@ function ArtistFilter() {
       matchesSearchQuery &&
       matchesDate
     );
+  });
+
+  const prioritizedArtists = filteredArtists.sort((a, b) => {
+    const locationA = a.location.split(", ").includes(selectedLocation);
+    const locationB = b.location.split(", ").includes(selectedLocation);
+
+    return locationA === locationB ? 0 : locationA ? -1 : 1;
   });
 
   const handleClearFilter = () => {
@@ -336,6 +350,9 @@ function ArtistFilter() {
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
         genres={genres}
+        location={locations}
+        selectedLocation={selectedLocation}
+        setSelectedLocation={setSelectedLocation}
         eventsTypes={eventsTypes}
         topEventTypes={topEventTypes}
         selectedEventType={selectedEventType}
@@ -369,9 +386,9 @@ function ArtistFilter() {
           <div className="flex flex-col justify-center items-center h-full text-center">
             <HashLoader color="#dc2626" size={180} />
           </div>
-        ) : filteredArtists.length > 0 ? (
+        ) : prioritizedArtists.length > 0 ? (
           <ArtistList
-            artists={filteredArtists}
+            artists={prioritizedArtists}
             selectedEventType={
               selectedEventType === "All Event Types" ? "" : selectedEventType
             }

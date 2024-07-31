@@ -21,6 +21,9 @@ const FilterPanel = ({
   selectedCategory,
   setSelectedCategory,
   genres,
+  location,
+  selectedLocation,
+  setSelectedLocation,
   eventsTypes,
   topEventTypes,
   selectedEventType,
@@ -122,12 +125,20 @@ const FilterPanel = ({
             selectedItems={selectedLanguage}
             setSelectedItems={setSelectedLanguage}
           />
-          <SearchList
+          {/* <SearchList
             type="Instruments"
             list={instruments}
             topList={topInstruments}
             selectedItems={selectedInstrument}
             setSelectedItems={setSelectedInstrument}
+          /> */}
+          <SingleSearch
+            type="Location"
+            list={location}
+            topList={location}
+            selectedItem={selectedLocation}
+            setSelectedItem={setSelectedLocation}
+            showSearch={false}
           />
           <SingleSearch
             type="Gender"
@@ -264,13 +275,13 @@ const FilterPanel = ({
             selectedItems={selectedLanguage}
             setSelectedItems={setSelectedLanguage}
           />
-          <SearchList
+          {/* <SearchList
             type="Instruments"
             list={instruments}
             topList={topInstruments}
             selectedItems={selectedInstrument}
             setSelectedItems={setSelectedInstrument}
-          />
+          /> */}
           <SingleSearch
             type="Gender"
             list={genders}

@@ -118,13 +118,13 @@ const FilterPanel = ({
               />
             </PopoverContent>
           </Popover>
-          <SearchList
+          {/* <SearchList
             type="Language"
             list={languages}
             topList={topLanguages}
             selectedItems={selectedLanguage}
             setSelectedItems={setSelectedLanguage}
-          />
+          /> */}
           {/* <SearchList
             type="Instruments"
             list={instruments}
@@ -268,13 +268,13 @@ const FilterPanel = ({
               />
             </PopoverContent>
           </Popover>
-          <SearchList
+          {/* <SearchList
             type="Language"
             list={languages}
             topList={topLanguages}
             selectedItems={selectedLanguage}
             setSelectedItems={setSelectedLanguage}
-          />
+          /> */}
           {/* <SearchList
             type="Instruments"
             list={instruments}
@@ -282,6 +282,14 @@ const FilterPanel = ({
             selectedItems={selectedInstrument}
             setSelectedItems={setSelectedInstrument}
           /> */}
+          <SingleSearch
+            type="Location"
+            list={location}
+            topList={location}
+            selectedItem={selectedLocation}
+            setSelectedItem={setSelectedLocation}
+            showSearch={false}
+          />
           <SingleSearch
             type="Gender"
             list={genders}

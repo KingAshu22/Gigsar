@@ -21,8 +21,8 @@ const Header = () => {
   }, []);
 
   const handleSignOut = useCallback(() => {
-    sessionStorage.removeItem("mobile");
-    sessionStorage.removeItem("authExpiry");
+    localStorage.removeItem("mobile");
+    localStorage.removeItem("authExpiry");
     window.dispatchEvent(new Event("storage")); // Trigger storage event manually
   }, [router]);
 

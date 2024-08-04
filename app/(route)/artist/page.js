@@ -49,6 +49,7 @@ function ArtistFilter() {
       selectedGenre,
       selectedLocation,
       selectedEventType,
+      selectedDate,
       selectedLanguage,
       selectedInstrument,
       selectedGender,
@@ -61,6 +62,7 @@ function ArtistFilter() {
     setSelectedGenre(selectedGenre ? selectedGenre.split(",") : []);
     setSelectedLocation(selectedLocation || "All Locations");
     setSelectedEventType(selectedEventType || "All Event Types");
+    setSelectedDate(selectedDate || "");
     setSelectedLanguage(selectedLanguage ? selectedLanguage.split(",") : []);
     setSelectedInstrument(
       selectedInstrument ? selectedInstrument.split(",") : []
@@ -322,6 +324,7 @@ function ArtistFilter() {
     params.set("selectedGenre", selectedGenre.join(","));
     params.set("selectedLocation", selectedLocation);
     params.set("selectedEventType", selectedEventType);
+    params.set("selectedDate", selectedDate);
     params.set("selectedLanguage", selectedLanguage.join(","));
     params.set("selectedInstrument", selectedInstrument.join(","));
     params.set("selectedGender", selectedGender);
@@ -389,9 +392,16 @@ function ArtistFilter() {
         ) : prioritizedArtists.length > 0 ? (
           <ArtistList
             artists={prioritizedArtists}
-            selectedEventType={
-              selectedEventType === "All Event Types" ? "" : selectedEventType
-            }
+            selectedCategory={selectedCategory}
+            selectedGenre={selectedGenre.join(",")}
+            selectedLocation={selectedLocation}
+            selectedEventType={selectedEventType}
+            selectedDate={selectedDate}
+            selectedLanguage={selectedLanguage.join(",")}
+            selectedInstrument={selectedInstrument.join(",")}
+            selectedGender={selectedGender}
+            selectedMinBudget={selectedMinBudget}
+            selectedMaxBudget={selectedMaxBudget}
             budget={budget}
           />
         ) : (

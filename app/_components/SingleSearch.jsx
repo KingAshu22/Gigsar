@@ -28,12 +28,12 @@ const SingleSearch = ({
   return (
     <div className="mt-4">
       <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
           {type}:
         </label>
         <div className="flex flex-wrap">
           {showSearch && selectedItem && (
-            <div className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center">
+            <div className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize">
               {selectedItem}
             </div>
           )}
@@ -45,8 +45,8 @@ const SingleSearch = ({
                 onClick={() => handleSelectItem(item)}
                 className={
                   item === selectedItem
-                    ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center"
-                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300"
+                    ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize"
+                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize"
                 }
               >
                 {item}

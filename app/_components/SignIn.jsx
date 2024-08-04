@@ -64,7 +64,7 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl") || "/artist"; // Get returnUrl from query params
+  const returnUrl = searchParams.get("returnUrl") || "/user"; // Get returnUrl from query params
 
   useEffect(() => {
     initializeOTPless();
@@ -83,12 +83,9 @@ export default function SignIn() {
     const verified = await verifyOtp(phone, otp);
     if (verified) {
       const user = { phone };
-      sessionStorage.setItem("user", JSON.stringify(user));
-      sessionStorage.setItem("authToken", response.token);
-      sessionStorage.setItem(
-        "authExpiry",
-        Date.now() + 7 * 24 * 60 * 60 * 1000
-      );
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("authToken", response.token);
+      localStorage.setItem("authExpiry", Date.now() + 7 * 24 * 60 * 60 * 1000);
 
       router.push(returnUrl);
     } else {
@@ -106,7 +103,7 @@ export default function SignIn() {
           Sign In
         </h2>
         <p className="text-center text-gray-500 mb-8">
-          Sign in to access your artist dashboard
+          Sign in to access your Dashboard
         </p>
         <div className="space-y-6">
           <div id="mobile-section">

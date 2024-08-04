@@ -22,8 +22,7 @@ export default function SignIn() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const rawReturnUrl =
-      searchParams.get("redirect_url") || "/artist-dashboard";
+    const rawReturnUrl = searchParams.get("redirect_url") || "/user-dashboard";
     if (typeof window !== "undefined") {
       const returnUrlPath = new URL(rawReturnUrl, window.location.origin)
         .pathname;
@@ -53,9 +52,9 @@ export default function SignIn() {
           const authExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000;
           const mobile = userinfo.identities[0].identityValue;
           const city = userinfo.network.ipLocation.city.name;
-          sessionStorage.setItem("authExpiry", authExpiry.toString());
-          sessionStorage.setItem("mobile", mobile.toString());
-          sessionStorage.setItem("city", city.toString());
+          localStorage.setItem("authExpiry", authExpiry.toString());
+          localStorage.setItem("mobile", mobile.toString());
+          localStorage.setItem("city", city.toString());
           router.push(returnUrl);
         };
 

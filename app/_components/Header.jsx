@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlignJustify, LogOut } from "lucide-react";
+import { AlignJustify, LogOut, MessagesSquare } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -51,6 +51,9 @@ const Header = () => {
       </div>
       {isMounted && (
         <div className="flex items-center gap-8 md:justify-end">
+          <Link href={"/chat"}>
+            <MessagesSquare />
+          </Link>
           <Popover className="md:hidden">
             <PopoverTrigger asChild>
               <Button variant="ghost" className="p-0 md:hidden">

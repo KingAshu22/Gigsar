@@ -182,13 +182,13 @@ const FilterPanel = ({
             </div>
           </div>
           <button
-            className="bg-blue-500 text-white py-2 px-4 rounded mb-4 w-full"
+            className="border-primary border-2 text-primary py-2 px-4 rounded mb-4 w-full"
             onClick={handleClearFilter}
           >
             Clear Filters
           </button>
           <button
-            className="bg-green-500 text-white py-2 px-4 rounded w-full"
+            className="bg-primary text-white py-2 px-4 rounded w-full"
             onClick={handleCopyLink}
           >
             Copy Filters Link
@@ -333,7 +333,7 @@ const FilterPanel = ({
           </div>
           <div className="flex justify-center mt-4 gap-4">
             <Button
-              className="bg-white border-primary border-2 text-primary rounded"
+              className="border-primary border-2 rounded"
               onClick={() => {
                 handleClearFilter();
                 setFilterOpen(false);
@@ -342,7 +342,7 @@ const FilterPanel = ({
               Clear Filters
             </Button>
             <Button
-              className="bg-green-500 text-white rounded"
+              className="bg-primary text-white rounded"
               onClick={handleCopyLink}
             >
               Copy Filters Link

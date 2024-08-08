@@ -12,9 +12,7 @@ import FilterPanel from "@/app/_components/Filter";
 function ArtistFilter() {
   const searchParams = useSearchParams();
   const filterParams = new URLSearchParams(searchParams.toString());
-  console.log(filterParams);
   const [artists, setArtists] = useState([]);
-  const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [genres, setGenres] = useState([]);
@@ -27,19 +25,26 @@ function ArtistFilter() {
   const [languages, setLanguages] = useState([]);
   const [instruments, setInstruments] = useState([]);
   const [genders, setGenders] = useState(["All"]);
+  const [budget, setBudget] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Artist Types");
   const [selectedGenre, setSelectedGenre] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("All Locations");
+  const [initialLocationSet, setInitialLocationSet] = useState(false);
   const [selectedEventType, setSelectedEventType] = useState("All Event Types");
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState([]);
   const [selectedInstrument, setSelectedInstrument] = useState([]);
   const [selectedGender, setSelectedGender] = useState("All");
   const [selectedSortOption, setSelectedSortOption] = useState("Low to High");
+  const [sortedArtists, setSortedArtists] = useState([]);
   const [selectedMinBudget, setSelectedMinBudget] = useState("");
   const [selectedMaxBudget, setSelectedMaxBudget] = useState("");
-  const [sortedArtists, setSortedArtists] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredArtists, setFilteredArtists] = useState([]);
+
+  const parsePrice = (priceString) => {
+    return parseInt(priceString.replace(/,/g, ""), 10);
+  };
 
   useEffect(() => {
     const params = Object.fromEntries(filterParams.entries());
@@ -91,13 +96,65 @@ function ArtistFilter() {
   };
 
   const extractFilters = async (artists) => {
+    let filteredArtists = artists;
+
+    if (selectedCategory !== "All Artist Types") {
+      filteredArtists = filteredArtists.filter(
+        (artist) => artist.artistType === selectedCategory
+      );
+    }
+
+    if (selectedGenre.length > 0) {
+      filteredArtists = filteredArtists.filter((artist) =>
+        selectedGenre.every((genre) => artist.genre.split(", ").includes(genre))
+      );
+    }
+
+    if (selectedLocation !== "All Locations") {
+      filteredArtists = filteredArtists.filter(
+        (artist) => artist.location === selectedLocation
+      );
+    }
+
+    if (selectedEventType !== "All Event Types") {
+      filteredArtists = filteredArtists.filter((artist) =>
+        artist.eventsType.split(", ").includes(selectedEventType)
+      );
+    }
+
+    if (selectedLanguage.length > 0) {
+      filteredArtists = filteredArtists.filter((artist) =>
+        selectedLanguage.every((language) =>
+          artist.languages.split(", ").includes(language)
+        )
+      );
+    }
+
+    if (selectedInstrument.length > 0) {
+      filteredArtists = filteredArtists.filter((artist) =>
+        selectedInstrument.every((instrument) =>
+          artist.instruments
+            ? artist.instruments.split(", ").includes(instrument)
+            : false
+        )
+      );
+    }
+
+    if (selectedGender !== "All") {
+      filteredArtists = filteredArtists.filter(
+        (artist) => artist.gender === selectedGender
+      );
+    }
+
     const uniqueCategories = [
       "All Artist Types",
       ...new Set(artists.map((artist) => artist.artistType)),
     ];
     setCategories(uniqueCategories);
 
-    const allGenres = artists.flatMap((artist) => artist.genre.split(", "));
+    const allGenres = filteredArtists.flatMap((artist) =>
+      artist.genre.split(", ")
+    );
     const uniqueGenres = [...new Set(allGenres)];
     setGenres(uniqueGenres);
 
@@ -121,17 +178,18 @@ function ArtistFilter() {
     const response = await axios.get("https://ipapi.co/json/");
     const { city } = response.data;
 
-    if (uniqueLocations.includes(city)) {
+    if (!initialLocationSet && uniqueLocations.includes(city)) {
       setSelectedLocation(city);
+      setInitialLocationSet(true);
     }
 
-    const allEventTypes = artists.flatMap((artist) =>
+    const allEventTypes = filteredArtists.flatMap((artist) =>
       artist.eventsType.split(", ")
     );
     const uniqueEventsTypes = ["All Event Types", ...new Set(allEventTypes)];
     setEventsTypes(uniqueEventsTypes);
 
-    // Calculate top 10 genres based on frequency
+    // Calculate top event types based on frequency
     const eventsFrequency = allEventTypes.reduce((acc, eventsType) => {
       acc[eventsType] = (acc[eventsType] || 0) + 1;
       return acc;
@@ -146,66 +204,71 @@ function ArtistFilter() {
     ];
     setTopEventTypes(uniqueSortedEventTypes);
 
-    // Collect all languages from artists
-    const allLanguages = artists.flatMap((artist) =>
+    const allLanguages = filteredArtists.flatMap((artist) =>
       artist.languages.split(", ")
     );
-
-    // Calculate language frequency
     const languageFrequency = allLanguages.reduce((acc, language) => {
       acc[language] = (acc[language] || 0) + 1;
       return acc;
     }, {});
-
-    // Sort languages by frequency and select top 10
     const sortedLanguages = Object.entries(languageFrequency)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([language]) => language);
-
-    // Set state for all languages and top languages
     setLanguages(allLanguages);
     setTopLanguages(sortedLanguages);
 
-    // Collect all instruments from artists
-    const allInstruments = artists.flatMap((artist) =>
+    const allInstruments = filteredArtists.flatMap((artist) =>
       artist.instruments ? artist.instruments.split(", ") : []
     );
-
-    // Calculate instrument frequency
     const instrumentFrequency = allInstruments.reduce((acc, instrument) => {
       acc[instrument] = (acc[instrument] || 0) + 1;
       return acc;
     }, {});
-
-    // Sort instruments by frequency and select top 10
     const sortedInstruments = Object.entries(instrumentFrequency)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([instrument]) => instrument);
-
-    // Set state for all instruments and top instruments
     setInstruments(allInstruments);
     setTopInstruments(sortedInstruments);
 
     const uniqueGenders = [
       "All",
-      ...new Set(artists.map((artist) => artist.gender)),
+      ...new Set(filteredArtists.map((artist) => artist.gender)),
     ];
     setGenders(uniqueGenders);
+
+    setFilteredArtists(filteredArtists);
   };
+
+  useEffect(() => {
+    extractFilters(artists);
+  }, [
+    artists,
+    selectedCategory,
+    selectedGenre,
+    selectedLocation,
+    selectedEventType,
+    selectedLanguage,
+    selectedInstrument,
+    selectedGender,
+  ]);
 
   useEffect(() => {
     if (selectedSortOption === "Low to High") {
       setSortedArtists(
-        [...artists].sort((a, b) => parsePrice(a.price) - parsePrice(b.price))
+        [...filteredArtists].sort(
+          (a, b) => parsePrice(a.price) - parsePrice(b.price)
+        )
       );
     } else if (selectedSortOption === "High to Low") {
       setSortedArtists(
-        [...artists].sort((a, b) => parsePrice(b.price) - parsePrice(a.price))
+        [...filteredArtists].sort(
+          (a, b) => parsePrice(b.price) - parsePrice(a.price)
+        )
       );
     } else {
-      setSortedArtists([...artists]);
+      setSortedArtists([...filteredArtists]);
     }
 
     if (selectedEventType === "Corporate") {
@@ -233,22 +296,15 @@ function ArtistFilter() {
     } else if (selectedEventType === "Virtual") {
       setBudget("singerCumGuitarist");
     }
-  }, [selectedSortOption, artists, selectedEventType]);
+  }, [selectedSortOption, filteredArtists, selectedEventType, searchQuery]);
 
-  const parsePrice = (priceString) => {
-    return parseInt(priceString.replace(/,/g, ""), 10);
-  };
-
-  const filteredArtists = sortedArtists.filter((artist) => {
+  const finalArtists = sortedArtists.filter((artist) => {
     const matchesCategory =
       selectedCategory === "All Artist Types" ||
       artist.artistType === selectedCategory;
     const matchesGenre =
       selectedGenre.length === 0 ||
       selectedGenre.every((genre) => artist.genre.split(", ").includes(genre));
-    // const matchesLocation =
-    //   selectedLocation === "All Locations" ||
-    //   artist.location.split(", ").includes(selectedLocation);
     const matchesEventType =
       selectedEventType === "All Event Types" ||
       artist.eventsType.split(", ").includes(selectedEventType);
@@ -284,7 +340,6 @@ function ArtistFilter() {
     return (
       matchesCategory &&
       matchesGenre &&
-      // matchesLocation &&
       matchesEventType &&
       matchesLanguage &&
       matchesInstrument &&
@@ -296,18 +351,12 @@ function ArtistFilter() {
     );
   });
 
-  const prioritizedArtists = filteredArtists.sort((a, b) => {
-    const locationA = a.location.split(", ").includes(selectedLocation);
-    const locationB = b.location.split(", ").includes(selectedLocation);
-
-    return locationA === locationB ? 0 : locationA ? -1 : 1;
-  });
-
   const handleClearFilter = () => {
     setSelectedCategory("All Artist Types");
     setSelectedGenre([]);
     setSelectedLocation("All Locations");
     setSelectedEventType("All Event Types");
+    setSelectedDate("");
     setSelectedLanguage([]);
     setSelectedInstrument([]);
     setSelectedGender("All");
@@ -345,32 +394,32 @@ function ArtistFilter() {
   return (
     <div className="flex flex-col lg:flex-row p-4">
       <FilterPanel
-        className="desktop"
         categories={categories}
-        topGenres={topGenres}
-        selectedGenre={selectedGenre}
-        setSelectedGenre={setSelectedGenre}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
         genres={genres}
+        topGenres={topGenres}
         location={locations}
-        selectedLocation={selectedLocation}
-        setSelectedLocation={setSelectedLocation}
         eventsTypes={eventsTypes}
         topEventTypes={topEventTypes}
+        languages={languages}
+        topLanguages={topLanguages}
+        instruments={instruments}
+        topInstruments={topInstruments}
+        genders={genders}
+        budgetOptions={budgetOptions}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedGenre={selectedGenre}
+        setSelectedGenre={setSelectedGenre}
+        selectedLocation={selectedLocation}
+        setSelectedLocation={setSelectedLocation}
         selectedEventType={selectedEventType}
         setSelectedEventType={setSelectedEventType}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        languages={languages}
-        topLanguages={topLanguages}
         selectedLanguage={selectedLanguage}
         setSelectedLanguage={setSelectedLanguage}
-        instruments={instruments}
-        topInstruments={topInstruments}
         selectedInstrument={selectedInstrument}
         setSelectedInstrument={setSelectedInstrument}
-        genders={genders}
         selectedGender={selectedGender}
         setSelectedGender={setSelectedGender}
         selectedSortOption={selectedSortOption}
@@ -389,9 +438,9 @@ function ArtistFilter() {
           <div className="flex flex-col justify-center items-center h-full text-center">
             <HashLoader color="#dc2626" size={180} />
           </div>
-        ) : prioritizedArtists.length > 0 ? (
+        ) : filteredArtists.length > 0 ? (
           <ArtistList
-            artists={prioritizedArtists}
+            artists={finalArtists}
             selectedCategory={selectedCategory}
             selectedGenre={selectedGenre.join(",")}
             selectedLocation={selectedLocation}

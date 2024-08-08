@@ -41,7 +41,7 @@ function Hero() {
             than ever. Transform your events with Gigsar today!
           </p>
 
-          <Link href="/registration">
+          <Link href="https://artist.gigsar.com">
             <Button className="mt-10 bg-primary hover:bg-primary-dark text-white">
               Register Now
             </Button>

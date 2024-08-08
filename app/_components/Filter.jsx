@@ -15,30 +15,31 @@ import {
 
 const FilterPanel = ({
   categories,
-  topGenres,
-  selectedGenre,
-  setSelectedGenre,
-  selectedCategory,
-  setSelectedCategory,
   genres,
+  topGenres,
   location,
-  selectedLocation,
-  setSelectedLocation,
   eventsTypes,
   topEventTypes,
+  languages,
+  topLanguages,
+  instruments,
+  topInstruments,
+  genders,
+  budgetOptions,
+  selectedCategory,
+  setSelectedCategory,
+  selectedGenre,
+  setSelectedGenre,
+  selectedLocation,
+  setSelectedLocation,
   selectedEventType,
   setSelectedEventType,
   selectedDate,
   setSelectedDate,
-  languages,
-  topLanguages,
   selectedLanguage,
   setSelectedLanguage,
-  instruments,
-  topInstruments,
   selectedInstrument,
   setSelectedInstrument,
-  genders,
   selectedGender,
   setSelectedGender,
   selectedSortOption,
@@ -53,6 +54,8 @@ const FilterPanel = ({
   setSearchQuery,
 }) => {
   const [filterOpen, setFilterOpen] = useState(false);
+
+  console.log(location);
 
   return (
     <>

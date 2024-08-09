@@ -34,6 +34,7 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState(selectedChat.artistId);
   const [messages, setMessages] = useState(selectedChat.message);
+  const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -60,6 +61,21 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
         }
         return <p key={index}>{capitalizeWords(line)}</p>;
       });
+  };
+
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      // Logic to send the message
+      setMessages([
+        ...messages,
+        {
+          content: newMessage,
+          time: new Date().toISOString(),
+          isSenderMe: true,
+        },
+      ]);
+      setNewMessage("");
+    }
   };
 
   return (
@@ -102,12 +118,20 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
           </div>
         ))}
       </div>
-      <div className="p-4 border-t border-gray-300">
+      <div className="p-4 border-t border-gray-300 flex items-center space-x-2">
         <input
           type="text"
-          className="w-full p-2 border rounded-lg"
+          className="flex-grow p-2 border rounded-lg"
           placeholder="Type a message"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
         />
+        <button
+          className="bg-primary text-white px-4 py-2 rounded-lg"
+          onClick={handleSendMessage}
+        >
+          Send
+        </button>
       </div>
     </div>
   );

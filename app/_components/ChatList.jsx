@@ -13,11 +13,24 @@ const truncateMessage = (message, maxLength = 30) => {
 
 const formatTime = (timeStr) => {
   const date = new Date(timeStr);
-  return date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  });
+  const now = new Date();
+
+  const isToday = date.toDateString() === now.toDateString();
+  const isYesterday =
+    new Date(now.setDate(now.getDate() - 1)).toDateString() ===
+    date.toDateString();
+
+  if (isToday) {
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+  } else if (isYesterday) {
+    return "Yesterday";
+  } else {
+    return date.toLocaleDateString("en-GB");
+  }
 };
 
 const ChatList = ({ setSelectedChat, chats }) => {
@@ -46,13 +59,22 @@ const ChatList = ({ setSelectedChat, chats }) => {
     return messages[messages.length - 1];
   };
 
+  // Sort chats based on the timestamp of the last message
+  const sortedChats = [...chats].sort((a, b) => {
+    const lastMessageA = getLastMessage(a.message);
+    const lastMessageB = getLastMessage(b.message);
+    const timeA = new Date(lastMessageA.time.$date || lastMessageA.time);
+    const timeB = new Date(lastMessageB.time.$date || lastMessageB.time);
+    return timeB - timeA; // Sort in descending order
+  });
+
   return (
     <div className="bg-gray-100 border-r border-gray-300 h-full overflow-y-auto">
       <div className="p-4 border-b border-gray-300">
         <h2 className="text-lg font-semibold">Chats</h2>
       </div>
       <ul>
-        {[...chats].reverse().map((chat) => {
+        {sortedChats.map((chat) => {
           const lastMessage = getLastMessage(chat.message);
           const isUnread = lastMessage.isUnread;
 
@@ -83,7 +105,7 @@ const ChatList = ({ setSelectedChat, chats }) => {
                 {isUnread && (
                   <span className="inline-block w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                 )}
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-400 pt-8">
                   {formatTime(lastMessage.time.$date || lastMessage.time)}
                 </span>
               </div>

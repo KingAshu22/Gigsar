@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import getProfilePic from "../helpers/profilePic";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -36,6 +36,9 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
   const [messages, setMessages] = useState(selectedChat.message);
   const [newMessage, setNewMessage] = useState("");
 
+  // Ref for the last message
+  const messagesEndRef = useRef(null);
+
   useEffect(() => {
     const fetchProfile = async () => {
       const { name, profilePic } = await getProfilePic(selectedChat.artistId);
@@ -45,6 +48,18 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
 
     fetchProfile();
   }, [selectedChat]);
+
+  // Update messages whenever selectedChat changes
+  useEffect(() => {
+    setMessages(selectedChat.message);
+  }, [selectedChat]);
+
+  // Scroll to the last message whenever messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const formatMessageContent = (content) => {
     return content
@@ -79,7 +94,7 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-svh">
       <div className="p-4 border-b border-gray-300 flex items-center">
         <button className="md:hidden mr-2" onClick={handleBack}>
           <ChevronLeft />
@@ -117,6 +132,8 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
             </div>
           </div>
         ))}
+        {/* Dummy div to act as an anchor to scroll to */}
+        <div ref={messagesEndRef} />
       </div>
       <div className="p-4 border-t border-gray-300 flex items-center space-x-2">
         <input

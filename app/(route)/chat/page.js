@@ -102,7 +102,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-dvh">
       <div
         className={`w-full md:w-1/3 ${
           selectedChat ? "hidden md:block" : "block"

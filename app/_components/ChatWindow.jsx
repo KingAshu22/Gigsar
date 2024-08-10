@@ -36,8 +36,8 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
   const [messages, setMessages] = useState(selectedChat.message);
   const [newMessage, setNewMessage] = useState("");
 
-  // Ref for the last message
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -49,16 +49,15 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
     fetchProfile();
   }, [selectedChat]);
 
-  // Update messages whenever selectedChat changes
   useEffect(() => {
     setMessages(selectedChat.message);
   }, [selectedChat]);
 
-  // Scroll to the last message whenever messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
+    inputRef.current.focus();
   }, [messages]);
 
   const formatMessageContent = (content) => {
@@ -80,7 +79,6 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      // Logic to send the message
       setMessages([
         ...messages,
         {
@@ -94,7 +92,7 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
   };
 
   return (
-    <div className="flex flex-col h-svh">
+    <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-300 flex items-center">
         <button className="md:hidden mr-2" onClick={handleBack}>
           <ChevronLeft />
@@ -130,10 +128,9 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
                 {formatTime(message.time.$date || message.time)}
               </span>
             </div>
+            <div ref={messagesEndRef} />
           </div>
         ))}
-        {/* Dummy div to act as an anchor to scroll to */}
-        <div ref={messagesEndRef} />
       </div>
       <div className="p-4 border-t border-gray-300 flex items-center space-x-2">
         <input
@@ -142,6 +139,7 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
           placeholder="Type a message"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          ref={inputRef}
         />
         <button
           className="bg-primary text-white px-4 py-2 rounded-lg"

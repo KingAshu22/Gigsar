@@ -5,6 +5,7 @@ import getProfilePic from "../helpers/profilePic";
 import { ChevronLeft, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
+import $ from "jquery";
 
 // Utility function to capitalize each word
 const capitalizeWords = (str) => {
@@ -77,6 +78,22 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
     };
   }, [newMessage]);
 
+  useEffect(() => {
+    // Adjust the scroll position to ensure the input field is visible when the keyboard opens
+    const adjustScrollPosition = () => {
+      if ($(inputRef.current).is(":focus")) {
+        const textareaTop = $(inputRef.current).offset().top;
+        $("html, body").scrollTop(textareaTop - 8);
+      }
+    };
+
+    $(inputRef.current).on("focus", adjustScrollPosition);
+
+    return () => {
+      $(inputRef.current).off("focus", adjustScrollPosition);
+    };
+  }, []);
+
   const formatMessageContent = (content) => {
     return content
       .split("\n")
@@ -129,34 +146,8 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
     }
   };
 
-  // New Effect for managing keyboard on mobile
-  useEffect(() => {
-    const handleResize = () => {
-      const viewportHeight = window.innerHeight;
-      const chatWindowHeight = viewportHeight - inputRef.current.offsetHeight;
-      document.documentElement.style.setProperty(
-        "--chat-window-height",
-        `${chatWindowHeight}px`
-      );
-
-      if (inputRef.current) {
-        inputRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Initial call
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   return (
-    <div
-      className="flex flex-col h-full"
-      style={{ height: "var(--chat-window-height)" }}
-    >
+    <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-300 flex items-center">
         <button className="md:hidden mr-2" onClick={handleBack}>
           <ChevronLeft />

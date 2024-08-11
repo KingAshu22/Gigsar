@@ -129,8 +129,34 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
     }
   };
 
+  // New Effect for managing keyboard on mobile
+  useEffect(() => {
+    const handleResize = () => {
+      const viewportHeight = window.innerHeight;
+      const chatWindowHeight = viewportHeight - inputRef.current.offsetHeight;
+      document.documentElement.style.setProperty(
+        "--chat-window-height",
+        `${chatWindowHeight}px`
+      );
+
+      if (inputRef.current) {
+        inputRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initial call
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col h-full">
+    <div
+      className="flex flex-col h-full"
+      style={{ height: "var(--chat-window-height)" }}
+    >
       <div className="p-4 border-b border-gray-300 flex items-center">
         <button className="md:hidden mr-2" onClick={handleBack}>
           <ChevronLeft />

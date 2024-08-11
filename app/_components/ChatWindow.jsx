@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import getProfilePic from "../helpers/profilePic";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, SendHorizonal } from "lucide-react";
 import Link from "next/link";
+import axios from "axios";
 
 // Utility function to capitalize each word
 const capitalizeWords = (str) => {
@@ -60,6 +61,22 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
     inputRef.current.focus();
   }, [messages]);
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault(); // Prevents the default action of the Enter key
+        handleSendMessage();
+      }
+    };
+
+    const input = inputRef.current;
+    input.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      input.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [newMessage]);
+
   const formatMessageContent = (content) => {
     return content
       .split("\n")
@@ -77,17 +94,38 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
       });
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      setMessages([
-        ...messages,
-        {
-          content: newMessage,
-          time: new Date().toISOString(),
-          isSenderMe: true,
-        },
-      ]);
-      setNewMessage("");
+      try {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API}/client-custom-message`,
+          {
+            contact: `+${localStorage?.getItem("mobile")}`,
+            artistId: selectedChat.artistId,
+            message: {
+              content: newMessage,
+              time: new Date().toISOString(),
+              isSenderMe: true,
+              isUnread: false,
+            },
+          },
+          { withCredentials: true }
+        );
+
+        setMessages([
+          ...messages,
+          {
+            content: newMessage,
+            time: new Date().toISOString(),
+            isSenderMe: true,
+          },
+        ]);
+        setNewMessage("");
+      } catch (error) {
+        // Handle error
+        console.error("Error submitting form:", error);
+        toast.error("Error sending message");
+      }
     }
   };
 
@@ -145,7 +183,7 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
           className="bg-primary text-white px-4 py-2 rounded-lg"
           onClick={handleSendMessage}
         >
-          Send
+          <SendHorizonal />
         </button>
       </div>
     </div>

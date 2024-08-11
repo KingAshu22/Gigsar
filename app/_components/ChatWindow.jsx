@@ -5,7 +5,6 @@ import getProfilePic from "../helpers/profilePic";
 import { ChevronLeft, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
-import $ from "jquery";
 
 // Utility function to capitalize each word
 const capitalizeWords = (str) => {
@@ -79,18 +78,24 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
   }, [newMessage]);
 
   useEffect(() => {
-    // Adjust the scroll position to ensure the input field is visible when the keyboard opens
     const adjustScrollPosition = () => {
-      if ($(inputRef.current).is(":focus")) {
-        const textareaTop = $(inputRef.current).offset().top;
-        $("html, body").scrollTop(textareaTop - 8);
+      if (inputRef.current) {
+        const textareaTop = inputRef.current.getBoundingClientRect().top;
+        const viewportHeight = window.innerHeight;
+
+        if (textareaTop > viewportHeight - 50) {
+          window.scrollTo({
+            top: textareaTop - viewportHeight + 50,
+            behavior: "smooth",
+          });
+        }
       }
     };
 
-    $(inputRef.current).on("focus", adjustScrollPosition);
+    inputRef.current.addEventListener("focus", adjustScrollPosition);
 
     return () => {
-      $(inputRef.current).off("focus", adjustScrollPosition);
+      inputRef.current.removeEventListener("focus", adjustScrollPosition);
     };
   }, []);
 

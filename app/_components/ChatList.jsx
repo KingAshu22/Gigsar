@@ -33,7 +33,7 @@ const formatTime = (timeStr) => {
   }
 };
 
-const ChatList = ({ setSelectedChat, chats }) => {
+const ChatList = ({ setSelectedChat, chats, socket }) => {
   const [profilePics, setProfilePics] = useState({});
 
   useEffect(() => {
@@ -54,6 +54,43 @@ const ChatList = ({ setSelectedChat, chats }) => {
 
     fetchProfilePics();
   }, [chats]);
+
+  useEffect(() => {
+    if (socket) {
+      // Listen for new messages from the socket
+      socket.on("message", (newMessage) => {
+        // Update the chats with the new incoming message
+        setSelectedChat((prevChats) => {
+          const updatedChats = prevChats.map((chat) => {
+            if (chat.artistId === newMessage.artistId) {
+              return {
+                ...chat,
+                message: [...chat.message, newMessage.message],
+              };
+            }
+            return chat;
+          });
+
+          // If the new message is from a new artist, add it to chats
+          if (
+            !updatedChats.some((chat) => chat.artistId === newMessage.artistId)
+          ) {
+            updatedChats.unshift({
+              artistId: newMessage.artistId,
+              message: [newMessage.message],
+            });
+          }
+
+          return updatedChats;
+        });
+      });
+
+      // Clean up the event listener on unmount
+      return () => {
+        socket.off("message");
+      };
+    }
+  }, [socket]);
 
   const getLastMessage = (messages) => {
     return messages[messages.length - 1];

@@ -31,7 +31,7 @@ const formatTime = (timeStr) => {
   });
 };
 
-const ChatWindow = ({ selectedChat, handleBack }) => {
+const ChatWindow = ({ selectedChat, handleBack, socket }) => {
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState(selectedChat.artistId);
   const [messages, setMessages] = useState(selectedChat.message);
@@ -99,6 +99,22 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (socket) {
+      // Listen for incoming messages for the selected artist
+      socket.on("message", (newMessage) => {
+        if (newMessage.artistId === selectedChat.artistId) {
+          setMessages((prevMessages) => [...prevMessages, newMessage.message]);
+        }
+      });
+
+      // Clean up the event listener on unmount
+      return () => {
+        socket.off("message");
+      };
+    }
+  }, [socket, selectedChat.artistId]);
+
   const formatMessageContent = (content) => {
     return content
       .split("\n")
@@ -118,30 +134,31 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
 
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
+      const messageData = {
+        content: newMessage,
+        time: new Date().toISOString(),
+        isSenderMe: true,
+        isUnread: false,
+      };
+
       try {
         await axios.post(
           `${process.env.NEXT_PUBLIC_API}/client-custom-message`,
           {
             contact: `+${localStorage?.getItem("mobile")}`,
             artistId: selectedChat.artistId,
-            message: {
-              content: newMessage,
-              time: new Date().toISOString(),
-              isSenderMe: true,
-              isUnread: false,
-            },
+            message: messageData,
           },
           { withCredentials: true }
         );
 
-        setMessages([
-          ...messages,
-          {
-            content: newMessage,
-            time: new Date().toISOString(),
-            isSenderMe: true,
-          },
-        ]);
+        // Emit the message to the server
+        socket.emit("message", {
+          artistId: selectedChat.artistId,
+          message: messageData,
+        });
+
+        setMessages((prevMessages) => [...prevMessages, messageData]);
         setNewMessage("");
       } catch (error) {
         // Handle error

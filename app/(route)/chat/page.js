@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import io from "socket.io-client"; // Import Socket.io client
 import ChatList from "@/app/_components/ChatList";
 import ChatWindow from "@/app/_components/ChatWindow";
 import withAuth from "@/lib/withAuth";
@@ -12,7 +13,21 @@ const Chat = () => {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [profilePics, setProfilePics] = useState({});
+  const [socket, setSocket] = useState(null); // State for Socket.io instance
   const router = useRouter();
+
+  useEffect(() => {
+    // Initialize Socket.io connection
+    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+      withCredentials: true,
+    });
+    setSocket(socket);
+
+    // Clean up socket connection on component unmount
+    return () => {
+      if (socket) socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchProfilePics = async () => {
@@ -45,6 +60,37 @@ const Chat = () => {
       }
     }
   }, [router.isReady]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("message", (newMessage) => {
+        // Update chats with the new incoming message
+        setChats((prevChats) => {
+          const updatedChats = prevChats.map((chat) => {
+            if (chat.artistId === newMessage.artistId) {
+              return {
+                ...chat,
+                message: [...chat.message, newMessage.message],
+              };
+            }
+            return chat;
+          });
+
+          // If the new message is from a new artist, add it to chats
+          if (
+            !updatedChats.some((chat) => chat.artistId === newMessage.artistId)
+          ) {
+            updatedChats.unshift({
+              artistId: newMessage.artistId,
+              message: [newMessage.message],
+            });
+          }
+
+          return updatedChats;
+        });
+      });
+    }
+  }, [socket]);
 
   const getClient = async () => {
     try {
@@ -81,10 +127,25 @@ const Chat = () => {
     setSelectedChat(newMessage);
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API}/messages`, {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/messages`,
+        {
+          artistId,
+          contact: localStorage.getItem("mobile"),
+          message: formattedMessage,
+        }
+      );
+
+      // Emit the new message to the server via Socket.io
+      socket.emit("sendMessage", {
         artistId,
-        contact: localStorage.getItem("mobile"),
-        message: formattedMessage,
+        clientId: response.data.clientId, // assuming clientId comes from response
+        message: {
+          content: formattedMessage,
+          time: new Date().toISOString(),
+          isSenderMe: true,
+          isUnread: false,
+        },
       });
     } catch (error) {
       console.error("Error sending message:", error);
@@ -120,6 +181,7 @@ const Chat = () => {
             selectedChat={selectedChat}
             handleBack={() => setSelectedChat(null)}
             profilePic={profilePics[selectedChat.artistId]?.profilePic}
+            socket={socket} // Pass socket instance to ChatWindow
           />
         )}
       </div>

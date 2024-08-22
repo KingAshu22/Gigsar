@@ -5,6 +5,7 @@ import getProfilePic from "../helpers/profilePic";
 import { ChevronLeft, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 // Utility function to capitalize each word
 const capitalizeWords = (str) => {
@@ -31,7 +32,7 @@ const formatTime = (timeStr) => {
   });
 };
 
-const ChatWindow = ({ selectedChat, handleBack, socket }) => {
+const ChatWindow = ({ selectedChat, handleBack }) => {
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState(selectedChat.artistId);
   const [messages, setMessages] = useState(selectedChat.message);
@@ -39,6 +40,9 @@ const ChatWindow = ({ selectedChat, handleBack, socket }) => {
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Initialize the socket connection
+  const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -99,21 +103,24 @@ const ChatWindow = ({ selectedChat, handleBack, socket }) => {
     };
   }, []);
 
+  // Listen for incoming messages
   useEffect(() => {
-    if (socket) {
-      // Listen for incoming messages for the selected artist
-      socket.on("message", (newMessage) => {
-        if (newMessage.artistId === selectedChat.artistId) {
-          setMessages((prevMessages) => [...prevMessages, newMessage.message]);
-        }
-      });
+    const handleMessageReceived = (data) => {
+      if (
+        data.artistId === selectedChat.artistId &&
+        data.contact === `+${localStorage?.getItem("mobile")}`
+      ) {
+        setMessages((prevMessages) => [...prevMessages, data.message]);
+      }
+    };
 
-      // Clean up the event listener on unmount
-      return () => {
-        socket.off("message");
-      };
-    }
-  }, [socket, selectedChat.artistId]);
+    socket.on("messageReceived", handleMessageReceived);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      socket.off("messageReceived", handleMessageReceived);
+    };
+  }, [selectedChat, socket]);
 
   const formatMessageContent = (content) => {
     return content
@@ -135,33 +142,29 @@ const ChatWindow = ({ selectedChat, handleBack, socket }) => {
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
       const messageData = {
-        content: newMessage,
-        time: new Date().toISOString(),
-        isSenderMe: true,
-        isUnread: false,
+        contact: `+${localStorage?.getItem("mobile")}`,
+        artistId: selectedChat.artistId,
+        message: {
+          content: newMessage,
+          time: new Date().toISOString(),
+          isSenderMe: true,
+          isUnread: false,
+        },
       };
 
       try {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API}/client-custom-message`,
+        socket.emit("sendMessage", messageData);
+
+        setMessages([
+          ...messages,
           {
-            contact: `+${localStorage?.getItem("mobile")}`,
-            artistId: selectedChat.artistId,
-            message: messageData,
+            content: newMessage,
+            time: new Date().toISOString(),
+            isSenderMe: true,
           },
-          { withCredentials: true }
-        );
-
-        // Emit the message to the server
-        socket.emit("message", {
-          artistId: selectedChat.artistId,
-          message: messageData,
-        });
-
-        setMessages((prevMessages) => [...prevMessages, messageData]);
+        ]);
         setNewMessage("");
       } catch (error) {
-        // Handle error
         console.error("Error submitting form:", error);
         toast.error("Error sending message");
       }

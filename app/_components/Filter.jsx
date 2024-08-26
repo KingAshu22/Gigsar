@@ -93,7 +93,7 @@ const FilterPanel = ({
             topList={topEventTypes}
             selectedItem={selectedEventType}
             setSelectedItem={setSelectedEventType}
-            showSearch={false}
+            showSearch={true}
           />
           <Popover>
             <label className="block mb-2 font-semibold">Event Date</label>
@@ -243,7 +243,7 @@ const FilterPanel = ({
             topList={topEventTypes}
             selectedItem={selectedEventType}
             setSelectedItem={setSelectedEventType}
-            showSearch={false}
+            showSearch={true}
           />
           <Popover>
             <label className="block mb-2 font-semibold">Event Date</label>

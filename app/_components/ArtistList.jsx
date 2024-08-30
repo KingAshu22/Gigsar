@@ -4,6 +4,11 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
+import useAuth from "@/lib/hook";
+import Modal from "./Modal";
+import eventTypesOptions from "@/constants/eventTypes";
+import SingleSearch from "./SingleSearch";
+import artistTypesOptions from "@/constants/artistTypes";
 
 function ArtistList({
   artists,
@@ -20,7 +25,17 @@ function ArtistList({
   budget,
 }) {
   const { toast } = useToast();
+  const isAuthenticated = useAuth();
   const [contact, setContact] = useState("");
+  const [artistType, setArtistType] = useState(
+    selectedCategory !== "All Artist Types" ? selectedCategory : ""
+  );
+  const [eventType, setEventType] = useState(
+    selectedEventType !== "All Event Types" ? selectedEventType : ""
+  );
+  const [showModal, setShowModal] = useState(false);
+  const [step, setStep] = useState(1);
+  const [selectedArtistId, setSelectedArtistId] = useState(null);
 
   useEffect(() => {
     const storedContact = localStorage.getItem("mobile");
@@ -29,17 +44,19 @@ function ArtistList({
     }
   }, []);
 
-  const sendEnquiry = async (linkid) => {
+  const sendEnquiry = async () => {
+    if (!selectedArtistId) return;
+
     try {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API}/client-message`,
         {
-          linkid,
+          linkid: selectedArtistId,
           contact,
-          selectedCategory,
+          selectedCategory: artistType,
           selectedGenre,
           selectedLocation,
-          selectedEventType,
+          selectedEventType: eventType,
           selectedDate,
           selectedLanguage,
           selectedInstrument,
@@ -50,12 +67,40 @@ function ArtistList({
         { withCredentials: true }
       );
       toast({
-        description: "Enquiry Send Successfully.",
+        description: "Enquiry sent successfully.",
       });
     } catch (error) {
-      // Handle error
       console.error("Error submitting form:", error);
       toast.error("Error sending message");
+    }
+  };
+
+  const handleArtistTypeSelect = (item) => {
+    setArtistType(item);
+    setStep(2);
+  };
+
+  const handleEventTypeSelect = (item) => {
+    setEventType(item);
+    setStep(3);
+  };
+
+  const handlePreviousStep = () => {
+    setStep(step - 1);
+  };
+
+  const handleSendEnquiryClick = (linkid) => {
+    setSelectedArtistId(linkid);
+
+    if (!artistType || !eventType) {
+      setShowModal(true);
+    } else if (isAuthenticated) {
+      setStep(3);
+      setShowModal(true);
+    } else {
+      toast({
+        description: "Please Sign In before sending enquiry.",
+      });
     }
   };
 
@@ -70,10 +115,7 @@ function ArtistList({
         {artists.length > 0
           ? artists.map((artist, index) => {
               const eventTypeLink =
-                selectedEventType.length > 0 &&
-                selectedEventType !== "All Event Types"
-                  ? `?selectedEventType=${selectedEventType}`
-                  : "";
+                eventType.length > 0 ? `?selectedEventType=${eventType}` : "";
               return (
                 <div
                   className="border-[1px] rounded-lg p-3
@@ -105,18 +147,16 @@ function ArtistList({
                         : formatToIndianNumber(artist.price)}
                     </h2>
                     <h2 className="text-gray-500 text-sm">{artist.location}</h2>
-                    {contact.length > 1 && (
-                      <button
-                        onClick={() => sendEnquiry(artist.linkid)}
-                        className="p-2 px-3 border-[1px] border-primary
+                    <button
+                      onClick={() => handleSendEnquiryClick(artist.linkid)}
+                      className="p-2 px-3 border-[1px] border-primary
                         text-primary rounded-full w-full text-center
                         text-[11px] mt-2
                         cursor-pointer 
                         hover:bg-primary hover:text-white"
-                      >
-                        Send enquiry
-                      </button>
-                    )}
+                    >
+                      Send enquiry
+                    </button>
                   </div>
                 </div>
               );
@@ -129,6 +169,69 @@ function ArtistList({
               ></div>
             ))}
       </div>
+
+      {showModal && (
+        <Modal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          title={
+            step === 1
+              ? "Select Artist Type"
+              : step === 2
+              ? "Select Event Type"
+              : "Confirm Enquiry"
+          }
+        >
+          <div className="flex flex-col items-center">
+            {step === 1 && (
+              <SingleSearch
+                type="Artist Type"
+                list={artistTypesOptions}
+                topList={artistTypesOptions}
+                selectedItem={artistType}
+                setSelectedItem={handleArtistTypeSelect}
+                showSearch={true}
+              />
+            )}
+            {step === 2 && (
+              <SingleSearch
+                type="Event Type"
+                list={eventTypesOptions}
+                topList={eventTypesOptions}
+                selectedItem={eventType}
+                setSelectedItem={handleEventTypeSelect}
+                showSearch={true}
+              />
+            )}
+            {step === 3 && (
+              <p>
+                Are you sure you want to send the enquiry to {selectedArtistId}?
+              </p>
+            )}
+            <div className="flex justify-between w-full mt-4">
+              {step > 1 && (
+                <button
+                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={handlePreviousStep}
+                >
+                  Previous
+                </button>
+              )}
+              {step === 3 && (
+                <button
+                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => {
+                    sendEnquiry();
+                    setShowModal(false);
+                  }}
+                >
+                  Confirm & Send
+                </button>
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

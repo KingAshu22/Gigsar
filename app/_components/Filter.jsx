@@ -141,7 +141,7 @@ const FilterPanel = ({
             topList={location}
             selectedItem={selectedLocation}
             setSelectedItem={setSelectedLocation}
-            showSearch={false}
+            showSearch={true}
           />
           <SingleSearch
             type="Gender"

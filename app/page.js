@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section  */}
-      <Hero />
+      {/* <Hero /> */}
       <MyBot />
       {/* Popular Artists List  */}
       <ArtistFilter />

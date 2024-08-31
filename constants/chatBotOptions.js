@@ -56,7 +56,7 @@ export const options = {
     storageKey: "rcb-history",
     viewChatHistoryButtonText: "Load Chat History ⟳",
     chatHistoryLineBreakText: "----- Previous Chat History -----",
-    autoLoad: false,
+    autoLoad: true,
   },
   chatInput: {
     disabled: false,

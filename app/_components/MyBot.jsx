@@ -288,7 +288,7 @@ const MyBot = () => {
     <div>
       {isLoaded && (
         <Suspense fallback={<div>Loading...</div>}>
-          <ChatBot options={options} flow={flow} />
+          {/* <ChatBot options={options} flow={flow} /> */}
         </Suspense>
       )}
     </div>

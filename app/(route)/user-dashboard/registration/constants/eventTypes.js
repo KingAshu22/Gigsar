@@ -11,6 +11,7 @@ const eventTypesOptions = [
   "House Party",
   "Ticketing Concert",
   "Virtual",
+  "Phoolon Ki Holi",
 ];
 
 export default eventTypesOptions;

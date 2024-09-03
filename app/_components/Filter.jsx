@@ -3,7 +3,7 @@ import SingleSearch from "@/app/_components/SingleSearch";
 import SearchList from "@/app/_components/SearchList";
 import { Button } from "@/components/ui/button";
 import Modal from "./Modal";
-import { Filter } from "lucide-react";
+import { Copy, Filter } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -338,7 +338,7 @@ const FilterPanel = ({
               Clear Filters
             </Button>
             <Button className="w-1/3" onClick={handleCopyLink}>
-              Copy Filters Link
+              <Copy />
             </Button>
             <Button className="w-1/3" onClick={() => setFilterOpen(false)}>
               Apply Filter

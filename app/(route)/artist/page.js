@@ -8,6 +8,9 @@ import * as animationData from "../../../public/cat.json";
 import LottieImg from "@/app/_components/Lottie";
 import { budgetOptions } from "./budget";
 import FilterPanel from "@/app/_components/Filter";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 
 function ArtistFilter() {
   const searchParams = useSearchParams();
@@ -392,75 +395,86 @@ function ArtistFilter() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row p-4">
-      <FilterPanel
-        categories={categories}
-        genres={genres}
-        topGenres={topGenres}
-        location={locations}
-        eventsTypes={eventsTypes}
-        topEventTypes={topEventTypes}
-        languages={languages}
-        topLanguages={topLanguages}
-        instruments={instruments}
-        topInstruments={topInstruments}
-        genders={genders}
-        budgetOptions={budgetOptions}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        selectedGenre={selectedGenre}
-        setSelectedGenre={setSelectedGenre}
-        selectedLocation={selectedLocation}
-        setSelectedLocation={setSelectedLocation}
-        selectedEventType={selectedEventType}
-        setSelectedEventType={setSelectedEventType}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        selectedLanguage={selectedLanguage}
-        setSelectedLanguage={setSelectedLanguage}
-        selectedInstrument={selectedInstrument}
-        setSelectedInstrument={setSelectedInstrument}
-        selectedGender={selectedGender}
-        setSelectedGender={setSelectedGender}
-        selectedSortOption={selectedSortOption}
-        setSelectedSortOption={setSelectedSortOption}
-        selectedMinBudget={selectedMinBudget}
-        setSelectedMinBudget={setSelectedMinBudget}
-        selectedMaxBudget={selectedMaxBudget}
-        setSelectedMaxBudget={setSelectedMaxBudget}
-        handleClearFilter={handleClearFilter}
-        handleCopyLink={handleCopyLink}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <div className="w-full lg:w-3/4">
-        {loading ? (
-          <div className="flex flex-col justify-center items-center h-full text-center">
-            <HashLoader color="#dc2626" size={180} />
-          </div>
-        ) : filteredArtists.length > 0 ? (
-          <ArtistList
-            artists={finalArtists}
-            selectedCategory={selectedCategory}
-            selectedGenre={selectedGenre.join(",")}
-            selectedLocation={selectedLocation}
-            selectedEventType={selectedEventType}
-            selectedDate={selectedDate}
-            selectedLanguage={selectedLanguage.join(",")}
-            selectedInstrument={selectedInstrument.join(",")}
-            selectedGender={selectedGender}
-            selectedMinBudget={selectedMinBudget}
-            selectedMaxBudget={selectedMaxBudget}
-            budget={budget}
-          />
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <LottieImg animationData={animationData} width={400} height={400} />
-            <p className="text-lg font-bold mt-4">No artists found.</p>
-          </div>
-        )}
+    <>
+      <div className="items-center px-5 flex flex-col gap-2">
+        <div className="flex w-full mt-3 max-w-sm items-center">
+          <Input type="text" placeholder="Search By Artist Name..." />
+        </div>
       </div>
-    </div>
+      <div className="flex flex-col lg:flex-row p-4">
+        <FilterPanel
+          categories={categories}
+          genres={genres}
+          topGenres={topGenres}
+          location={locations}
+          eventsTypes={eventsTypes}
+          topEventTypes={topEventTypes}
+          languages={languages}
+          topLanguages={topLanguages}
+          instruments={instruments}
+          topInstruments={topInstruments}
+          genders={genders}
+          budgetOptions={budgetOptions}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedGenre={selectedGenre}
+          setSelectedGenre={setSelectedGenre}
+          selectedLocation={selectedLocation}
+          setSelectedLocation={setSelectedLocation}
+          selectedEventType={selectedEventType}
+          setSelectedEventType={setSelectedEventType}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          selectedLanguage={selectedLanguage}
+          setSelectedLanguage={setSelectedLanguage}
+          selectedInstrument={selectedInstrument}
+          setSelectedInstrument={setSelectedInstrument}
+          selectedGender={selectedGender}
+          setSelectedGender={setSelectedGender}
+          selectedSortOption={selectedSortOption}
+          setSelectedSortOption={setSelectedSortOption}
+          selectedMinBudget={selectedMinBudget}
+          setSelectedMinBudget={setSelectedMinBudget}
+          selectedMaxBudget={selectedMaxBudget}
+          setSelectedMaxBudget={setSelectedMaxBudget}
+          handleClearFilter={handleClearFilter}
+          handleCopyLink={handleCopyLink}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        <div className="w-full lg:w-3/4">
+          {loading ? (
+            <div className="flex flex-col justify-center items-center h-full text-center">
+              <HashLoader color="#dc2626" size={180} />
+            </div>
+          ) : filteredArtists.length > 0 ? (
+            <ArtistList
+              artists={finalArtists}
+              selectedCategory={selectedCategory}
+              selectedGenre={selectedGenre.join(",")}
+              selectedLocation={selectedLocation}
+              selectedEventType={selectedEventType}
+              selectedDate={selectedDate}
+              selectedLanguage={selectedLanguage.join(",")}
+              selectedInstrument={selectedInstrument.join(",")}
+              selectedGender={selectedGender}
+              selectedMinBudget={selectedMinBudget}
+              selectedMaxBudget={selectedMaxBudget}
+              budget={budget}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <LottieImg
+                animationData={animationData}
+                width={400}
+                height={400}
+              />
+              <p className="text-lg font-bold mt-4">No artists found.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

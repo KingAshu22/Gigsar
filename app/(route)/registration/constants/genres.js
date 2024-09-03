@@ -610,7 +610,7 @@ const genreOptions = [
   "Pop",
   "Icaro",
   "IDM",
-  "Mayra / Bhaat",
+  "Mayra/Bhaat",
   "Igbo music",
   "Illbient",
   "Impressionist music",

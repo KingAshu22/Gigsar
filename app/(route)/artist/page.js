@@ -86,9 +86,12 @@ function ArtistFilter() {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/artist`);
-      console.log(response.data.length);
 
-      setArtists(response.data);
+      const filteredArtists = response.data.filter(
+        (artist) => artist.showGigsar
+      );
+
+      setArtists(filteredArtists);
       extractFilters(filteredArtists);
     } catch (error) {
       console.error("Error fetching artists:", error);

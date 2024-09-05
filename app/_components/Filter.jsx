@@ -55,8 +55,6 @@ const FilterPanel = ({
 }) => {
   const [filterOpen, setFilterOpen] = useState(false);
 
-  console.log(location);
-
   return (
     <>
       <div className="desktop w-full lg:w-1/4 lg:sticky lg:top-4 lg:h-full overflow-y-auto max-h-screen">

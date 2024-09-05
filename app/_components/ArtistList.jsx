@@ -9,6 +9,7 @@ import artistTypesOptions from "@/constants/artistTypes";
 import { formatToIndianNumber } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { Calendar } from "@/components/ui/calendar";
 
 function ArtistList({
   artists,
@@ -16,7 +17,6 @@ function ArtistList({
   selectedGenre,
   selectedLocation,
   selectedEventType,
-  selectedDate,
   selectedLanguage,
   selectedInstrument,
   selectedGender,
@@ -29,9 +29,11 @@ function ArtistList({
   const [contact, setContact] = useState("");
   const [artistType, setArtistType] = useState("");
   const [eventType, setEventType] = useState("");
+  const [eventDate, setEventDate] = useState(null); // New state for event date
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState(1);
   const [currentArtistId, setCurrentArtistId] = useState(null);
+  const [currentBudget, setCurrentBudget] = useState(""); // New state for current artist budget
 
   useEffect(() => {
     const storedContact = localStorage.getItem("mobile");
@@ -41,20 +43,18 @@ function ArtistList({
   }, []);
 
   useEffect(() => {
-    // Update artistType whenever selectedCategory changes
     if (selectedCategory !== "All Artist Types") {
       setArtistType(selectedCategory);
     }
   }, [selectedCategory]);
 
   useEffect(() => {
-    // Update eventType whenever selectedEventType changes
     if (selectedEventType !== "All Event Types") {
       setEventType(selectedEventType);
     }
   }, [selectedEventType]);
 
-  const sendEnquiry = async (linkid) => {
+  const sendEnquiry = async (linkid, budget) => {
     if (!linkid) return;
 
     try {
@@ -67,10 +67,17 @@ function ArtistList({
           selectedGenre,
           selectedLocation,
           selectedEventType: eventType,
-          selectedDate,
+          selectedDate: eventDate
+            ? eventDate.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : "", // Format date as "18 Aug 2024"
           selectedLanguage,
           selectedInstrument,
           selectedGender,
+          budget,
           selectedMinBudget,
           selectedMaxBudget,
         },
@@ -99,8 +106,13 @@ function ArtistList({
     setStep(step - 1);
   };
 
-  const handleSendEnquiryClick = (linkid) => {
-    setCurrentArtistId(linkid);
+  const handleSendEnquiryClick = (artist) => {
+    setCurrentArtistId(artist.linkid);
+    setCurrentBudget(
+      budget && artist[budget]
+        ? formatToIndianNumber(artist[budget])
+        : formatToIndianNumber(artist.price)
+    );
 
     if (!isAuthenticated) {
       toast({
@@ -121,7 +133,8 @@ function ArtistList({
       setStep(2);
       setShowModal(true);
     } else {
-      sendEnquiry(linkid);
+      setStep(3);
+      setShowModal(true);
     }
   };
 
@@ -129,8 +142,10 @@ function ArtistList({
     setShowModal(false);
     setArtistType("");
     setEventType("");
+    setEventDate(null); // Reset event date
     setStep(1);
     setCurrentArtistId(null);
+    setCurrentBudget(""); // Reset current budget
   };
 
   return (
@@ -167,7 +182,7 @@ function ArtistList({
                     </h2>
                     <h2 className="text-gray-500 text-sm">{artist.location}</h2>
                     <button
-                      onClick={() => handleSendEnquiryClick(artist.linkid)}
+                      onClick={() => handleSendEnquiryClick(artist)}
                       className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
                     >
                       Send enquiry
@@ -181,6 +196,8 @@ function ArtistList({
                             ? "Select Artist Type"
                             : step === 2
                             ? "Select Event Type"
+                            : step === 3
+                            ? "Select Event Date"
                             : "Confirm Enquiry"
                         }
                       >
@@ -206,10 +223,44 @@ function ArtistList({
                             />
                           )}
                           {step === 3 && (
-                            <p>
-                              Are you sure you want to send the enquiry to{" "}
-                              {currentArtistId}?
-                            </p>
+                            <>
+                              <label className="block mb-2 text-sm font-medium text-gray-700">
+                                Select Event Date
+                              </label>
+                              <Calendar
+                                mode="single"
+                                selected={eventDate}
+                                onSelect={(date) => setEventDate(date)}
+                                className="border border-gray-300 rounded-md p-2"
+                                initialFocus
+                              />
+                            </>
+                          )}
+                          {step === 4 && (
+                            <div className="flex flex-col items-start">
+                              <p className="font-bold mb-2">
+                                Confirm Your Enquiry
+                              </p>
+                              <p>
+                                <strong>Artist Type:</strong> {artistType}
+                              </p>
+                              <p>
+                                <strong>Event Type:</strong> {eventType}
+                              </p>
+                              <p>
+                                <strong>Event Date:</strong>{" "}
+                                {eventDate
+                                  ? eventDate.toLocaleDateString("en-GB", {
+                                      day: "2-digit",
+                                      month: "short",
+                                      year: "numeric",
+                                    })
+                                  : "Not selected"}
+                              </p>
+                              <p>
+                                <strong>Location:</strong> {selectedLocation}
+                              </p>
+                            </div>
                           )}
                           <div className="flex justify-between w-full mt-4">
                             {step > 1 && (
@@ -223,8 +274,16 @@ function ArtistList({
                             {step === 3 && (
                               <button
                                 className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                onClick={() => setStep(4)}
+                              >
+                                Next
+                              </button>
+                            )}
+                            {step === 4 && (
+                              <button
+                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 onClick={() => {
-                                  sendEnquiry(currentArtistId);
+                                  sendEnquiry(currentArtistId, currentBudget); // Pass currentBudget
                                   handleModalClose();
                                 }}
                               >

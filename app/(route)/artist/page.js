@@ -86,10 +86,9 @@ function ArtistFilter() {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/artist`);
-      const filteredArtists = response.data.filter(
-        (artist) => artist.showGigsar
-      );
-      setArtists(filteredArtists);
+      console.log(response.data.length);
+
+      setArtists(response.data);
       extractFilters(filteredArtists);
     } catch (error) {
       console.error("Error fetching artists:", error);
@@ -207,19 +206,19 @@ function ArtistFilter() {
     ];
     setTopEventTypes(uniqueSortedEventTypes);
 
-    const allLanguages = filteredArtists.flatMap((artist) =>
-      artist.languages.split(", ")
-    );
-    const languageFrequency = allLanguages.reduce((acc, language) => {
-      acc[language] = (acc[language] || 0) + 1;
-      return acc;
-    }, {});
-    const sortedLanguages = Object.entries(languageFrequency)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([language]) => language);
-    setLanguages(allLanguages);
-    setTopLanguages(sortedLanguages);
+    // const allLanguages = filteredArtists.flatMap((artist) =>
+    //   artist.languages.split(", ")
+    // );
+    // const languageFrequency = allLanguages.reduce((acc, language) => {
+    //   acc[language] = (acc[language] || 0) + 1;
+    //   return acc;
+    // }, {});
+    // const sortedLanguages = Object.entries(languageFrequency)
+    //   .sort((a, b) => b[1] - a[1])
+    //   .slice(0, 10)
+    //   .map(([language]) => language);
+    // setLanguages(allLanguages);
+    // setTopLanguages(sortedLanguages);
 
     const allInstruments = filteredArtists.flatMap((artist) =>
       artist.instruments ? artist.instruments.split(", ") : []

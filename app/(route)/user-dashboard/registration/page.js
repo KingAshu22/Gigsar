@@ -1,28 +1,43 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-cropper-custom/dist/index.css";
 import "./modal.css"; // Import CSS for modal styles
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
-import Script from "next/script";
 
 const ArtistRegistration = () => {
-  const inputRef = useRef(null);
-
-  const expiryTime = sessionStorage?.getItem("authExpiry");
+  const expiryTime = localStorage?.getItem("authExpiry");
   const [name, setName] = useState();
   const [contact, setContact] = useState(
     "" || "+" + localStorage?.getItem("mobile")
   );
   const [email, setEmail] = useState("");
   const [type, setType] = useState("");
+  const [clientId, setClientId] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+
+  // Function to generate client ID
+  const generateClientId = (name) => {
+    if (!name) return "";
+    const firstName = name.split(" ")[0]; // Get the first word of the name
+    const formattedName =
+      firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+    const randomCode = Math.floor(1000 + Math.random() * 9000); // 4-digit random code
+    return `${formattedName}@${randomCode}`;
+  };
+
+  // Generate ID when the name changes
+  useEffect(() => {
+    if (name) {
+      setClientId(generateClientId(name));
+    }
+  }, [name]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,6 +57,7 @@ const ArtistRegistration = () => {
         contact,
         email,
         type,
+        clientId,
       };
 
       const response = axios.post(
@@ -64,7 +80,7 @@ const ArtistRegistration = () => {
 
   return (
     <div className="container mx-auto p-5">
-      <h1 className="text-xl font-bold mb-4">Client Registration</h1>
+      <h1 className="text-xl font-bold mb-4">User Registration</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label
@@ -85,10 +101,10 @@ const ArtistRegistration = () => {
 
         <div className="mb-4">
           <label
-            htmlFor="gender"
+            htmlFor="type"
             className="block text-sm font-medium text-gray-700"
           >
-            Type
+            Role
           </label>
           <select
             id="type"
@@ -98,9 +114,9 @@ const ArtistRegistration = () => {
             required
           >
             <option value="">Select Type</option>
-            <option value="Client">Client</option>
+            <option value="Client">Direct Client</option>
             <option value="Event Manager">Event Manager</option>
-            <option value="Wedding Planner">Weding Planner</option>
+            <option value="Wedding Planner">Wedding Planner</option>
           </select>
         </div>
         <div className="mb-4">

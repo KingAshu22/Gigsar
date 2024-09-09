@@ -10,6 +10,15 @@ import { formatToIndianNumber } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 function ArtistList({
   artists,
@@ -23,6 +32,9 @@ function ArtistList({
   selectedMinBudget,
   selectedMaxBudget,
   budget,
+  page,
+  setPage,
+  totalPages,
 }) {
   const { toast } = useToast();
   const isAuthenticated = useAuth();
@@ -141,7 +153,6 @@ function ArtistList({
   const handleModalClose = () => {
     setShowModal(false);
     setArtistType("");
-    setEventType("");
     setEventDate(null); // Reset event date
     setStep(1);
     setCurrentArtistId(null);
@@ -305,6 +316,89 @@ function ArtistList({
               ></div>
             ))}
       </div>
+      <Pagination className="mt-6">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page > 1) setPage(page - 1);
+              }}
+              disabled={page === 1}
+            />
+          </PaginationItem>
+          {page > 1 && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(1);
+                }}
+              >
+                1
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          {page > 2 && <PaginationEllipsis />}
+          {page > 1 && page < totalPages && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(page - 1);
+                }}
+              >
+                {page - 1}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          <PaginationItem>
+            <PaginationLink href="#" className="bg-primary text-white">
+              {page}
+            </PaginationLink>
+          </PaginationItem>
+          {page < totalPages - 1 && <PaginationEllipsis />}
+          {page < totalPages && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(page + 1);
+                }}
+              >
+                {page + 1}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          {page < totalPages && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(totalPages);
+                }}
+              >
+                {totalPages}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page < totalPages) setPage(page + 1);
+              }}
+              disabled={page === totalPages}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }

@@ -20,10 +20,6 @@ const FilterPanel = ({
   location,
   eventsTypes,
   topEventTypes,
-  languages,
-  topLanguages,
-  instruments,
-  topInstruments,
   genders,
   budgetOptions,
   selectedCategory,
@@ -36,10 +32,6 @@ const FilterPanel = ({
   setSelectedEventType,
   selectedDate,
   setSelectedDate,
-  selectedLanguage,
-  setSelectedLanguage,
-  selectedInstrument,
-  setSelectedInstrument,
   selectedGender,
   setSelectedGender,
   selectedSortOption,
@@ -119,20 +111,6 @@ const FilterPanel = ({
               />
             </PopoverContent>
           </Popover>
-          {/* <SearchList
-            type="Language"
-            list={languages}
-            topList={topLanguages}
-            selectedItems={selectedLanguage}
-            setSelectedItems={setSelectedLanguage}
-          /> */}
-          {/* <SearchList
-            type="Instruments"
-            list={instruments}
-            topList={topInstruments}
-            selectedItems={selectedInstrument}
-            setSelectedItems={setSelectedInstrument}
-          /> */}
           <SingleSearch
             type="Location"
             list={location}
@@ -263,20 +241,6 @@ const FilterPanel = ({
                 />
               </PopoverContent>
             </Popover>
-            {/* <SearchList
-            type="Language"
-            list={languages}
-            topList={topLanguages}
-            selectedItems={selectedLanguage}
-            setSelectedItems={setSelectedLanguage}
-          /> */}
-            {/* <SearchList
-            type="Instruments"
-            list={instruments}
-            topList={topInstruments}
-            selectedItems={selectedInstrument}
-            setSelectedItems={setSelectedInstrument}
-          /> */}
             <SingleSearch
               type="Location"
               list={location}

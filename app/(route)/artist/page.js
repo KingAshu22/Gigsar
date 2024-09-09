@@ -74,7 +74,7 @@ function ArtistFilter() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API}/artist?page=${page}`
+        `${process.env.NEXT_PUBLIC_API}/gigsar-artist?page=${page}`
       );
 
       const filteredArtists = response.data.artists.filter(

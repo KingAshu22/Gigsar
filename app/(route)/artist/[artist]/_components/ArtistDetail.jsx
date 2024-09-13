@@ -11,7 +11,6 @@ import {
   Type,
   User,
 } from "lucide-react";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { formatToIndianNumber } from "@/lib/utils";
@@ -24,7 +23,7 @@ function ArtistDetail({ artist }) {
   const [eventInfo, setEventInfo] = useState("");
   const [selectedEventType, setSelectedEventType] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedimg, setSelectedimg] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -178,12 +177,12 @@ function ArtistDetail({ artist }) {
   };
 
   const openModal = (image) => {
-    setSelectedImage(image);
+    setSelectedimg(image);
     setModalOpen(true);
   };
 
   const closeModal = () => {
-    setSelectedImage(null);
+    setSelectedimg(null);
     setModalOpen(false);
   };
 
@@ -191,7 +190,7 @@ function ArtistDetail({ artist }) {
     <div className="container mx-auto p-5">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="flex justify-center md:justify-start">
-          <Image
+          <img
             src={artist.profilePic}
             width={200}
             height={200}
@@ -245,7 +244,7 @@ function ArtistDetail({ artist }) {
         <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-20">
           {artist.gallery.map((link, index) => (
             <div key={index} className="w-full">
-              <Image
+              <img
                 src={link.link}
                 width={200}
                 height={200}
@@ -285,14 +284,14 @@ function ArtistDetail({ artist }) {
         ></div>
       </div>
 
-      {/* Modal for Gallery Images */}
-      <Modal isOpen={modalOpen} onClose={closeModal} title="Gallery Image">
+      {/* Modal for Gallery imgs */}
+      <Modal isOpen={modalOpen} onClose={closeModal} title="Gallery img">
         <div className="flex justify-center">
-          <Image
-            src={selectedImage}
+          <img
+            src={selectedimg}
             width={400}
             height={400}
-            alt="Selected Image"
+            alt="Selected img"
             className="border rounded-lg object-contain"
           />
         </div>

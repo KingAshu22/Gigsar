@@ -33,7 +33,7 @@ function ArtistFilter() {
   const [selectedMinBudget, setSelectedMinBudget] = useState("");
   const [selectedMaxBudget, setSelectedMaxBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(6);
   const [totalPages, setTotalPages] = useState();
 
   const parsePrice = (priceString) => {

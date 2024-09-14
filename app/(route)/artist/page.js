@@ -4,8 +4,6 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import ArtistList from "@/app/_components/ArtistList";
 import { HashLoader } from "react-spinners";
-import * as animationData from "../../../public/cat.json";
-import LottieImg from "@/app/_components/Lottie";
 import { budgetOptions } from "./budget";
 import FilterPanel from "@/app/_components/Filter";
 
@@ -454,10 +452,12 @@ function ArtistFilter() {
             budget={budget}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <LottieImg animationData={animationData} width={400} height={400} />
-            <p className="text-lg font-bold mt-4">No artists found.</p>
-          </div>
+          [1, 2, 3, 4, 5, 6].map((item, index) => (
+            <div
+              className="h-[220px] bg-slate-200 w-full rounded-lg animate-pulse"
+              key={index}
+            ></div>
+          ))
         )}
       </div>
     </div>

@@ -1,19 +1,22 @@
 import Artist from "@/models/Artist";
 import { connectToDB } from "@/app/_utils/mongodb";
 
-// Handler function for GET requests
-export async function getArtists(req, res) {
+export async function GET(req) {
   await connectToDB();
   try {
     // Fetch all artists from the database
-    const artists = await Artist.find({});
-    res.json(artists);
+    const artists = await Artist.find({ showGigsar: true });
+    // Return a successful response with the artists data
+    return new Response(JSON.stringify(artists), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Error fetching artists:", error.message);
-    // Send a more specific error response based on the type of error
-    res.status(500).json({ error: "Server error" });
+    // Return a server error response
+    return new Response(JSON.stringify({ error: "Server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
-
-// Export the handler function for the GET request
-export { getArtists as default };

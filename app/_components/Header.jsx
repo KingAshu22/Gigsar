@@ -51,9 +51,9 @@ const Header = () => {
       </div>
       {isMounted && (
         <div className="flex items-center gap-8 md:justify-end">
-          <Link href={"/chat"}>
+          <a href={"/chat"}>
             <MessagesSquare />
-          </Link>
+          </a>
           <Popover className="md:hidden">
             <PopoverTrigger asChild>
               <Button variant="ghost" className="p-0 md:hidden">

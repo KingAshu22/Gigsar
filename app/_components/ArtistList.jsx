@@ -320,7 +320,7 @@ function ArtistList({
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              href="#"
+              href="{`?page-${page - 1}`}"
               onClick={(e) => {
                 e.preventDefault();
                 if (page > 1) setPage(page - 1);
@@ -356,7 +356,10 @@ function ArtistList({
             </PaginationItem>
           )}
           <PaginationItem>
-            <PaginationLink href="#" className="bg-primary text-white">
+            <PaginationLink
+              href={`?page-${page}`}
+              className="bg-primary text-white"
+            >
               {page}
             </PaginationLink>
           </PaginationItem>
@@ -364,7 +367,7 @@ function ArtistList({
           {page < totalPages && (
             <PaginationItem>
               <PaginationLink
-                href="#"
+                href={`?page-${page + 1}`}
                 onClick={(e) => {
                   e.preventDefault();
                   setPage(page + 1);
@@ -377,7 +380,7 @@ function ArtistList({
           {page < totalPages && (
             <PaginationItem>
               <PaginationLink
-                href="#"
+                href={`?page-${totalPages}`}
                 onClick={(e) => {
                   e.preventDefault();
                   setPage(totalPages);
@@ -389,7 +392,7 @@ function ArtistList({
           )}
           <PaginationItem>
             <PaginationNext
-              href="#"
+              href={`?page-${page + 1}`}
               onClick={(e) => {
                 e.preventDefault();
                 if (page < totalPages) setPage(page + 1);

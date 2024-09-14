@@ -32,9 +32,6 @@ function ArtistList({
   selectedMinBudget,
   selectedMaxBudget,
   budget,
-  page,
-  setPage,
-  totalPages,
 }) {
   const { toast } = useToast();
   const isAuthenticated = useAuth();
@@ -316,92 +313,6 @@ function ArtistList({
               ></div>
             ))}
       </div>
-      <Pagination className="mt-6">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="{`?page-${page - 1}`}"
-              onClick={(e) => {
-                e.preventDefault();
-                if (page > 1) setPage(page - 1);
-              }}
-              disabled={page === 1}
-            />
-          </PaginationItem>
-          {page > 1 && (
-            <PaginationItem>
-              <PaginationLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage(1);
-                }}
-              >
-                1
-              </PaginationLink>
-            </PaginationItem>
-          )}
-          {page > 2 && <PaginationEllipsis />}
-          {page > 1 && page < totalPages && (
-            <PaginationItem>
-              <PaginationLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage(page - 1);
-                }}
-              >
-                {page - 1}
-              </PaginationLink>
-            </PaginationItem>
-          )}
-          <PaginationItem>
-            <PaginationLink
-              href={`?page-${page}`}
-              className="bg-primary text-white"
-            >
-              {page}
-            </PaginationLink>
-          </PaginationItem>
-          {page < totalPages - 1 && <PaginationEllipsis />}
-          {page < totalPages && (
-            <PaginationItem>
-              <PaginationLink
-                href={`?page-${page + 1}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage(page + 1);
-                }}
-              >
-                {page + 1}
-              </PaginationLink>
-            </PaginationItem>
-          )}
-          {page < totalPages && (
-            <PaginationItem>
-              <PaginationLink
-                href={`?page-${totalPages}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage(totalPages);
-                }}
-              >
-                {totalPages}
-              </PaginationLink>
-            </PaginationItem>
-          )}
-          <PaginationItem>
-            <PaginationNext
-              href={`?page-${page + 1}`}
-              onClick={(e) => {
-                e.preventDefault();
-                if (page < totalPages) setPage(page + 1);
-              }}
-              disabled={page === totalPages}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
     </div>
   );
 }

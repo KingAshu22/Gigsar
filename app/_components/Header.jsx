@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlignJustify, LogOut, MessagesSquare } from "lucide-react";
+import { AlignJustify, CircleUser, LogOut, MessagesSquare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import {
@@ -86,6 +86,7 @@ const Header = () => {
     localStorage.removeItem("mobile");
     localStorage.removeItem("authExpiry");
     window.dispatchEvent(new Event("storage")); // Trigger storage event manually
+    window.location.reload(); // Force a page refresh
   }, [router]);
 
   const Menu = [
@@ -136,7 +137,7 @@ const Header = () => {
               </PopoverContent>
             </Popover>
             <div>
-              {isAuthenticated && (
+              {isAuthenticated ? (
                 <Avatar
                   onClick={() => {
                     setShowProfile(true);
@@ -144,6 +145,10 @@ const Header = () => {
                 >
                   <AvatarFallback>{shortName}</AvatarFallback>
                 </Avatar>
+              ) : (
+                <Link href={"/sign-in"}>
+                  <CircleUser />
+                </Link>
               )}
             </div>
           </div>

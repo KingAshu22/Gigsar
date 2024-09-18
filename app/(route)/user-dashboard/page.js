@@ -72,6 +72,20 @@ function UserDashboard() {
             </CardContent>
           </Card>
         </Link>
+
+        <Link href="/enquiries">
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center">
+              <MessageSquare className="hidden sm:block" />
+              <div className="ml-0 sm:ml-4 mt-2 sm:mt-0">
+                <CardTitle>Enquiries</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="mt-2 sm:mt-4">
+              <p>Your previous enquiries</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );

@@ -139,6 +139,7 @@ const Header = () => {
             <div>
               {isAuthenticated ? (
                 <Avatar
+                  className="cursor-pointer"
                   onClick={() => {
                     setShowProfile(true);
                   }}

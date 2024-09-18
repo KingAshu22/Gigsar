@@ -18,13 +18,14 @@ function ArtistList({
   selectedCategory,
   selectedGenre,
   selectedLocation,
-  selectedEventType,
+  selectedEventType = "All Event Types",
   selectedLanguage,
   selectedInstrument,
   selectedGender,
   selectedMinBudget,
   selectedMaxBudget,
   budget,
+  showEnquiry = true,
 }) {
   const { toast } = useToast();
   const isAuthenticated = useAuth();
@@ -182,12 +183,14 @@ function ArtistList({
                       : formatToIndianNumber(artist.price)}
                   </h2>
                   <h2 className="text-gray-500 text-sm">{artist.location}</h2>
-                  <button
-                    onClick={() => handleSendEnquiryClick(artist)}
-                    className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
-                  >
-                    Send enquiry
-                  </button>
+                  {showEnquiry && (
+                    <button
+                      onClick={() => handleSendEnquiryClick(artist)}
+                      className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
+                    >
+                      Send enquiry
+                    </button>
+                  )}
                   {showModal && currentArtistId === artist.linkid && (
                     <Modal
                       isOpen={showModal}
@@ -301,8 +304,18 @@ function ArtistList({
           })
         ) : (
           <div className="items-center justify-center text-center p-4">
-            <LottieImg animationData={animationData} width={300} height={300} />
-            <p className="text-lg font-bold mt-4">No artists found.</p>
+            {showEnquiry ? (
+              <>
+                <LottieImg
+                  animationData={animationData}
+                  width={300}
+                  height={300}
+                />
+                <p className="text-lg font-bold mt-4">No artists found.</p>
+              </>
+            ) : (
+              <p className="text-lg font-bold mt-4">No artists.</p>
+            )}
           </div>
         )}
       </div>

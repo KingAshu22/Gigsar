@@ -6,6 +6,7 @@ import ArtistList from "@/app/_components/ArtistList";
 import { HashLoader } from "react-spinners";
 import { budgetOptions } from "./budget";
 import FilterPanel from "@/app/_components/Filter";
+import { Input } from "@/components/ui/input";
 
 function ArtistFilter() {
   const searchParams = useSearchParams();
@@ -333,7 +334,7 @@ function ArtistFilter() {
       artist.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDate =
       !selectedDate ||
-      !artist.busyDates.includes(new Date(selectedDate).toISOString());
+      !artist.busyDates?.includes(new Date(selectedDate).toISOString());
 
     return (
       matchesCategory &&
@@ -390,77 +391,90 @@ function ArtistFilter() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row p-4">
-      <FilterPanel
-        categories={categories}
-        genres={genres}
-        topGenres={topGenres}
-        location={locations}
-        eventsTypes={eventsTypes}
-        topEventTypes={topEventTypes}
-        languages={languages}
-        topLanguages={topLanguages}
-        instruments={instruments}
-        topInstruments={topInstruments}
-        genders={genders}
-        budgetOptions={budgetOptions}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        selectedGenre={selectedGenre}
-        setSelectedGenre={setSelectedGenre}
-        selectedLocation={selectedLocation}
-        setSelectedLocation={setSelectedLocation}
-        selectedEventType={selectedEventType}
-        setSelectedEventType={setSelectedEventType}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        selectedLanguage={selectedLanguage}
-        setSelectedLanguage={setSelectedLanguage}
-        selectedInstrument={selectedInstrument}
-        setSelectedInstrument={setSelectedInstrument}
-        selectedGender={selectedGender}
-        setSelectedGender={setSelectedGender}
-        selectedSortOption={selectedSortOption}
-        setSelectedSortOption={setSelectedSortOption}
-        selectedMinBudget={selectedMinBudget}
-        setSelectedMinBudget={setSelectedMinBudget}
-        selectedMaxBudget={selectedMaxBudget}
-        setSelectedMaxBudget={setSelectedMaxBudget}
-        handleClearFilter={handleClearFilter}
-        handleCopyLink={handleCopyLink}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <div className="w-full lg:w-3/4">
-        {loading ? (
-          <div className="flex flex-col justify-center items-center h-full text-center">
-            <HashLoader color="#dc2626" size={180} />
-          </div>
-        ) : filteredArtists.length > 0 ? (
-          <ArtistList
-            artists={finalArtists}
-            selectedCategory={selectedCategory}
-            selectedGenre={selectedGenre.join(",")}
-            selectedLocation={selectedLocation}
-            selectedEventType={selectedEventType}
-            selectedDate={selectedDate}
-            selectedLanguage={selectedLanguage.join(",")}
-            selectedInstrument={selectedInstrument.join(",")}
-            selectedGender={selectedGender}
-            selectedMinBudget={selectedMinBudget}
-            selectedMaxBudget={selectedMaxBudget}
-            budget={budget}
+    <>
+      <div className="items-center px-5 flex flex-col gap-2">
+        <div className="flex w-full mt-3 max-w-sm items-center">
+          <input
+            type="text"
+            className="mobile w-full p-2 border rounded"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Artist Name..."
           />
-        ) : (
-          [1, 2, 3, 4, 5, 6].map((item, index) => (
-            <div
-              className="h-[220px] bg-slate-200 w-full rounded-lg animate-pulse"
-              key={index}
-            ></div>
-          ))
-        )}
+        </div>
       </div>
-    </div>
+      <div className="flex flex-col lg:flex-row p-4">
+        <FilterPanel
+          categories={categories}
+          genres={genres}
+          topGenres={topGenres}
+          location={locations}
+          eventsTypes={eventsTypes}
+          topEventTypes={topEventTypes}
+          languages={languages}
+          topLanguages={topLanguages}
+          instruments={instruments}
+          topInstruments={topInstruments}
+          genders={genders}
+          budgetOptions={budgetOptions}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedGenre={selectedGenre}
+          setSelectedGenre={setSelectedGenre}
+          selectedLocation={selectedLocation}
+          setSelectedLocation={setSelectedLocation}
+          selectedEventType={selectedEventType}
+          setSelectedEventType={setSelectedEventType}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          selectedLanguage={selectedLanguage}
+          setSelectedLanguage={setSelectedLanguage}
+          selectedInstrument={selectedInstrument}
+          setSelectedInstrument={setSelectedInstrument}
+          selectedGender={selectedGender}
+          setSelectedGender={setSelectedGender}
+          selectedSortOption={selectedSortOption}
+          setSelectedSortOption={setSelectedSortOption}
+          selectedMinBudget={selectedMinBudget}
+          setSelectedMinBudget={setSelectedMinBudget}
+          selectedMaxBudget={selectedMaxBudget}
+          setSelectedMaxBudget={setSelectedMaxBudget}
+          handleClearFilter={handleClearFilter}
+          handleCopyLink={handleCopyLink}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        <div className="w-full lg:w-3/4">
+          {loading ? (
+            <div className="flex flex-col justify-center items-center h-full text-center">
+              <HashLoader color="#dc2626" size={180} />
+            </div>
+          ) : filteredArtists.length > 0 ? (
+            <ArtistList
+              artists={finalArtists}
+              selectedCategory={selectedCategory}
+              selectedGenre={selectedGenre.join(",")}
+              selectedLocation={selectedLocation}
+              selectedEventType={selectedEventType}
+              selectedDate={selectedDate}
+              selectedLanguage={selectedLanguage.join(",")}
+              selectedInstrument={selectedInstrument.join(",")}
+              selectedGender={selectedGender}
+              selectedMinBudget={selectedMinBudget}
+              selectedMaxBudget={selectedMaxBudget}
+              budget={budget}
+            />
+          ) : (
+            [1, 2, 3, 4, 5, 6].map((item, index) => (
+              <div
+                className="h-[220px] bg-slate-200 w-full rounded-lg animate-pulse"
+                key={index}
+              ></div>
+            ))
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

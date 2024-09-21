@@ -91,7 +91,7 @@ const genreOptions = [
   "Banda music",
   "Bangsawan",
   "Bantowbol",
-  "Bollywood",
+  "Bollywood/New",
   "Bollywood/Retro/Old",
   "Barbershop music",
   "Barcarolle",

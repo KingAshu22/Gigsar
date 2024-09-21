@@ -81,7 +81,8 @@ function ArtistFilter() {
   const fetchArtists = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/artists");
+      // Append a timestamp to the URL to prevent caching
+      const response = await axios.get(`/api/artists?ts=${Date.now()}`);
       const filteredArtists = response.data.filter(
         (artist) => artist.showGigsar
       );
@@ -105,7 +106,9 @@ function ArtistFilter() {
 
     if (selectedGenre.length > 0) {
       filteredArtists = filteredArtists.filter((artist) =>
-        selectedGenre.every((genre) => artist.genre.split(", ").includes(genre))
+        selectedGenre.every((genre) =>
+          artist.genre?.split(", ").includes(genre)
+        )
       );
     }
 
@@ -124,7 +127,7 @@ function ArtistFilter() {
     if (selectedLanguage.length > 0) {
       filteredArtists = filteredArtists.filter((artist) =>
         selectedLanguage.every((language) =>
-          artist.languages.split(", ").includes(language)
+          artist.languages?.split(", ").includes(language)
         )
       );
     }
@@ -152,7 +155,7 @@ function ArtistFilter() {
     setCategories(uniqueCategories);
 
     const allGenres = filteredArtists.flatMap((artist) =>
-      artist.genre.split(", ")
+      artist.genre?.split(", ")
     );
     const uniqueGenres = [...new Set(allGenres)];
     setGenres(uniqueGenres);
@@ -204,7 +207,7 @@ function ArtistFilter() {
     setTopEventTypes(uniqueSortedEventTypes);
 
     const allLanguages = filteredArtists.flatMap((artist) =>
-      artist.languages.split(", ")
+      artist.languages?.split(", ")
     );
     const languageFrequency = allLanguages.reduce((acc, language) => {
       acc[language] = (acc[language] || 0) + 1;
@@ -303,7 +306,7 @@ function ArtistFilter() {
       artist.artistType === selectedCategory;
     const matchesGenre =
       selectedGenre.length === 0 ||
-      selectedGenre.every((genre) => artist.genre.split(", ").includes(genre));
+      selectedGenre.every((genre) => artist.genre?.split(", ").includes(genre));
     const matchesEventType =
       selectedEventType === "All Event Types" ||
       artist.eventsType.split(", ").includes(selectedEventType);

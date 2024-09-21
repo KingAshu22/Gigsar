@@ -26,7 +26,7 @@ const SearchList = ({
 
   const filteredItems = list.filter(
     (item) =>
-      item.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      item?.toLowerCase().includes(searchTerm.toLowerCase()) &&
       !selectedItems.includes(item)
   );
 

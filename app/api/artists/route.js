@@ -9,7 +9,14 @@ export async function GET(req) {
     // Return a successful response with the artists data
     return new Response(JSON.stringify(artists), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control":
+          "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+        "Surrogate-Control": "no-store",
+      },
     });
   } catch (error) {
     console.error("Error fetching artists:", error.message);

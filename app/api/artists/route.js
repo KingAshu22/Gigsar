@@ -5,7 +5,7 @@ export async function GET(req) {
   await connectToDB();
   try {
     // Fetch all artists from the database
-    const artists = await Artist.find({ showGigsar: true });
+    const artists = await Artist.find({});
     // Return a successful response with the artists data
     return new Response(JSON.stringify(artists), {
       status: 200,

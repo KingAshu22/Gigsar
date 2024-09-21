@@ -72,8 +72,7 @@ function Enquiries() {
     return Array.from(uniqueDates).sort((a, b) => new Date(b) - new Date(a));
   };
 
-  const handleDateChange = (e) => {
-    const newDate = e.target.value;
+  const handleDateChange = (newDate) => {
     setSelectedDate(newDate);
     filterArtistsByDate(newDate);
   };

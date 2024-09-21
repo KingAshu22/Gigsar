@@ -179,6 +179,7 @@ const genreOptions = [
   "Burger-highlife",
   "Burgundian School",
   "Bush ballad",
+  "Bryan Adams Songs",
   "Byzantine music",
   "Ca din tulnic",
   "Ca trù",

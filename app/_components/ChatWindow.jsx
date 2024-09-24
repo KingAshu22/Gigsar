@@ -96,10 +96,10 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
       }
     };
 
-    inputRef.current.addEventListener("focus", adjustScrollPosition);
+    inputRef.current?.addEventListener("focus", adjustScrollPosition);
 
     return () => {
-      inputRef.current.removeEventListener("focus", adjustScrollPosition);
+      inputRef.current?.removeEventListener("focus", adjustScrollPosition);
     };
   }, []);
 

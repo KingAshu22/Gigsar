@@ -22,7 +22,7 @@ export default function SignIn() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const rawReturnUrl = searchParams.get("redirect_url") || "/";
+    const rawReturnUrl = searchParams.get("redirect_url") || "/user-dashboard";
     if (typeof window !== "undefined") {
       const returnUrlPath = new URL(rawReturnUrl, window.location.origin)
         .pathname;

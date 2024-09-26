@@ -177,13 +177,13 @@ function ArtistFilter() {
     ];
     setLocations(uniqueLocations);
 
-    const response = await axios.get("https://ipapi.co/json/");
-    const { city } = response.data;
+    // const response = await axios.get("https://ipapi.co/json/");
+    // const { city } = response.data;
 
-    if (!initialLocationSet && uniqueLocations.includes(city)) {
-      setSelectedLocation(city);
-      setInitialLocationSet(true);
-    }
+    // if (!initialLocationSet && uniqueLocations.includes(city)) {
+    //   setSelectedLocation(city);
+    //   setInitialLocationSet(true);
+    // }
 
     const allEventTypes = filteredArtists.flatMap((artist) =>
       artist.eventsType.split(", ")

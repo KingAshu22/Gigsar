@@ -9,6 +9,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "react-hot-toast";
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -37,6 +38,7 @@ export default function RootLayout({ children }) {
             <Toaster />
           </div>
           <Footer />
+          <SpeedInsights />
         </body>
       </html>
     </ClerkProvider>

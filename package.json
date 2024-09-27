@@ -67,6 +67,7 @@
     "react-easy-crop": "^5.0.6",
     "react-email": "2.0.0",
     "react-hook-form": "^7.51.2",
+    "react-hot-toast": "^2.4.1",
     "react-lottie": "^1.2.4",
     "react-places-autocomplete": "^7.3.0",
     "react-player": "^2.15.1",

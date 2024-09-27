@@ -9,7 +9,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "react-hot-toast";
 
 const outfit = Outfit({ subsets: ["latin"] });
 

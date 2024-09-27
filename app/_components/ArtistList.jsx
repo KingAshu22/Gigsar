@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useToast } from "@/components/ui/use-toast";
 import useAuth from "@/lib/hook";
 import Modal from "./Modal";
 import eventTypesOptions from "@/constants/eventTypes";
@@ -12,6 +11,9 @@ import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
 import * as animationData from "../../public/cat.json";
 import LottieImg from "./Lottie";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 function ArtistList({
   artists,
@@ -27,7 +29,7 @@ function ArtistList({
   budget,
   showEnquiry = true,
 }) {
-  const { toast } = useToast();
+  const router = useRouter();
   const isAuthenticated = useAuth();
   const [contact, setContact] = useState("");
   const [artistType, setArtistType] = useState("");
@@ -37,6 +39,7 @@ function ArtistList({
   const [step, setStep] = useState(1);
   const [currentArtistId, setCurrentArtistId] = useState(null);
   const [currentBudget, setCurrentBudget] = useState(""); // New state for current artist budget
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     const storedContact = localStorage.getItem("mobile");
@@ -86,12 +89,8 @@ function ArtistList({
         },
         { withCredentials: true }
       );
-      toast({
-        description: "Enquiry sent successfully.",
-      });
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Error sending message");
     }
   };
 
@@ -118,9 +117,7 @@ function ArtistList({
     );
 
     if (!isAuthenticated) {
-      toast({
-        description: "Please Sign In before sending enquiry.",
-      });
+      setShowLogin(true);
       return;
     }
 
@@ -152,6 +149,20 @@ function ArtistList({
 
   return (
     <div className="mb-10 px-8">
+      <Modal
+        isOpen={showLogin}
+        onClose={() => {
+          setShowLogin(false);
+        }}
+        title="Login Required"
+        description="You need to be logged in to send enquiries."
+      >
+        <div className="flex justify-center mt-4">
+          <Button onClick={() => router.push("/user-dashboard")}>
+            Login Now
+          </Button>
+        </div>
+      </Modal>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-7 mt-4 lg:grid-cols-4">
         {artists.length > 0 ? (
           artists.map((artist, index) => {
@@ -287,7 +298,20 @@ function ArtistList({
                             <button
                               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                               onClick={() => {
-                                sendEnquiry(currentArtistId, currentBudget); // Pass currentBudget
+                                toast.promise(
+                                  sendEnquiry(currentArtistId, currentBudget),
+                                  {
+                                    loading: "Sending Enquiry...",
+                                    success: "Enquiry Sent Successfully",
+                                    error:
+                                      "Error sending Enquiry, Please try again later",
+                                  },
+                                  {
+                                    style: {
+                                      width: "full",
+                                    },
+                                  }
+                                );
                                 handleModalClose();
                               }}
                             >

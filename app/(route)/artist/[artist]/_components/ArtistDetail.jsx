@@ -255,27 +255,44 @@ function ArtistDetail({ artist }) {
             </div>
           ))}
         </div>
-        <h2 className="font-bold text-2xl text-primary mb-4">Videos</h2>
+        <h2 className="font-bold text-2xl text-primary mb-4">
+          {artist.events.some((event) =>
+            event.links.some((link) => link.length > 0)
+          ) && "Videos"}
+        </h2>
         <div className="space-y-6">
-          {artist.events.map((event, index) => (
-            <div key={index}>
-              <h3 className="font-semibold text-xl text-gray-700 mb-2">
-                {event.name}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {event.links.map((link, linkIndex) => (
-                  <div key={linkIndex} className="w-full h-64">
-                    <ReactPlayer
-                      url={`https://www.youtube.com/watch?v=${link}`}
-                      className="react-player"
-                      width="100%"
-                      height="100%"
-                    />
-                  </div>
-                ))}
+          {artist.events.map((event, index) => {
+            const hasAvailableLinks = event.links.some(
+              (link) => link.length > 0
+            );
+
+            return (
+              <div key={index}>
+                {hasAvailableLinks && (
+                  <>
+                    <h3 className="font-semibold text-xl text-gray-700 mb-2">
+                      {event.name}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {event.links.map(
+                        (link, linkIndex) =>
+                          link.length > 0 && (
+                            <div key={linkIndex} className="w-full h-64">
+                              <ReactPlayer
+                                url={`https://www.youtube.com/watch?v=${link}`}
+                                className="react-player"
+                                width="100%"
+                                height="100%"
+                              />
+                            </div>
+                          )
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <h2 className="font-bold text-2xl text-gray-800 mt-8">About Me</h2>
         <div

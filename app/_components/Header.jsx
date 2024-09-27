@@ -135,7 +135,7 @@ const Header = () => {
               </PopoverContent>
             </Popover>
             <div>
-              {isAuthenticated ? (
+              {isAuthenticated && (
                 <Avatar
                   className="cursor-pointer"
                   onClick={() => {
@@ -144,10 +144,6 @@ const Header = () => {
                 >
                   <AvatarFallback>{shortName}</AvatarFallback>
                 </Avatar>
-              ) : (
-                <Link href={"/sign-in"}>
-                  <CircleUser />
-                </Link>
               )}
             </div>
           </div>

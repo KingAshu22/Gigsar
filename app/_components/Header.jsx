@@ -90,8 +90,6 @@ const Header = () => {
   }, [router]);
 
   const Menu = [
-    { id: 1, name: "Home", path: "/" },
-    { id: 2, name: "Artist Search", path: "/artist" },
     { id: 3, name: "Artist Login", path: "https://artist.gigsar.com" },
     { id: 4, name: "User Login", path: "/user-dashboard" },
   ];

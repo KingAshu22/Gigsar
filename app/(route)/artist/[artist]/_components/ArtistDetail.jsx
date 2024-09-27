@@ -294,11 +294,15 @@ function ArtistDetail({ artist }) {
             );
           })}
         </div>
-        <h2 className="font-bold text-2xl text-gray-800 mt-8">About Me</h2>
-        <div
-          className="text-gray-600 tracking-wide mt-4 text-justify"
-          dangerouslySetInnerHTML={{ __html: artist.blog }}
-        ></div>
+        {artist.blog.length > 0 && (
+          <>
+            <h2 className="font-bold text-2xl text-gray-800 mt-8">About Me</h2>
+            <div
+              className="text-gray-600 tracking-wide mt-4 text-justify"
+              dangerouslySetInnerHTML={{ __html: artist.blog }}
+            ></div>
+          </>
+        )}
       </div>
 
       {/* Modal for Gallery imgs */}

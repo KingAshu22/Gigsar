@@ -6,7 +6,6 @@ import ArtistList from "@/app/_components/ArtistList";
 import { HashLoader } from "react-spinners";
 import { budgetOptions } from "./budget";
 import FilterPanel from "@/app/_components/Filter";
-import { Input } from "@/components/ui/input";
 
 function ArtistFilter() {
   const searchParams = useSearchParams();
@@ -448,11 +447,7 @@ function ArtistFilter() {
           setSearchQuery={setSearchQuery}
         />
         <div className="w-full lg:w-3/4">
-          {loading ? (
-            <div className="flex flex-col justify-center items-center h-full text-center">
-              <HashLoader color="#dc2626" size={180} />
-            </div>
-          ) : filteredArtists.length > 0 ? (
+          {filteredArtists.length > 0 ? (
             <ArtistList
               artists={finalArtists}
               selectedCategory={selectedCategory}

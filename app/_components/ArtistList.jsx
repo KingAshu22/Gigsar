@@ -356,7 +356,8 @@ function ArtistList({
                               Confirm Your Enquiry
                             </p>
                             <p>
-                              <strong>Artist Type:</strong> {artistType}
+                              <strong>Artist Type:</strong>{" "}
+                              {formatString(artistType)}
                             </p>
                             <p>
                               <strong>Event Type:</strong> {eventType}

@@ -110,7 +110,8 @@ function ArtistList({
           contact,
           selectedCategory: formatString(artistType),
           selectedGenre,
-          selectedLocation,
+          selectedLocation:
+            selectedLocation === "All Locations" ? location : selectedLocation,
           selectedEventType: eventType,
           selectedDate: eventDate
             ? eventDate.toLocaleDateString("en-GB", {

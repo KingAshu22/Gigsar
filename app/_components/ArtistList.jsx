@@ -95,13 +95,20 @@ function ArtistList({
   const sendEnquiry = async (linkid, budget) => {
     if (!linkid) return;
 
+    const formatString = (str) => {
+      return str
+        .split("-") // Split by hyphen
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+        .join(" "); // Join words with a space
+    };
+
     try {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API}/client-message`,
         {
           linkid,
           contact,
-          selectedCategory: artistType,
+          selectedCategory: formatString(artistType),
           selectedGenre,
           selectedLocation,
           selectedEventType: eventType,

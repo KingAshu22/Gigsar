@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import useAuth from "@/lib/hook";
 import Modal from "./Modal";
@@ -14,6 +14,7 @@ import LottieImg from "./Lottie";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import Script from "next/script";
 
 function ArtistList({
   artists,
@@ -21,6 +22,7 @@ function ArtistList({
   selectedGenre,
   selectedLocation,
   selectedEventType = "All Event Types",
+  selectedDate,
   selectedLanguage,
   selectedInstrument,
   selectedGender,
@@ -30,16 +32,21 @@ function ArtistList({
   showEnquiry = true,
 }) {
   const router = useRouter();
+  const inputRef = useRef(null);
   const isAuthenticated = useAuth();
   const [contact, setContact] = useState("");
-  const [artistType, setArtistType] = useState("");
+  const [artistType, setArtistType] = useState(selectedCategory);
   const [eventType, setEventType] = useState("");
-  const [eventDate, setEventDate] = useState(null); // New state for event date
+  const [eventDate, setEventDate] = useState(selectedDate); // New state for event date
+  const [location, setLocation] = useState(
+    selectedLocation === "All Locations" ? "" : selectedLocation
+  );
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState(1);
   const [currentArtistId, setCurrentArtistId] = useState(null);
   const [currentBudget, setCurrentBudget] = useState(""); // New state for current artist budget
   const [showLogin, setShowLogin] = useState(false);
+  const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
     const storedContact = localStorage.getItem("mobile");
@@ -47,6 +54,31 @@ function ArtistList({
       setContact(`+${storedContact}`);
     }
   }, []);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      const initAutocomplete = () => {
+        const autocomplete = new google.maps.places.Autocomplete(
+          inputRef.current,
+          {
+            types: ["(cities)"],
+          }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (place.geometry) {
+            setLocation(place.formatted_address);
+            setIsValid(true);
+          }
+        });
+      };
+
+      if (typeof google !== "undefined" && google.maps) {
+        initAutocomplete();
+      }
+    }
+  }, [location]);
 
   useEffect(() => {
     if (selectedCategory !== "All Artist Types") {
@@ -121,10 +153,17 @@ function ArtistList({
       return;
     }
 
+    console.log(artistType);
+    console.log(eventDate);
+    console.log(selectedDate);
+
     const isArtistTypeDefault =
-      artistType === "" || artistType === "All Artist Types";
+      artistType === "All Artist Types" || artistType === "";
     const isEventTypeDefault =
       eventType === "" || eventType === "All Event Types";
+
+    console.log("isArtistTypeDefault: " + isArtistTypeDefault);
+    console.log("isEventTypeDefault: " + isEventTypeDefault);
 
     if (isArtistTypeDefault) {
       setStep(1);
@@ -132,8 +171,14 @@ function ArtistList({
     } else if (isEventTypeDefault) {
       setStep(2);
       setShowModal(true);
-    } else {
+    } else if (!selectedDate || selectedDate === "Not selected") {
       setStep(3);
+      setShowModal(true);
+    } else if (!selectedLocation || location == "All Locations") {
+      setStep(4);
+      setShowModal(true);
+    } else {
+      setStep(5);
       setShowModal(true);
     }
   };
@@ -149,6 +194,26 @@ function ArtistList({
 
   return (
     <div className="mb-10 px-8">
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        onLoad={() => {
+          if (inputRef.current) {
+            const autocomplete = new google.maps.places.Autocomplete(
+              inputRef.current,
+              {
+                types: ["(cities)"],
+              }
+            );
+
+            autocomplete.addListener("place_changed", () => {
+              const place = autocomplete.getPlace();
+              if (place.geometry) {
+                setLocation(place.formatted_address);
+              }
+            });
+          }
+        }}
+      />
       <Modal
         isOpen={showLogin}
         onClose={() => {
@@ -213,6 +278,8 @@ function ArtistList({
                           ? "Select Event Type"
                           : step === 3
                           ? "Select Event Date"
+                          : step === 4
+                          ? "Select Event City"
                           : "Confirm Enquiry"
                       }
                     >
@@ -220,9 +287,17 @@ function ArtistList({
                         {step === 1 && (
                           <SingleSearch
                             type="Artist Type"
-                            list={artistTypesOptions}
-                            topList={artistTypesOptions}
-                            selectedItem={artistType}
+                            list={artistTypesOptions.filter(
+                              (option) => option !== "All Artist Types"
+                            )}
+                            topList={artistTypesOptions.filter(
+                              (option) => option !== "All Artist Types"
+                            )}
+                            selectedItem={
+                              artistType === "All Artist Types"
+                                ? null
+                                : artistType
+                            }
                             setSelectedItem={handleArtistTypeSelect}
                             showSearch={true}
                           />
@@ -252,6 +327,23 @@ function ArtistList({
                           </>
                         )}
                         {step === 4 && (
+                          <>
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                              Event City
+                            </label>
+                            <input
+                              type="text"
+                              id="xabx"
+                              value={location}
+                              autoComplete="new-password"
+                              ref={inputRef}
+                              onChange={(e) => setLocation(e.target.value)}
+                              placeholder="City"
+                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </>
+                        )}
+                        {step === 5 && (
                           <div className="flex flex-col items-start">
                             <p className="font-bold mb-2">
                               Confirm Your Enquiry
@@ -270,10 +362,19 @@ function ArtistList({
                                     month: "short",
                                     year: "numeric",
                                   })
+                                : selectedDate
+                                ? selectedDate.toLocaleDateString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
                                 : "Not selected"}
                             </p>
                             <p>
-                              <strong>Location:</strong> {selectedLocation}
+                              <strong>Location:</strong>{" "}
+                              {selectedLocation === "All Locations"
+                                ? location
+                                : selectedLocation}
                             </p>
                           </div>
                         )}
@@ -294,7 +395,15 @@ function ArtistList({
                               Next
                             </button>
                           )}
-                          {step === 4 && (
+                          {isValid && step === 4 && (
+                            <button
+                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              onClick={() => setStep(5)}
+                            >
+                              Next
+                            </button>
+                          )}
+                          {step === 5 && (
                             <button
                               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                               onClick={() => {

@@ -181,7 +181,7 @@ function ArtistList({
     } else if (!selectedDate || selectedDate === "Not selected") {
       setStep(3);
       setShowModal(true);
-    } else if (!selectedLocation || location == "All Locations") {
+    } else if (!selectedLocation || selectedLocation == "All Locations") {
       setStep(4);
       setShowModal(true);
     } else {

@@ -8,11 +8,9 @@ import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
 
 const ArtistRegistration = () => {
-  const expiryTime = localStorage?.getItem("authExpiry");
+  const [expiryTime, setExpiryTime] = useState();
   const [name, setName] = useState();
-  const [contact, setContact] = useState(
-    "" || "+" + localStorage?.getItem("mobile")
-  );
+  const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
   const [type, setType] = useState("");
   const [clientId, setClientId] = useState("");
@@ -21,6 +19,11 @@ const ArtistRegistration = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setExpiryTime(localStorage?.getItem("authExpiry"));
+    setContact("+" + localStorage?.getItem("mobile"));
+  }, []);
 
   // Function to generate client ID
   const generateClientId = (name) => {

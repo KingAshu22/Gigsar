@@ -4,8 +4,11 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import ArtistList from "@/app/_components/ArtistList";
 import { HashLoader } from "react-spinners";
+import * as animationData from "../../../public/cat.json";
+import LottieImg from "@/app/_components/Lottie";
 import { budgetOptions } from "./budget";
 import FilterPanel from "@/app/_components/Filter";
+import { Input } from "@/components/ui/input";
 
 function ArtistFilter() {
   const searchParams = useSearchParams();
@@ -15,13 +18,9 @@ function ArtistFilter() {
   const [categories, setCategories] = useState([]);
   const [genres, setGenres] = useState([]);
   const [topGenres, setTopGenres] = useState([]);
-  const [topLanguages, setTopLanguages] = useState([]);
-  const [topInstruments, setTopInstruments] = useState([]);
   const [locations, setLocations] = useState([]);
   const [eventsTypes, setEventsTypes] = useState([]);
   const [topEventTypes, setTopEventTypes] = useState([]);
-  const [languages, setLanguages] = useState([]);
-  const [instruments, setInstruments] = useState([]);
   const [genders, setGenders] = useState(["All"]);
   const [budget, setBudget] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Artist Types");
@@ -30,8 +29,6 @@ function ArtistFilter() {
   const [initialLocationSet, setInitialLocationSet] = useState(false);
   const [selectedEventType, setSelectedEventType] = useState("All Event Types");
   const [selectedDate, setSelectedDate] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState([]);
-  const [selectedInstrument, setSelectedInstrument] = useState([]);
   const [selectedGender, setSelectedGender] = useState("All");
   const [selectedSortOption, setSelectedSortOption] = useState("Low to High");
   const [sortedArtists, setSortedArtists] = useState([]);
@@ -39,6 +36,8 @@ function ArtistFilter() {
   const [selectedMaxBudget, setSelectedMaxBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredArtists, setFilteredArtists] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState();
 
   const parsePrice = (priceString) => {
     return parseInt(priceString.replace(/,/g, ""), 10);
@@ -53,8 +52,6 @@ function ArtistFilter() {
       selectedLocation,
       selectedEventType,
       selectedDate,
-      selectedLanguage,
-      selectedInstrument,
       selectedGender,
       selectedSortOption,
       minBudget,
@@ -62,29 +59,29 @@ function ArtistFilter() {
     } = params;
 
     setSelectedCategory(selectedCategory || "All Artist Types");
-    setSelectedGenre(selectedGenre ? selectedGenre.split(",") : []);
+    setSelectedGenre(selectedGenre ? selectedGenre?.split(",") : []);
     setSelectedLocation(selectedLocation || "All Locations");
     setSelectedEventType(selectedEventType || "All Event Types");
     setSelectedDate(selectedDate || "");
-    setSelectedLanguage(selectedLanguage ? selectedLanguage.split(",") : []);
-    setSelectedInstrument(
-      selectedInstrument ? selectedInstrument.split(",") : []
-    );
     setSelectedGender(selectedGender || "All");
     setSelectedSortOption(selectedSortOption || "Low to High");
     setSelectedMinBudget(minBudget || "");
     setSelectedMaxBudget(maxBudget || "");
     fetchArtists();
-  }, [searchParams]);
+  }, [searchParams, page]);
 
   const fetchArtists = async () => {
     setLoading(true);
     try {
-      // Append a timestamp to the URL to prevent caching
-      const response = await axios.get(`/api/artists?ts=${Date.now()}`);
-      const filteredArtists = response.data.filter(
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/gigsar-artist?page=${page}`
+      );
+
+      const filteredArtists = response.data.artists.filter(
         (artist) => artist.showGigsar
       );
+      setTotalPages(response.data.totalPages);
+
       setArtists(filteredArtists);
       extractFilters(filteredArtists);
     } catch (error) {
@@ -119,25 +116,7 @@ function ArtistFilter() {
 
     if (selectedEventType !== "All Event Types") {
       filteredArtists = filteredArtists.filter((artist) =>
-        artist.eventsType.split(", ").includes(selectedEventType)
-      );
-    }
-
-    if (selectedLanguage.length > 0) {
-      filteredArtists = filteredArtists.filter((artist) =>
-        selectedLanguage.every((language) =>
-          artist.languages?.split(", ").includes(language)
-        )
-      );
-    }
-
-    if (selectedInstrument.length > 0) {
-      filteredArtists = filteredArtists.filter((artist) =>
-        selectedInstrument.every((instrument) =>
-          artist.instruments
-            ? artist.instruments.split(", ").includes(instrument)
-            : false
-        )
+        artist.eventsType?.split(", ").includes(selectedEventType)
       );
     }
 
@@ -185,7 +164,7 @@ function ArtistFilter() {
     // }
 
     const allEventTypes = filteredArtists.flatMap((artist) =>
-      artist.eventsType.split(", ")
+      artist.eventsType?.split(", ")
     );
     const uniqueEventsTypes = ["All Event Types", ...new Set(allEventTypes)];
     setEventsTypes(uniqueEventsTypes);
@@ -205,34 +184,6 @@ function ArtistFilter() {
     ];
     setTopEventTypes(uniqueSortedEventTypes);
 
-    const allLanguages = filteredArtists.flatMap((artist) =>
-      artist.languages?.split(", ")
-    );
-    const languageFrequency = allLanguages.reduce((acc, language) => {
-      acc[language] = (acc[language] || 0) + 1;
-      return acc;
-    }, {});
-    const sortedLanguages = Object.entries(languageFrequency)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([language]) => language);
-    setLanguages(allLanguages);
-    setTopLanguages(sortedLanguages);
-
-    const allInstruments = filteredArtists.flatMap((artist) =>
-      artist.instruments ? artist.instruments.split(", ") : []
-    );
-    const instrumentFrequency = allInstruments.reduce((acc, instrument) => {
-      acc[instrument] = (acc[instrument] || 0) + 1;
-      return acc;
-    }, {});
-    const sortedInstruments = Object.entries(instrumentFrequency)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([instrument]) => instrument);
-    setInstruments(allInstruments);
-    setTopInstruments(sortedInstruments);
-
     const uniqueGenders = [
       "All",
       ...new Set(filteredArtists.map((artist) => artist.gender)),
@@ -250,8 +201,6 @@ function ArtistFilter() {
     selectedGenre,
     selectedLocation,
     selectedEventType,
-    selectedLanguage,
-    selectedInstrument,
     selectedGender,
   ]);
 
@@ -308,19 +257,7 @@ function ArtistFilter() {
       selectedGenre.every((genre) => artist.genre?.split(", ").includes(genre));
     const matchesEventType =
       selectedEventType === "All Event Types" ||
-      artist.eventsType.split(", ").includes(selectedEventType);
-    const matchesLanguage =
-      selectedLanguage.length === 0 ||
-      selectedLanguage.every((language) =>
-        artist.languages.split(", ").includes(language)
-      );
-    const matchesInstrument =
-      selectedInstrument.length === 0 ||
-      selectedInstrument.every(
-        (instrument) =>
-          artist.instruments &&
-          artist.instruments.split(", ").includes(instrument)
-      );
+      artist.eventsType?.split(", ").includes(selectedEventType);
     const matchesGender =
       selectedGender === "All" || artist.gender === selectedGender;
     const matchesMinBudget =
@@ -336,14 +273,12 @@ function ArtistFilter() {
       artist.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDate =
       !selectedDate ||
-      !artist.busyDates?.includes(new Date(selectedDate).toISOString());
+      !artist.busyDates.includes(new Date(selectedDate).toISOString());
 
     return (
       matchesCategory &&
       matchesGenre &&
       matchesEventType &&
-      matchesLanguage &&
-      matchesInstrument &&
       matchesGender &&
       matchesMinBudget &&
       matchesMaxBudget &&
@@ -358,8 +293,6 @@ function ArtistFilter() {
     setSelectedLocation("All Locations");
     setSelectedEventType("All Event Types");
     setSelectedDate("");
-    setSelectedLanguage([]);
-    setSelectedInstrument([]);
     setSelectedGender("All");
     setSelectedSortOption("Low to High");
     setSelectedMinBudget("");
@@ -375,8 +308,6 @@ function ArtistFilter() {
     params.set("selectedLocation", selectedLocation);
     params.set("selectedEventType", selectedEventType);
     params.set("selectedDate", selectedDate);
-    params.set("selectedLanguage", selectedLanguage.join(","));
-    params.set("selectedInstrument", selectedInstrument.join(","));
     params.set("selectedGender", selectedGender);
     params.set("selectedSortOption", selectedSortOption);
     params.set("minBudget", selectedMinBudget);
@@ -396,13 +327,7 @@ function ArtistFilter() {
     <>
       <div className="items-center px-5 flex flex-col gap-2">
         <div className="flex w-full mt-3 max-w-sm items-center">
-          <input
-            type="text"
-            className="mobile w-full p-2 border rounded"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by Artist Name..."
-          />
+          <Input type="text" placeholder="Search By Artist Name..." />
         </div>
       </div>
       <div className="flex flex-col lg:flex-row p-4">
@@ -413,10 +338,6 @@ function ArtistFilter() {
           location={locations}
           eventsTypes={eventsTypes}
           topEventTypes={topEventTypes}
-          languages={languages}
-          topLanguages={topLanguages}
-          instruments={instruments}
-          topInstruments={topInstruments}
           genders={genders}
           budgetOptions={budgetOptions}
           selectedCategory={selectedCategory}
@@ -429,10 +350,6 @@ function ArtistFilter() {
           setSelectedEventType={setSelectedEventType}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
-          selectedLanguage={selectedLanguage}
-          setSelectedLanguage={setSelectedLanguage}
-          selectedInstrument={selectedInstrument}
-          setSelectedInstrument={setSelectedInstrument}
           selectedGender={selectedGender}
           setSelectedGender={setSelectedGender}
           selectedSortOption={selectedSortOption}
@@ -447,7 +364,11 @@ function ArtistFilter() {
           setSearchQuery={setSearchQuery}
         />
         <div className="w-full lg:w-3/4">
-          {filteredArtists.length > 0 ? (
+          {loading ? (
+            <div className="flex flex-col justify-center items-center h-full text-center">
+              <HashLoader color="#dc2626" size={180} />
+            </div>
+          ) : filteredArtists.length > 0 ? (
             <ArtistList
               artists={finalArtists}
               selectedCategory={selectedCategory}
@@ -455,20 +376,23 @@ function ArtistFilter() {
               selectedLocation={selectedLocation}
               selectedEventType={selectedEventType}
               selectedDate={selectedDate}
-              selectedLanguage={selectedLanguage.join(",")}
-              selectedInstrument={selectedInstrument.join(",")}
               selectedGender={selectedGender}
               selectedMinBudget={selectedMinBudget}
               selectedMaxBudget={selectedMaxBudget}
               budget={budget}
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
             />
           ) : (
-            [1, 2, 3, 4, 5, 6].map((item, index) => (
-              <div
-                className="h-[220px] bg-slate-200 w-full rounded-lg animate-pulse"
-                key={index}
-              ></div>
-            ))
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <LottieImg
+                animationData={animationData}
+                width={400}
+                height={400}
+              />
+              <p className="text-lg font-bold mt-4">No artists found.</p>
+            </div>
           )}
         </div>
       </div>

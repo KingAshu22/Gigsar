@@ -71,7 +71,7 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       const mobile = localStorage.getItem("mobile");
       const authExpiry = localStorage.getItem("authExpiry");
       if (mobile && authExpiry && Date.now() < parseInt(authExpiry, 10)) {
@@ -79,8 +79,11 @@ const Header = () => {
       } else {
         setIsAuthenticated(false);
       }
-    }, []);
-  }, 2000);
+    }, 2000); // Set the interval to run every 2000ms (2 seconds)
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []); // Pass an empty array as the second argument
 
   const handleSignOut = useCallback(() => {
     localStorage.removeItem("mobile");

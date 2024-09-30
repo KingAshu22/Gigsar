@@ -25,21 +25,21 @@ const MyBot = () => {
   useEffect(() => {
     setIsLoaded(true);
     initializeOTPless();
-    fetchArtists();
+    // fetchArtists();
   }, []);
 
-  const fetchArtists = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/artist`);
-      const filteredArtists = response.data.filter(
-        (artist) => artist.showGigsar
-      );
-      setArtists(filteredArtists);
-      extractFilters(filteredArtists);
-    } catch (error) {
-      console.error("Error fetching artists:", error);
-    }
-  };
+  // const fetchArtists = async () => {
+  //   try {
+  //     const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/artist`);
+  //     const filteredArtists = response.data.filter(
+  //       (artist) => artist.showGigsar
+  //     );
+  //     setArtists(filteredArtists);
+  //     extractFilters(filteredArtists);
+  //   } catch (error) {
+  //     console.error("Error fetching artists:", error);
+  //   }
+  // };
 
   const extractFilters = (artists) => {
     const uniqueCategories = [

@@ -15,6 +15,15 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 function ArtistList({
   artists,
@@ -29,6 +38,9 @@ function ArtistList({
   selectedMinBudget,
   selectedMaxBudget,
   budget,
+  page,
+  setPage,
+  totalPages,
   showEnquiry = true,
 }) {
   const router = useRouter();
@@ -203,7 +215,8 @@ function ArtistList({
   return (
     <div className="mb-10 px-8">
       <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`}
+        strategy="afterInteractive" // Load after the page is interactive
         onLoad={() => {
           if (inputRef.current) {
             const autocomplete = new google.maps.places.Autocomplete(
@@ -217,6 +230,7 @@ function ArtistList({
               const place = autocomplete.getPlace();
               if (place.geometry) {
                 setLocation(place.formatted_address);
+                setIsValid(true);
               }
             });
           }
@@ -247,11 +261,12 @@ function ArtistList({
                 key={index}
               >
                 <Link href={`/artist/${artist.linkid}${eventTypeLink}`}>
-                  <Image
+                  <img
                     src={artist.profilePic}
                     alt={artist.name}
                     width={350}
                     height={350}
+                    loading="lazy"
                     className="object-cover rounded-lg"
                   />
                 </Link>
@@ -461,6 +476,89 @@ function ArtistList({
           </div>
         )}
       </div>
+      <Pagination className="mt-6">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page > 1) setPage(page - 1);
+              }}
+              disabled={page === 1}
+            />
+          </PaginationItem>
+          {page > 1 && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(1);
+                }}
+              >
+                1
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          {page > 2 && <PaginationEllipsis />}
+          {page > 1 && page < totalPages && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(page - 1);
+                }}
+              >
+                {page - 1}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          <PaginationItem>
+            <PaginationLink href="#" className="bg-primary text-white">
+              {page}
+            </PaginationLink>
+          </PaginationItem>
+          {page < totalPages - 1 && <PaginationEllipsis />}
+          {page < totalPages && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(page + 1);
+                }}
+              >
+                {page + 1}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          {page < totalPages && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(totalPages);
+                }}
+              >
+                {totalPages}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page < totalPages) setPage(page + 1);
+              }}
+              disabled={page === totalPages}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }

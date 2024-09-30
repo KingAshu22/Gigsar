@@ -182,6 +182,16 @@ const FilterPanel = ({
         <div className="fixed inset-0 bg-white z-50 flex flex-col">
           <div className="flex-1 overflow-y-auto p-4">
             <h2 className="text-xl font-bold mb-4">Filter</h2>
+            <div className="mb-4">
+              <label className="block mb-2 font-semibold">Search</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by Artist Name..."
+              />
+            </div>
             <SingleSearch
               type="Artist Type"
               list={categories}

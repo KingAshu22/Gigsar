@@ -2,13 +2,6 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
 import Footer from "./_components/Footer";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "react-hot-toast";
 
@@ -22,25 +15,16 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={outfit.className}>
-          <div className="md:px-20">
-            <Header>
-              <SignedOut>
-                <SignInButton />
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </Header>
-            {children}
-            <Toaster />
-          </div>
-          <Footer />
-          <SpeedInsights />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={outfit.className}>
+        <div className="md:px-20">
+          <Header />
+          {children}
+          <Toaster />
+        </div>
+        <Footer />
+        <SpeedInsights />
+      </body>
+    </html>
   );
 }

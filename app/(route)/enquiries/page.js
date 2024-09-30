@@ -57,14 +57,18 @@ function Enquiries() {
     }
   };
 
-  // Function to extract unique dates from messages
+  // Function to extract unique event dates from the "Category" messages
   const getUniqueDatesFromMessages = (clientData) => {
     const uniqueDates = new Set();
 
     clientData.messages.forEach((messageGroup) => {
       messageGroup.message.forEach((msg) => {
-        const messageDate = new Date(msg.time).toDateString();
-        uniqueDates.add(messageDate); // Add unique dates to the Set
+        if (msg.content.includes("Category")) {
+          const eventDateMatch = msg.content.match(/Date: ([^\n]*)/);
+          if (eventDateMatch && eventDateMatch[1]) {
+            uniqueDates.add(eventDateMatch[1]); // Add event date to the Set
+          }
+        }
       });
     });
 
@@ -84,21 +88,29 @@ function Enquiries() {
     let enquiriesCount = 0;
 
     const artistPromises = client.messages.map(async (messageGroup) => {
-      const relevantMessages = messageGroup.message.filter(
-        (msg) => new Date(msg.time).toDateString() === date
-      );
+      let relevantCategoryMessage = null;
 
-      if (relevantMessages.length === 0) return;
+      // Find the "Category" message with the matching event date
+      messageGroup.message.forEach((msg) => {
+        if (msg.content.includes("Category")) {
+          const eventDateMatch = msg.content.match(/Date: ([^\n]*)/);
+          if (eventDateMatch && eventDateMatch[1] === date) {
+            relevantCategoryMessage = msg;
+          }
+        }
+      });
+
+      if (!relevantCategoryMessage) return;
 
       enquiriesCount += 1; // Count enquiries for this date
 
       let categoryMessageIndex = -1;
       let nextCategoryMessageIndex = -1;
 
-      // Find the "Category" message and its range
+      // Find the index of the "Category" message and its range
       messageGroup.message.forEach((msg, index) => {
         if (msg.content.includes("Category")) {
-          if (new Date(msg.time).toDateString() === date) {
+          if (msg === relevantCategoryMessage) {
             categoryMessageIndex = index;
           } else if (
             categoryMessageIndex !== -1 &&
@@ -108,9 +120,6 @@ function Enquiries() {
           }
         }
       });
-
-      // If there's no "Category" message on this date, move to the next artist
-      if (categoryMessageIndex === -1) return;
 
       // Check messages between the "Category" message and the next one (or end)
       let artistCategorized = false;

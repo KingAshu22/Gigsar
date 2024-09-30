@@ -13,15 +13,12 @@ import PhotoUploader from "@/app/_components/PhotoUploader";
 import { useRouter } from "next/navigation";
 import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
-import { useUser } from "@clerk/nextjs";
 import Script from "next/script";
 import SearchList from "@/app/_components/SearchList";
 import { topGenres } from "./constants/topGenres";
 import topInstruments from "./constants/topInstruments";
 
 const ArtistRegistration = () => {
-  const { user } = useUser();
-
   const inputRef = useRef(null);
 
   const [artistName, setArtistName] = useState();
@@ -64,19 +61,6 @@ const ArtistRegistration = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    if (
-      user &&
-      user.fullName &&
-      user.phoneNumbers[0].phoneNumber &&
-      user.emailAddresses[0].emailAddress
-    ) {
-      setArtistName(user.fullName);
-      setContactNumber(user.phoneNumbers[0].phoneNumber);
-      setEmail(user.emailAddresses[0].emailAddress);
-    }
-  }, [user]);
 
   useEffect(() => {
     if (inputRef.current) {

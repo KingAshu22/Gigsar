@@ -17,33 +17,14 @@ const FilterPanel = ({
   categories,
   genres,
   topGenres,
-  location,
+  locations,
   eventsTypes,
   topEventTypes,
   genders,
-  budgetOptions,
-  selectedCategory,
-  setSelectedCategory,
-  selectedGenre,
-  setSelectedGenre,
-  selectedLocation,
-  setSelectedLocation,
-  selectedEventType,
-  setSelectedEventType,
-  selectedDate,
-  setSelectedDate,
-  selectedGender,
-  setSelectedGender,
-  selectedSortOption,
-  setSelectedSortOption,
-  selectedMinBudget,
-  setSelectedMinBudget,
-  selectedMaxBudget,
-  setSelectedMaxBudget,
+  selectedFilters,
+  handleFilterChange,
   handleClearFilter,
   handleCopyLink,
-  searchQuery,
-  setSearchQuery,
 }) => {
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -57,8 +38,10 @@ const FilterPanel = ({
             <input
               type="text"
               className="w-full p-2 border rounded"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={selectedFilters.searchQuery}
+              onChange={(e) =>
+                handleFilterChange({ searchQuery: e.target.value })
+              }
               placeholder="Search by Artist Name..."
             />
           </div>
@@ -66,23 +49,23 @@ const FilterPanel = ({
             type="Artist Type"
             list={categories}
             topList={categories}
-            selectedItem={selectedCategory}
-            setSelectedItem={setSelectedCategory}
+            selectedItem={selectedFilters.category}
+            setSelectedItem={(category) => handleFilterChange({ category })}
             showSearch={false}
           />
           <SearchList
             type="Genre"
             list={genres}
             topList={topGenres}
-            selectedItems={selectedGenre}
-            setSelectedItems={setSelectedGenre}
+            selectedItems={selectedFilters.genre}
+            setSelectedItems={(genre) => handleFilterChange({ genre })}
           />
           <SingleSearch
             type="Event Type"
             list={eventsTypes}
             topList={topEventTypes}
-            selectedItem={selectedEventType}
-            setSelectedItem={setSelectedEventType}
+            selectedItem={selectedFilters.eventType}
+            setSelectedItem={(eventType) => handleFilterChange({ eventType })}
             showSearch={true}
           />
           <Popover>
@@ -91,12 +74,12 @@ const FilterPanel = ({
               <Button
                 variant={"outline"}
                 className={`w-full justify-start text-left font-normal
-                  ${!selectedDate && "text-muted-foreground"}
+                  ${!selectedFilters.selectedDate && "text-muted-foreground"}
                 `}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? (
-                  format(selectedDate, "PPP")
+                {selectedFilters.selectedDate ? (
+                  format(selectedFilters.selectedDate, "PPP")
                 ) : (
                   <span>Event Date</span>
                 )}
@@ -105,34 +88,26 @@ const FilterPanel = ({
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
+                selected={selectedFilters.selectedDate}
+                onSelect={(date) => handleFilterChange({ selectedDate: date })}
                 initialFocus
               />
             </PopoverContent>
           </Popover>
           <SingleSearch
             type="Location"
-            list={location}
-            topList={location}
-            selectedItem={selectedLocation}
-            setSelectedItem={setSelectedLocation}
+            list={locations}
+            topList={locations}
+            selectedItem={selectedFilters.location}
+            setSelectedItem={(location) => handleFilterChange({ location })}
             showSearch={true}
           />
           <SingleSearch
             type="Gender"
             list={genders}
             topList={genders}
-            selectedItem={selectedGender}
-            setSelectedItem={setSelectedGender}
-            showSearch={false}
-          />
-          <SingleSearch
-            type="Sort By Budget"
-            list={["Low to High", "High to Low"]}
-            topList={["Low to High", "High to Low"]}
-            selectedItem={selectedSortOption}
-            setSelectedItem={setSelectedSortOption}
+            selectedItem={selectedFilters.gender}
+            setSelectedItem={(gender) => handleFilterChange({ gender })}
             showSearch={false}
           />
           <div className="flex gap-4 mb-4">
@@ -141,8 +116,10 @@ const FilterPanel = ({
               <input
                 type="number"
                 className="w-full p-2 border rounded"
-                value={selectedMinBudget}
-                onChange={(e) => setSelectedMinBudget(e.target.value)}
+                value={selectedFilters.minBudget}
+                onChange={(e) =>
+                  handleFilterChange({ minBudget: e.target.value })
+                }
                 placeholder="0"
               />
             </div>
@@ -151,8 +128,10 @@ const FilterPanel = ({
               <input
                 type="number"
                 className="w-full p-2 border rounded"
-                value={selectedMaxBudget}
-                onChange={(e) => setSelectedMaxBudget(e.target.value)}
+                value={selectedFilters.maxBudget}
+                onChange={(e) =>
+                  handleFilterChange({ maxBudget: e.target.value })
+                }
                 placeholder="100000"
               />
             </div>
@@ -187,8 +166,10 @@ const FilterPanel = ({
               <input
                 type="text"
                 className="w-full p-2 border rounded"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={selectedFilters.searchQuery}
+                onChange={(e) =>
+                  handleFilterChange({ searchQuery: e.target.value })
+                }
                 placeholder="Search by Artist Name..."
               />
             </div>
@@ -196,23 +177,23 @@ const FilterPanel = ({
               type="Artist Type"
               list={categories}
               topList={categories}
-              selectedItem={selectedCategory}
-              setSelectedItem={setSelectedCategory}
+              selectedItem={selectedFilters.category}
+              setSelectedItem={(category) => handleFilterChange({ category })}
               showSearch={false}
             />
             <SearchList
               type="Genre"
               list={genres}
               topList={topGenres}
-              selectedItems={selectedGenre}
-              setSelectedItems={setSelectedGenre}
+              selectedItems={selectedFilters.genre}
+              setSelectedItems={(genre) => handleFilterChange({ genre })}
             />
             <SingleSearch
               type="Event Type"
               list={eventsTypes}
               topList={topEventTypes}
-              selectedItem={selectedEventType}
-              setSelectedItem={setSelectedEventType}
+              selectedItem={selectedFilters.eventType}
+              setSelectedItem={(eventType) => handleFilterChange({ eventType })}
               showSearch={true}
             />
             <Popover>
@@ -221,12 +202,12 @@ const FilterPanel = ({
                 <Button
                   variant={"outline"}
                   className={`w-full justify-start text-left font-normal
-                  ${!selectedDate && "text-muted-foreground"}
+                  ${!selectedFilters.selectedDate && "text-muted-foreground"}
                 `}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate ? (
-                    format(selectedDate, "PPP")
+                  {selectedFilters.selectedDate ? (
+                    format(selectedFilters.selectedDate, "PPP")
                   ) : (
                     <span>Event Date</span>
                   )}
@@ -235,34 +216,28 @@ const FilterPanel = ({
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
+                  selected={selectedFilters.selectedDate}
+                  onSelect={(date) =>
+                    handleFilterChange({ selectedDate: date })
+                  }
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
             <SingleSearch
               type="Location"
-              list={location}
-              topList={location}
-              selectedItem={selectedLocation}
-              setSelectedItem={setSelectedLocation}
+              list={locations}
+              topList={locations}
+              selectedItem={selectedFilters.location}
+              setSelectedItem={(location) => handleFilterChange({ location })}
               showSearch={true}
             />
             <SingleSearch
               type="Gender"
               list={genders}
               topList={genders}
-              selectedItem={selectedGender}
-              setSelectedItem={setSelectedGender}
-              showSearch={false}
-            />
-            <SingleSearch
-              type="Sort By Budget"
-              list={["Low to High", "High to Low"]}
-              topList={["Low to High", "High to Low"]}
-              selectedItem={selectedSortOption}
-              setSelectedItem={setSelectedSortOption}
+              selectedItem={selectedFilters.gender}
+              setSelectedItem={(gender) => handleFilterChange({ gender })}
               showSearch={false}
             />
             <div className="flex gap-4 mb-4">
@@ -271,8 +246,10 @@ const FilterPanel = ({
                 <input
                   type="number"
                   className="w-full p-2 border rounded"
-                  value={selectedMinBudget}
-                  onChange={(e) => setSelectedMinBudget(e.target.value)}
+                  value={selectedFilters.minBudget}
+                  onChange={(e) =>
+                    handleFilterChange({ minBudget: e.target.value })
+                  }
                   placeholder="0"
                 />
               </div>
@@ -281,8 +258,10 @@ const FilterPanel = ({
                 <input
                   type="number"
                   className="w-full p-2 border rounded"
-                  value={selectedMaxBudget}
-                  onChange={(e) => setSelectedMaxBudget(e.target.value)}
+                  value={selectedFilters.maxBudget}
+                  onChange={(e) =>
+                    handleFilterChange({ maxBudget: e.target.value })
+                  }
                   placeholder="100000"
                 />
               </div>
@@ -292,18 +271,22 @@ const FilterPanel = ({
             <Button
               variant="outline"
               className="w-1/3"
-              onClick={() => {
-                handleClearFilter();
-                setFilterOpen(false);
-              }}
+              onClick={handleClearFilter}
             >
               Clear Filters
             </Button>
-            <Button className="w-1/3" onClick={handleCopyLink}>
-              <Copy />
+            <Button
+              className="w-1/3 bg-primary text-white"
+              onClick={handleCopyLink}
+            >
+              <Copy size={16} className="mr-2" />
+              Copy Filters Link
             </Button>
-            <Button className="w-1/3" onClick={() => setFilterOpen(false)}>
-              Apply Filter
+            <Button
+              className="w-1/3 bg-primary text-white"
+              onClick={() => setFilterOpen(false)}
+            >
+              Close
             </Button>
           </div>
         </div>

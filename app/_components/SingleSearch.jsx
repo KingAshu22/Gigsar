@@ -19,9 +19,9 @@ const SingleSearch = ({
     setSearchTerm("");
   };
 
-  const filteredItems = list.filter(
+  const filteredItems = list?.filter(
     (item) =>
-      item.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      item?.toLowerCase().includes(searchTerm.toLowerCase()) &&
       item !== selectedItem
   );
 

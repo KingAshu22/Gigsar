@@ -48,11 +48,7 @@ export async function GET(req) {
       .slice(0, 4)
       .map(([eventsType]) => eventsType);
 
-    const uniqueGenders = [
-      "All",
-      ...new Set(artists.map((artist) => artist.gender)),
-    ];
-
+    const uniqueGenders = ["All", "male", "female"];
     // Return JSON response with unique filters
     return new Response(
       JSON.stringify({

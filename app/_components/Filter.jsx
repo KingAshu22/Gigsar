@@ -159,12 +159,12 @@ const FilterPanel = ({
         </div>
       </div>
       {/* For mobile screen */}
-      <button
-        className="mobile fixed bottom-0 left-0 w-full bg-primary text-white py-2 px-4 rounded-t shadow-lg flex items-center justify-center z-50"
+      <Button
+        className="mobile fixed bottom-0 left-0 w-full bg-primary text-white py-2 px-4 pt-2 rounded-t shadow-lg flex items-center justify-center z-50"
         onClick={() => setFilterOpen(true)}
       >
         Filter
-      </button>
+      </Button>
       {filterOpen && (
         <div className="fixed inset-0 bg-white z-50 flex flex-col">
           <div className="flex-1 overflow-y-auto p-4">
@@ -298,13 +298,12 @@ const FilterPanel = ({
               onClick={handleCopyLink}
             >
               <Copy size={16} className="mr-2" />
-              Copy Filters Link
             </Button>
             <Button
               className="w-1/3 bg-primary text-white"
               onClick={() => setFilterOpen(false)}
             >
-              Close
+              Apply
             </Button>
           </div>
         </div>

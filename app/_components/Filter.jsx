@@ -110,6 +110,14 @@ const FilterPanel = ({
             setSelectedItem={(gender) => handleFilterChange({ gender })}
             showSearch={false}
           />
+          <SingleSearch
+            type="Sort By Budget"
+            list={["Low to High", "High to Low"]}
+            topList={["Low to High", "High to Low"]}
+            selectedItem={selectedFilters.sortOption}
+            setSelectedItem={(sortOption) => handleFilterChange({ sortOption })}
+            showSearch={false}
+          />
           <div className="flex gap-4 mb-4">
             <div className="w-1/2">
               <label className="block mb-2 font-semibold">Min Budget</label>
@@ -238,6 +246,16 @@ const FilterPanel = ({
               topList={genders}
               selectedItem={selectedFilters.gender}
               setSelectedItem={(gender) => handleFilterChange({ gender })}
+              showSearch={false}
+            />
+            <SingleSearch
+              type="Sort By Budget"
+              list={["Low to High", "High to Low"]}
+              topList={["Low to High", "High to Low"]}
+              selectedItem={selectedFilters.sortOption}
+              setSelectedItem={(sortOption) =>
+                handleFilterChange({ sortOption })
+              }
               showSearch={false}
             />
             <div className="flex gap-4 mb-4">

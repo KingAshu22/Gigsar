@@ -12,6 +12,7 @@ const eventTypesOptions = [
   "Ticketing Concert",
   "Virtual",
   "Phoolon Ki Holi",
+  "Other",
 ];
 
 export default eventTypesOptions;

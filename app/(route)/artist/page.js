@@ -32,6 +32,7 @@ function ArtistFilter() {
     minBudget: "",
     maxBudget: "",
     searchQuery: "",
+    sortOption: "Low to High",
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
@@ -98,6 +99,7 @@ function ArtistFilter() {
       gender: "All",
       minBudget: "",
       maxBudget: "",
+      sortOption: "Low to High",
       searchQuery: "",
     });
   };

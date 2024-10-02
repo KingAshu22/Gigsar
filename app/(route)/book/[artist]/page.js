@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/popover";
 import soundSystems from "./components/soundSystems";
 import addOns from "./components/addOns";
+import SingleSearch from "@/app/_components/SingleSearch";
+import eventTypesOptions from "@/constants/eventTypes";
 
 const eventTypeMapping = {
   Corporate: "corporateBudget",
@@ -59,6 +61,7 @@ function BookArtistPage() {
   const [priceName, setPriceName] = useState("");
   const [date, setDate] = useState(null);
   const [location, setLocation] = useState("");
+  const [venue, setVenue] = useState("");
   const [guestCount, setGuestCount] = useState("");
   const [selectedSoundSystem, setSelectedSoundSystem] = useState(null);
   const [selectedAddOns, setSelectedAddOns] = useState([]);
@@ -204,6 +207,15 @@ function BookArtistPage() {
         Event
       </h1>
       {currentStep === 1 && (
+        <SingleSearch
+          type="Event Type"
+          list={eventTypesOptions}
+          selectedItem={event}
+          topList={eventTypesOptions}
+          setSelectedItem={setEvent}
+        />
+      )}
+      {currentStep === 2 && (
         <div>
           <Label htmlFor="location" className="text-lg">
             Event Location
@@ -220,9 +232,23 @@ function BookArtistPage() {
               onChange={(e) => setLocation(e.target.value)}
             />
           </div>
+          <Label htmlFor="location" className="text-lg">
+            Venue Name
+          </Label>
+          <div className="relative">
+            <Input
+              id="venue"
+              type="text"
+              value={venue}
+              autoComplete="off"
+              className="w-full"
+              placeholder="Enter Venue Name"
+              onChange={(e) => setVenue(e.target.value)}
+            />
+          </div>
         </div>
       )}
-      {currentStep === 2 && (
+      {currentStep === 3 && (
         <div>
           <Label htmlFor="date" className="text-lg">
             Event Date
@@ -252,7 +278,7 @@ function BookArtistPage() {
           </Popover>
         </div>
       )}
-      {currentStep === 3 && (
+      {currentStep === 4 && (
         <div>
           <Label htmlFor="guests" className="text-lg">
             Number of Guests
@@ -273,7 +299,7 @@ function BookArtistPage() {
           </Select>
         </div>
       )}
-      {currentStep === 4 && (
+      {currentStep === 5 && (
         <div>
           <Label htmlFor="soundSystem" className="block mb-2 text-xl">
             Select Sound System
@@ -345,7 +371,7 @@ function BookArtistPage() {
           </div>
         </div>
       )}
-      {currentStep === 5 && (
+      {currentStep === 6 && (
         <div>
           <Label htmlFor="addOns" className="block mb-2 text-lg">
             Any Add On?
@@ -380,7 +406,7 @@ function BookArtistPage() {
           </div>
         </div>
       )}
-      {currentStep === 6 && (
+      {currentStep === 7 && (
         <div>
           <h2 className="text-2xl font-bold mb-4">Pricing Details</h2>
           <div className="bg-gray-100 p-4 rounded-lg">
@@ -480,9 +506,9 @@ function BookArtistPage() {
             variant="primary"
             onClick={nextStep}
             disabled={
-              (currentStep === 1 && !location) ||
-              (currentStep === 2 && !date) ||
-              (currentStep === 3 && !guestCount) ||
+              (currentStep === 1 && !event) ||
+              (currentStep === 2 && !location && !venue) ||
+              (currentStep === 3 && !date) ||
               (currentStep === 4 && !selectedSoundSystem)
             }
           >

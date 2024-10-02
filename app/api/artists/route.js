@@ -1,6 +1,10 @@
 import { connectToDB } from "@/app/_utils/mongodb";
 import Artist from "@/models/Artist";
 
+const parsePrice = (priceString) => {
+  return parseInt(priceString.replace(/,/g, ""), 10);
+};
+
 export async function GET(req) {
   await connectToDB();
   try {
@@ -19,8 +23,7 @@ export async function GET(req) {
       selectedMaxBudget: url.searchParams.get("maxBudget") || "",
       searchQuery: url.searchParams.get("searchQuery") || "",
       selectedDate: url.searchParams.get("selectedDate") || "",
-      selectedSortOption:
-        url.searchParams.get("selectedSortOption") || "Low to High",
+      selectedSortOption: url.searchParams.get("sortOption") || "Low to High",
       page: parseInt(url.searchParams.get("page"), 10) || 1,
     };
 
@@ -58,49 +61,54 @@ export async function GET(req) {
     const minBudget = parseInt(filters.selectedMinBudget.replace(/,/g, ""), 10);
     const maxBudget = parseInt(filters.selectedMaxBudget.replace(/,/g, ""), 10);
 
-    // Only add price filters if min and max budgets are valid numbers
-    if (!isNaN(minBudget)) {
-      query.price = { ...query.price, $gte: minBudget };
-    }
+    // Adding aggregation to handle price stored as string
+    const aggregationPipeline = [
+      { $match: query }, // Apply filters before aggregation
+      {
+        $addFields: {
+          numericPrice: {
+            $toInt: {
+              $replaceAll: { input: "$price", find: ",", replacement: "" },
+            },
+          },
+        },
+      },
+      // Filtering by min and max budget if provided
+      ...(isNaN(minBudget)
+        ? []
+        : [{ $match: { numericPrice: { $gte: minBudget } } }]),
+      ...(isNaN(maxBudget)
+        ? []
+        : [{ $match: { numericPrice: { $lte: maxBudget } } }]),
+      // Sorting by price (numericPrice field)
+      {
+        $sort: {
+          numericPrice: filters.selectedSortOption === "Low to High" ? 1 : -1,
+        },
+      },
+      // Pagination
+      { $skip: (filters.page - 1) * 12 },
+      { $limit: 12 },
+      // Selecting only required fields
+      {
+        $project: {
+          linkid: 1,
+          profilePic: 1,
+          name: 1,
+          price: 1,
+          location: 1,
+          artistType: 1,
+        },
+      },
+    ];
 
-    if (!isNaN(maxBudget)) {
-      query.price = { ...query.price, $lte: maxBudget };
-    }
-
-    if (filters.searchQuery) {
-      query.name = { $regex: filters.searchQuery, $options: "i" };
-    }
-
-    if (filters.selectedDate) {
-      query.busyDates = {
-        $nin: [new Date(filters.selectedDate).toISOString()],
-      };
-    }
-
-    // Sort by price
-    const sortOption =
-      filters.selectedSortOption === "Low to High"
-        ? { price: 1 }
-        : { price: -1 };
-
-    // Pagination
-    const pageSize = 12;
-    const skip = (filters.page - 1) * pageSize;
-
-    console.log(query); // For debugging
-
-    // Fetch artists from MongoDB with filtering, sorting, and pagination
+    // Fetching artists and total count
     const [artists, totalArtists] = await Promise.all([
-      Artist.find(query)
-        .sort(sortOption)
-        .skip(skip)
-        .limit(pageSize)
-        .select("linkid profilePic name price location artistType") // Select only required fields
-        .exec(),
+      Artist.aggregate(aggregationPipeline).exec(),
       Artist.countDocuments(query),
     ]);
 
-    const totalPages = Math.ceil(totalArtists / pageSize);
+    const totalPages = Math.ceil(totalArtists / 12);
 
     // Return JSON response
     return new Response(
@@ -127,3 +135,5 @@ export async function GET(req) {
     });
   }
 }
+
+export const dynamic = "force-dynamic";

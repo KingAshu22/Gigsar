@@ -57,6 +57,16 @@ export async function GET(req) {
       query.gender = filters.selectedGender;
     }
 
+    if (filters.searchQuery) {
+      query.name = { $regex: filters.searchQuery, $options: "i" };
+    }
+
+    if (filters.selectedDate) {
+      query.busyDates = {
+        $nin: [new Date(filters.selectedDate).toISOString()],
+      };
+    }
+
     // Use price for min and max filtering
     const minBudget = parseInt(filters.selectedMinBudget.replace(/,/g, ""), 10);
     const maxBudget = parseInt(filters.selectedMaxBudget.replace(/,/g, ""), 10);
@@ -86,6 +96,7 @@ export async function GET(req) {
           numericPrice: filters.selectedSortOption === "Low to High" ? 1 : -1,
         },
       },
+
       // Pagination
       { $skip: (filters.page - 1) * 12 },
       { $limit: 12 },

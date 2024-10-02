@@ -91,7 +91,12 @@ export async function GET(req) {
 
     // Fetch artists from MongoDB with filtering, sorting, and pagination
     const [artists, totalArtists] = await Promise.all([
-      Artist.find(query).sort(sortOption).skip(skip).limit(pageSize).exec(),
+      Artist.find(query)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(pageSize)
+        .select("linkid profilePic name price location artistType") // Select only required fields
+        .exec(),
       Artist.countDocuments(query),
     ]);
 

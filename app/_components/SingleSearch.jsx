@@ -45,8 +45,8 @@ const SingleSearch = ({
                 onClick={() => handleSelectItem(item)}
                 className={
                   item === selectedItem
-                    ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize"
-                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize"
+                    ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize text-sm"
+                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-sm"
                 }
               >
                 {item}

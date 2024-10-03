@@ -43,24 +43,18 @@ function ArtistFilter() {
   const [totalPages, setTotalPages] = useState();
   const [applyFilter, setApplyFilter] = useState(false);
 
-  // Fetch initial artists and filters
+  // Fetch initial filters (but skip artists if filters are applied in the URL)
   useEffect(() => {
-    fetchInitialData();
+    fetchInitialFilters();
   }, []);
 
-  const fetchInitialData = async () => {
+  const fetchInitialFilters = async () => {
     setLoading(true);
     try {
-      const [artistsResponse, filtersResponse] = await Promise.all([
-        axios.get(`/api/artists`, { params: { page, limit: 12 } }),
-        axios.get(`/api/artists/filters`),
-      ]);
-
-      setArtists(artistsResponse.data.artists);
-      setTotalPages(artistsResponse.data.totalPages);
+      const filtersResponse = await axios.get(`/api/artists/filters`);
       setFilters(filtersResponse.data); // This includes topGenres and topEventTypes
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching filters:", error);
     } finally {
       setLoading(false);
     }
@@ -70,20 +64,22 @@ function ArtistFilter() {
   useEffect(() => {
     const params = Object.fromEntries(filterParams.entries());
 
-    setSelectedFilters((prevFilters) => ({
-      ...prevFilters,
-      category: params.selectedCategory || "All Artist Types",
-      genre: params.selectedGenre ? params.selectedGenre.split(",") : [],
-      location: params.selectedLocation || "All Locations",
-      eventType: params.selectedEventType || "All Event Types",
-      genders: params.selectedGender || "All",
+    const updatedFilters = {
+      category: params.category || "All Artist Types",
+      genre: params.genre ? params.genre.split(",") : [],
+      location: params.location || "All Locations",
+      eventType: params.eventType || "All Event Types",
+      genders: params.genders || "All",
       minBudget: params.minBudget || "",
       maxBudget: params.maxBudget || "",
       searchQuery: params.searchQuery || "",
-      sortOption: params.selectedSortOption || "Low to High",
-    }));
+      sortOption: params.sortOption || "Low to High",
+    };
 
-    fetchFilteredArtists();
+    setSelectedFilters(updatedFilters);
+
+    // Trigger the fetch after updating the filters
+    setApplyFilter(true);
   }, [searchParams, page]);
 
   // Fetch filtered artists based on selected filters
@@ -93,7 +89,7 @@ function ArtistFilter() {
       const response = await axios.get(`/api/artists`, {
         params: {
           ...selectedFilters,
-          genre: selectedFilters.genre.join(","),
+          genre: selectedFilters.genre.join(","), // Convert array to comma-separated string
           page,
         },
       });
@@ -106,19 +102,20 @@ function ArtistFilter() {
     }
   }, [selectedFilters, page]);
 
+  // Handle the conditional fetching of artists
+  useEffect(() => {
+    if (applyFilter || page > 1) {
+      fetchFilteredArtists(); // Fetch only when filters are applied or page changes
+      setApplyFilter(false);
+    }
+  }, [applyFilter, selectedFilters, page, fetchFilteredArtists]);
+
   const handleFilterChange = (newFilters) => {
     setSelectedFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
     }));
   };
-
-  useEffect(() => {
-    if (applyFilter || page > 1) {
-      fetchFilteredArtists();
-      setApplyFilter(false);
-    }
-  }, [applyFilter, selectedFilters, page, fetchFilteredArtists]);
 
   const handleClearFilter = () => {
     setSelectedFilters({

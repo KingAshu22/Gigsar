@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import ArtistList from "@/app/_components/ArtistList";
@@ -8,10 +8,13 @@ import * as animationData from "../../../public/cat.json";
 import LottieImg from "@/app/_components/Lottie";
 import FilterPanel from "@/app/_components/Filter";
 import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 function ArtistFilter() {
   const searchParams = useSearchParams();
   const filterParams = new URLSearchParams(searchParams.toString());
+
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -20,9 +23,10 @@ function ArtistFilter() {
     locations: [],
     eventsTypes: [],
     genders: [],
-    topGenres: [], // Initialize topGenres
-    topEventTypes: [], // Initialize topEventTypes
+    topGenres: [],
+    topEventTypes: [],
   });
+
   const [selectedFilters, setSelectedFilters] = useState({
     category: "All Artist Types",
     genre: [],
@@ -34,10 +38,12 @@ function ArtistFilter() {
     searchQuery: "",
     sortOption: "Low to High",
   });
+
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const [applyFilter, setApplyFilter] = useState(false);
 
+  // Fetch initial artists and filters
   useEffect(() => {
     fetchInitialData();
   }, []);
@@ -45,14 +51,14 @@ function ArtistFilter() {
   const fetchInitialData = async () => {
     setLoading(true);
     try {
-      const artistsResponse = await axios.get(`/api/artists`, {
-        params: { page, limit: 12 },
-      });
-      const filtersResponse = await axios.get(`/api/artists/filters`);
+      const [artistsResponse, filtersResponse] = await Promise.all([
+        axios.get(`/api/artists`, { params: { page, limit: 12 } }),
+        axios.get(`/api/artists/filters`),
+      ]);
 
       setArtists(artistsResponse.data.artists);
       setTotalPages(artistsResponse.data.totalPages);
-      setFilters(filtersResponse.data); // This now includes topGenres and topEventTypes
+      setFilters(filtersResponse.data); // This includes topGenres and topEventTypes
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -60,7 +66,28 @@ function ArtistFilter() {
     }
   };
 
-  const fetchFilteredArtists = async () => {
+  // Extract filters from URL and apply them
+  useEffect(() => {
+    const params = Object.fromEntries(filterParams.entries());
+
+    setSelectedFilters((prevFilters) => ({
+      ...prevFilters,
+      category: params.selectedCategory || "All Artist Types",
+      genre: params.selectedGenre ? params.selectedGenre.split(",") : [],
+      location: params.selectedLocation || "All Locations",
+      eventType: params.selectedEventType || "All Event Types",
+      genders: params.selectedGender || "All",
+      minBudget: params.minBudget || "",
+      maxBudget: params.maxBudget || "",
+      searchQuery: params.searchQuery || "",
+      sortOption: params.selectedSortOption || "Low to High",
+    }));
+
+    fetchFilteredArtists();
+  }, [searchParams, page]);
+
+  // Fetch filtered artists based on selected filters
+  const fetchFilteredArtists = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`/api/artists`, {
@@ -70,33 +97,28 @@ function ArtistFilter() {
           page,
         },
       });
-
       setArtists(response.data.artists);
       setTotalPages(response.data.totalPages);
-      setApplyFilter(false);
     } catch (error) {
       console.error("Error fetching artists:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedFilters, page]);
 
   const handleFilterChange = (newFilters) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
+    setSelectedFilters((prevFilters) => ({
+      ...prevFilters,
       ...newFilters,
     }));
   };
 
   useEffect(() => {
-    console.log("Inside Use Effect", applyFilter);
-    if (applyFilter) {
+    if (applyFilter || page > 1) {
       fetchFilteredArtists();
       setApplyFilter(false);
-    } else if (page > 1) {
-      fetchFilteredArtists();
     }
-  }, [applyFilter, selectedFilters, page]);
+  }, [applyFilter, selectedFilters, page, fetchFilteredArtists]);
 
   const handleClearFilter = () => {
     setSelectedFilters({
@@ -107,9 +129,10 @@ function ArtistFilter() {
       genders: "All",
       minBudget: "",
       maxBudget: "",
-      sortOption: "Low to High",
       searchQuery: "",
+      sortOption: "Low to High",
     });
+    setApplyFilter(true);
   };
 
   const handleCopyLink = () => {
@@ -129,18 +152,33 @@ function ArtistFilter() {
       });
   };
 
+  const handleSearch = () => {
+    setApplyFilter(true);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <>
       <div className="items-center px-5 flex flex-col gap-2">
         <div className="flex w-full mt-3 max-w-sm items-center">
           <Input
+            className="flex-grow"
             type="text"
             placeholder="Search By Artist Name..."
             value={selectedFilters.searchQuery}
             onChange={(e) =>
               handleFilterChange({ searchQuery: e.target.value })
             }
+            onKeyDown={handleKeyDown}
           />
+          <Button className="ml-2 w-auto" onClick={handleSearch}>
+            <Search />
+          </Button>
         </div>
       </div>
       <div className="flex flex-col lg:flex-row p-4">

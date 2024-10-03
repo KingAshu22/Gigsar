@@ -36,6 +36,7 @@ function ArtistFilter() {
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
+  const [applyFilter, setApplyFilter] = useState(false);
 
   useEffect(() => {
     fetchInitialData();
@@ -72,6 +73,7 @@ function ArtistFilter() {
 
       setArtists(response.data.artists);
       setTotalPages(response.data.totalPages);
+      setApplyFilter(false);
     } catch (error) {
       console.error("Error fetching artists:", error);
     } finally {
@@ -87,8 +89,14 @@ function ArtistFilter() {
   };
 
   useEffect(() => {
-    fetchFilteredArtists();
-  }, [selectedFilters, page]);
+    console.log("Inside Use Effect", applyFilter);
+    if (applyFilter) {
+      fetchFilteredArtists();
+      setApplyFilter(false);
+    } else if (page > 1) {
+      fetchFilteredArtists();
+    }
+  }, [applyFilter, selectedFilters, page]);
 
   const handleClearFilter = () => {
     setSelectedFilters({
@@ -144,6 +152,7 @@ function ArtistFilter() {
           genders={filters.genders}
           selectedFilters={selectedFilters}
           handleFilterChange={handleFilterChange}
+          setApplyFilter={setApplyFilter}
           handleClearFilter={handleClearFilter}
           handleCopyLink={handleCopyLink}
           topGenres={filters.topGenres}

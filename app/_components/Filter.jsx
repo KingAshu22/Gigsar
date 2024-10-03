@@ -25,6 +25,7 @@ const FilterPanel = ({
   handleFilterChange,
   handleClearFilter,
   handleCopyLink,
+  setApplyFilter,
 }) => {
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -144,6 +145,16 @@ const FilterPanel = ({
               />
             </div>
           </div>
+          <Button
+            className="border-primary border-2 py-2 px-4 rounded mb-4 w-full"
+            onClick={() => {
+              console.log("Applied Filter");
+
+              setApplyFilter(true);
+            }}
+          >
+            Apply Filter
+          </Button>
           <button
             className="border-primary border-2 text-primary py-2 px-4 rounded mb-4 w-full"
             onClick={handleClearFilter}
@@ -301,7 +312,10 @@ const FilterPanel = ({
             </Button>
             <Button
               className="w-1/3 bg-primary text-white"
-              onClick={() => setFilterOpen(false)}
+              onClick={() => {
+                setFilterOpen(false);
+                setApplyFilter(true);
+              }}
             >
               Apply
             </Button>

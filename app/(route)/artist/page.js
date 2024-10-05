@@ -69,20 +69,22 @@ function ArtistFilter() {
       genre: params.genre ? params.genre.split(",") : [],
       location: params.location || "All Locations",
       eventType: params.eventType || "All Event Types",
-      genders: params.genders || "All",
+      genders: params.gender || "All",
       minBudget: params.minBudget || "",
       maxBudget: params.maxBudget || "",
       searchQuery: params.searchQuery || "",
       sortOption: params.sortOption || "Low to High",
     };
 
+    console.log(updatedFilters);
+
     setSelectedFilters(updatedFilters);
 
     // Trigger the fetch after updating the filters
     setApplyFilter(true);
-  }, [searchParams, page]);
+  }, [searchParams]);
 
-  // Fetch filtered artists based on selected filters
+  // Fetch filtered artists based on selected filters and current page
   const fetchFilteredArtists = useCallback(async () => {
     setLoading(true);
     try {
@@ -110,11 +112,18 @@ function ArtistFilter() {
     }
   }, [applyFilter, selectedFilters, page, fetchFilteredArtists]);
 
+  useEffect(() => {
+    if (page == 1) {
+      fetchFilteredArtists(); // Fetch when page changes to 1
+    }
+  }, [page]);
+
   const handleFilterChange = (newFilters) => {
     setSelectedFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
     }));
+    setPage(1); // Reset to page 1 when filter changes
   };
 
   const handleClearFilter = () => {
@@ -130,15 +139,26 @@ function ArtistFilter() {
       sortOption: "Low to High",
     });
     setApplyFilter(true);
+    setPage(1); // Reset to page 1 when filters are cleared
   };
 
   const handleCopyLink = () => {
     const filteredURL = new URL(window.location.href);
     const params = new URLSearchParams();
+
+    // Ensure selectedFilters are properly formatted for URL
     Object.entries(selectedFilters).forEach(([key, value]) => {
-      params.set(key, Array.isArray(value) ? value.join(",") : value);
+      if (Array.isArray(value) && value.length > 0) {
+        // Join array values
+        params.set(key, value.join(","));
+      } else if (value && value !== "All" && value !== "") {
+        // Include only non-default values
+        params.set(key, value);
+      }
     });
+
     filteredURL.search = params.toString();
+
     navigator.clipboard
       .writeText(filteredURL.toString())
       .then(() => {
@@ -151,6 +171,7 @@ function ArtistFilter() {
 
   const handleSearch = () => {
     setApplyFilter(true);
+    setPage(1); // Reset to page 1 on search
   };
 
   const handleKeyDown = (event) => {

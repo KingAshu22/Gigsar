@@ -18,7 +18,7 @@ export async function GET(req) {
         : [],
       selectedLocation: url.searchParams.get("location") || "All Locations",
       selectedEventType: url.searchParams.get("eventType") || "All Event Types",
-      selectedGender: url.searchParams.get("gender") || "All",
+      selectedGender: url.searchParams.get("genders") || "All",
       selectedMinBudget: url.searchParams.get("minBudget") || "",
       selectedMaxBudget: url.searchParams.get("maxBudget") || "",
       searchQuery: url.searchParams.get("searchQuery") || "",

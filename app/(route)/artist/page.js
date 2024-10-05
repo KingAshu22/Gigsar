@@ -201,6 +201,11 @@ function ArtistFilter() {
           ) : artists.length > 0 ? (
             <ArtistList
               artists={artists}
+              selectedCategory={selectedFilters.category}
+              selectedGenre={selectedFilters.genre}
+              selectedLocation={selectedFilters.location}
+              selectedEventType={selectedFilters.eventType}
+              selectedGenders={selectedFilters.genders}
               page={page}
               setPage={setPage}
               totalPages={totalPages}

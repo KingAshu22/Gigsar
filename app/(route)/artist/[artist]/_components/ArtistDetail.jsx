@@ -294,7 +294,7 @@ function ArtistDetail({ artist }) {
             );
           })}
         </div>
-        {artist.blog.length > 0 && (
+        {artist.blog?.length > 0 && (
           <>
             <h2 className="font-bold text-2xl text-gray-800 mt-8">About Me</h2>
             <div

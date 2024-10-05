@@ -108,7 +108,8 @@ function ArtistList({
     return str
       .split("-") // Split by hyphen
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
-      .join(" "); // Join words with a space
+      .join(" ") // Join words with a space
+      .trim(); // Ensure no extra spaces
   };
 
   const sendEnquiry = async (linkid, budget) => {

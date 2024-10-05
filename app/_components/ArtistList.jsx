@@ -29,7 +29,6 @@ function ArtistList({
   artists,
   selectedCategory,
   selectedGenre,
-  selectedLocation,
   selectedEventType = "All Event Types",
   selectedDate,
   selectedLanguage,
@@ -50,9 +49,7 @@ function ArtistList({
   const [artistType, setArtistType] = useState(selectedCategory);
   const [eventType, setEventType] = useState("");
   const [eventDate, setEventDate] = useState(selectedDate); // New state for event date
-  const [location, setLocation] = useState(
-    selectedLocation === "All Locations" ? "" : selectedLocation
-  );
+  const [location, setLocation] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState(1);
   const [currentArtistId, setCurrentArtistId] = useState(null);
@@ -123,8 +120,7 @@ function ArtistList({
           contact,
           selectedCategory: formatString(artistType),
           selectedGenre,
-          selectedLocation:
-            selectedLocation === "All Locations" ? location : selectedLocation,
+          selectedLocation: location,
           selectedEventType: eventType,
           selectedDate: eventDate
             ? eventDate.toLocaleDateString("en-GB", {
@@ -195,11 +191,8 @@ function ArtistList({
     } else if (!selectedDate || selectedDate === "Not selected") {
       setStep(3);
       setShowModal(true);
-    } else if (!selectedLocation || selectedLocation == "All Locations") {
-      setStep(4);
-      setShowModal(true);
     } else {
-      setStep(5);
+      setStep(4);
       setShowModal(true);
     }
   };
@@ -396,10 +389,7 @@ function ArtistList({
                                 : "Not selected"}
                             </p>
                             <p>
-                              <strong>Location:</strong>{" "}
-                              {selectedLocation === "All Locations"
-                                ? location
-                                : selectedLocation}
+                              <strong>Location:</strong> {location}
                             </p>
                           </div>
                         )}

@@ -4,6 +4,7 @@ import ArtistDetail from "./_components/ArtistDetail";
 import axios from "axios";
 import ArtistPricing from "./_components/ArtistPricing";
 import { Spinner } from "./_components/Spinner";
+import Head from "next/head"; // Import Head for managing head elements
 
 function ArtistDetails({ params }) {
   const [artist, setArtist] = useState(null);
@@ -27,6 +28,25 @@ function ArtistDetails({ params }) {
 
   return (
     <div className="p-5 md:px-10">
+      {/* Dynamic meta tags */}
+      {artist && (
+        <Head>
+          <title>{artist.name} | Gigsar</title>
+          <meta
+            name="description"
+            content={`Learn more about ${artist.name}, a talented artist available for events and bookings.`}
+          />
+          <meta property="og:title" content={artist.name} />
+          <meta
+            property="og:description"
+            content={`Learn more about ${artist.name}, a talented artist available for events and bookings.`}
+          />
+          <meta property="og:image" content={artist.profilePic} />
+          <meta property="og:url" content={window.location.href} />{" "}
+          {/* Include current URL */}
+        </Head>
+      )}
+
       <h2 className="font-bold text-2xl mb-5 text-gray-800">Artist Details</h2>
 
       {loading ? (

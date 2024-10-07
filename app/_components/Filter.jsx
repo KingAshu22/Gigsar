@@ -12,6 +12,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import ScrollSelect from "./ScrollSelect";
+import { budgetOptions } from "@/constants/budget";
 
 const FilterPanel = ({
   categories,
@@ -110,26 +112,22 @@ const FilterPanel = ({
           <div className="flex gap-4 mb-4">
             <div className="w-1/2">
               <label className="block mb-2 font-semibold">Min Budget</label>
-              <input
-                type="number"
-                className="w-full p-2 border rounded"
-                value={selectedFilters.minBudget}
-                onChange={(e) =>
-                  handleFilterChange({ minBudget: e.target.value })
+              <ScrollSelect
+                options={budgetOptions}
+                selectedValue={selectedFilters.minBudget}
+                setSelectedValue={(minBudget) =>
+                  handleFilterChange({ minBudget })
                 }
-                placeholder="0"
               />
             </div>
             <div className="w-1/2">
               <label className="block mb-2 font-semibold">Max Budget</label>
-              <input
-                type="number"
-                className="w-full p-2 border rounded"
-                value={selectedFilters.maxBudget}
-                onChange={(e) =>
-                  handleFilterChange({ maxBudget: e.target.value })
+              <ScrollSelect
+                options={budgetOptions}
+                selectedValue={selectedFilters.maxBudget}
+                setSelectedValue={(maxBudget) =>
+                  handleFilterChange({ maxBudget })
                 }
-                placeholder="100000"
               />
             </div>
           </div>
@@ -248,26 +246,22 @@ const FilterPanel = ({
             <div className="flex gap-4 mb-4">
               <div className="w-1/2">
                 <label className="block mb-2 font-semibold">Min Budget</label>
-                <input
-                  type="number"
-                  className="w-full p-2 border rounded"
-                  value={selectedFilters.minBudget}
-                  onChange={(e) =>
-                    handleFilterChange({ minBudget: e.target.value })
+                <ScrollSelect
+                  options={budgetOptions}
+                  selectedValue={selectedFilters.minBudget}
+                  setSelectedValue={(minBudget) =>
+                    handleFilterChange({ minBudget })
                   }
-                  placeholder="0"
                 />
               </div>
               <div className="w-1/2">
                 <label className="block mb-2 font-semibold">Max Budget</label>
-                <input
-                  type="number"
-                  className="w-full p-2 border rounded"
-                  value={selectedFilters.maxBudget}
-                  onChange={(e) =>
-                    handleFilterChange({ maxBudget: e.target.value })
+                <ScrollSelect
+                  options={budgetOptions}
+                  selectedValue={selectedFilters.maxBudget}
+                  setSelectedValue={(maxBudget) =>
+                    handleFilterChange({ maxBudget })
                   }
-                  placeholder="100000"
                 />
               </div>
             </div>

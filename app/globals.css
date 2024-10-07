@@ -141,3 +141,12 @@ body {
 .animate-shake {
   animation: shake 0.5s;
 }
+
+.scroll-select-container {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scroll-select-container::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}

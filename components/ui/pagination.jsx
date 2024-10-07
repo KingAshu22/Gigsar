@@ -14,7 +14,8 @@ const Pagination = ({
 
   const generatePageNumbers = () => {
     const pages = [];
-    const maxPageToShow = 5; // You can adjust this number
+    const isSmallDevice = window.innerWidth <= 640; // Adjust for small screens
+    const maxPageToShow = isSmallDevice ? 3 : 5; // Show fewer pages on small devices
     const startPage = Math.max(1, currentPage - 2);
     const endPage = Math.min(totalPages, startPage + maxPageToShow - 1);
 
@@ -103,7 +104,11 @@ Pagination.displayName = "Pagination";
 const PaginationContent = React.forwardRef(({ className, ...props }, ref) => (
   <ul
     ref={ref}
-    className={cn("flex flex-row items-center gap-1", className)}
+    className={cn(
+      "flex flex-row items-center gap-1",
+      "text-xs md:text-sm", // Adjust font size based on screen size
+      className
+    )}
     {...props}
   />
 ));
@@ -123,6 +128,7 @@ const PaginationLink = ({ className, isActive, size = "icon", ...props }) => (
         size,
       }),
       isActive ? "bg-primary text-white" : "", // Add bg-primary when active
+      "px-2 py-1 rounded", // Adjust padding for buttons
       className
     )}
     {...props}
@@ -138,7 +144,7 @@ const PaginationPrevious = ({ className, ...props }) => (
     {...props}
   >
     <ChevronLeft className="h-4 w-4" />
-    <span>Previous</span>
+    <span className="hidden md:inline">Previous</span>
   </PaginationLink>
 );
 PaginationPrevious.displayName = "PaginationPrevious";
@@ -150,7 +156,7 @@ const PaginationNext = ({ className, ...props }) => (
     className={cn("gap-1 pr-2.5", className)}
     {...props}
   >
-    <span>Next</span>
+    <span className="hidden md:inline">Next</span>
     <ChevronRight className="h-4 w-4" />
   </PaginationLink>
 );

@@ -22,7 +22,7 @@ function ArtistFilter() {
     genres: [],
     locations: [],
     eventsTypes: [],
-    genders: [],
+    gender: [],
     topGenres: [],
     topEventTypes: [],
   });
@@ -32,7 +32,7 @@ function ArtistFilter() {
     genre: [],
     location: "All Locations",
     eventType: "All Event Types",
-    genders: "All",
+    gender: "All",
     minBudget: "",
     maxBudget: "",
     searchQuery: "",
@@ -69,7 +69,7 @@ function ArtistFilter() {
       genre: params.genre ? params.genre.split(",") : [],
       location: params.location || "All Locations",
       eventType: params.eventType || "All Event Types",
-      genders: params.gender || "All",
+      gender: params.gender || "All",
       minBudget: params.minBudget || "",
       maxBudget: params.maxBudget || "",
       searchQuery: params.searchQuery || "",
@@ -112,11 +112,11 @@ function ArtistFilter() {
     }
   }, [applyFilter, selectedFilters, page, fetchFilteredArtists]);
 
-  useEffect(() => {
-    if (page == 1) {
-      fetchFilteredArtists(); // Fetch when page changes to 1
-    }
-  }, [page]);
+  // useEffect(() => {
+  //   if (page == 1) {
+  //     fetchFilteredArtists(); // Fetch when page changes to 1
+  //   }
+  // }, [page]);
 
   const handleFilterChange = (newFilters) => {
     setSelectedFilters((prevFilters) => ({
@@ -132,7 +132,7 @@ function ArtistFilter() {
       genre: [],
       location: "All Locations",
       eventType: "All Event Types",
-      genders: "All",
+      gender: "All",
       minBudget: "",
       maxBudget: "",
       searchQuery: "",
@@ -205,7 +205,7 @@ function ArtistFilter() {
           genres={filters.genres}
           locations={filters.locations}
           eventsTypes={filters.eventsTypes}
-          genders={filters.genders}
+          genders={filters.gender}
           selectedFilters={selectedFilters}
           handleFilterChange={handleFilterChange}
           setApplyFilter={setApplyFilter}
@@ -226,7 +226,7 @@ function ArtistFilter() {
               selectedGenre={selectedFilters.genre}
               selectedLocation={selectedFilters.location}
               selectedEventType={selectedFilters.eventType}
-              selectedGenders={selectedFilters.genders}
+              selectedGenders={selectedFilters.gender}
               page={page}
               setPage={setPage}
               totalPages={totalPages}

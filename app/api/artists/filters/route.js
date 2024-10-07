@@ -58,7 +58,7 @@ export async function GET(req) {
         locations: uniqueLocations,
         eventsTypes: uniqueEventsTypes,
         topEventTypes,
-        genders: uniqueGenders,
+        gender: uniqueGenders,
       }),
       {
         status: 200,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SingleSearch from "@/app/_components/SingleSearch";
 import SearchList from "@/app/_components/SearchList";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/popover";
 import ScrollSelect from "./ScrollSelect";
 import { budgetOptions } from "@/constants/budget";
+import { useRouter } from "next/navigation";
 
 const FilterPanel = ({
   categories,
@@ -29,7 +30,31 @@ const FilterPanel = ({
   handleCopyLink,
   setApplyFilter,
 }) => {
+  const router = useRouter();
   const [filterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    // Parse filters from the URL and apply them to state
+    const queryFilters = router.query;
+
+    if (queryFilters) {
+      const newFilters = { ...selectedFilters };
+
+      if (queryFilters.category) newFilters.category = queryFilters.category;
+      if (queryFilters.genre) newFilters.genre = queryFilters.genre.split(",");
+      if (queryFilters.eventType) newFilters.eventType = queryFilters.eventType;
+      if (queryFilters.selectedDate)
+        newFilters.selectedDate = new Date(queryFilters.selectedDate);
+      if (queryFilters.location) newFilters.location = queryFilters.location;
+      if (queryFilters.gender) newFilters.gender = queryFilters.gender;
+      if (queryFilters.minBudget) newFilters.minBudget = queryFilters.minBudget;
+      if (queryFilters.maxBudget) newFilters.maxBudget = queryFilters.maxBudget;
+      if (queryFilters.sortOption)
+        newFilters.sortOption = queryFilters.sortOption;
+
+      handleFilterChange(newFilters); // Update the filter state
+    }
+  }, [router.query]);
 
   return (
     <>

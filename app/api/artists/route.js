@@ -1,10 +1,6 @@
 import { connectToDB } from "@/app/_utils/mongodb";
 import Artist from "@/models/Artist";
 
-const parsePrice = (priceString) => {
-  return parseInt(priceString.replace(/,/g, ""), 10);
-};
-
 export async function GET(req) {
   await connectToDB();
   try {
@@ -32,12 +28,10 @@ export async function GET(req) {
     // Build MongoDB query based on filters
     const query = { showGigsar: true };
 
-    // Only add filters if they are not set to their default values
     if (filters.selectedCategory !== "All Artist Types") {
       query.artistType = filters.selectedCategory;
     }
 
-    // Check if any genre is selected
     query.genre = {
       $regex: filters.selectedGenre.map((genre) => genre.trim()).join("|"),
       $options: "i",
@@ -67,11 +61,20 @@ export async function GET(req) {
       };
     }
 
-    // Use price for min and max filtering
+    // Price filtering logic
     const minBudget = parseInt(filters.selectedMinBudget.replace(/,/g, ""), 10);
     const maxBudget = parseInt(filters.selectedMaxBudget.replace(/,/g, ""), 10);
 
-    // Adding aggregation to handle price stored as string
+    const priceFilter = {};
+
+    if (!isNaN(minBudget)) {
+      priceFilter.$gte = minBudget;
+    }
+
+    if (!isNaN(maxBudget)) {
+      priceFilter.$lte = maxBudget;
+    }
+
     const aggregationPipeline = [
       { $match: query }, // Apply filters before aggregation
       {
@@ -84,19 +87,15 @@ export async function GET(req) {
         },
       },
       // Filtering by min and max budget if provided
-      ...(isNaN(minBudget)
-        ? []
-        : [{ $match: { numericPrice: { $gte: minBudget } } }]),
-      ...(isNaN(maxBudget)
-        ? []
-        : [{ $match: { numericPrice: { $lte: maxBudget } } }]),
+      ...(Object.keys(priceFilter).length > 0
+        ? [{ $match: { numericPrice: priceFilter } }]
+        : []),
       // Sorting by price (numericPrice field)
       {
         $sort: {
           numericPrice: filters.selectedSortOption === "Low to High" ? 1 : -1,
         },
       },
-
       // Pagination
       { $skip: (filters.page - 1) * 12 },
       { $limit: 12 },
@@ -114,19 +113,38 @@ export async function GET(req) {
     ];
 
     // Fetching artists and total count
-    const [artists, totalArtists] = await Promise.all([
+    const [artists, filteredArtistsCount] = await Promise.all([
       Artist.aggregate(aggregationPipeline).exec(),
-      Artist.countDocuments(query),
+      Artist.aggregate([
+        { $match: query }, // Apply filters before aggregation
+        {
+          $addFields: {
+            numericPrice: {
+              $toInt: {
+                $replaceAll: { input: "$price", find: ",", replacement: "" },
+              },
+            },
+          },
+        },
+        ...(Object.keys(priceFilter).length > 0
+          ? [{ $match: { numericPrice: priceFilter } }]
+          : []),
+        { $count: "total" }, // Get the total count after price filtering
+      ])
+        .exec()
+        .then((res) => (res[0] ? res[0].total : 0)), // If no result, return 0
     ]);
 
-    const totalPages = Math.ceil(totalArtists / 12);
+    const totalPages = Math.ceil(filteredArtistsCount / 12);
+    console.log("Total pages", totalPages);
+    console.log("Total artists", filteredArtistsCount);
 
     // Return JSON response
     return new Response(
       JSON.stringify({
         artists,
         totalPages,
-        totalArtists,
+        totalArtists: filteredArtistsCount,
         page: filters.page,
       }),
       {

@@ -112,11 +112,11 @@ function ArtistFilter() {
     }
   }, [applyFilter, selectedFilters, page, fetchFilteredArtists]);
 
-  // useEffect(() => {
-  //   if (page == 1) {
-  //     fetchFilteredArtists(); // Fetch when page changes to 1
-  //   }
-  // }, [page]);
+  useEffect(() => {
+    if (page == 1) {
+      fetchFilteredArtists(); // Fetch when page changes to 1
+    }
+  }, [page, !searchParams]);
 
   const handleFilterChange = (newFilters) => {
     setSelectedFilters((prevFilters) => ({

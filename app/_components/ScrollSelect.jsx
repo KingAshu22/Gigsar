@@ -6,23 +6,29 @@ const ScrollSelect = ({ options, selectedValue, setSelectedValue }) => {
   const visibleItems = 5;
   const [pickerValue, setPickerValue] = useState(selectedValue);
 
-  // Function to handle scroll and snap to nearest item
+  // Function to handle scroll and set the value while scrolling
   const handleScroll = (e) => {
     const { scrollTop } = e.target;
     const index = Math.round(scrollTop / itemHeight);
     const value = options[index] || options[0];
+
+    // Update pickerValue and selectedValue while scrolling
     setPickerValue(value);
+    console.log(value);
+
+    setSelectedValue(value); // Automatically set the selected value as you scroll
   };
 
   const snapToNearest = () => {
     const container = scrollContainerRef.current;
     const { scrollTop } = container;
     const index = Math.round(scrollTop / itemHeight);
+
+    // Smoothly scroll to the nearest item
     container.scrollTo({
       top: index * itemHeight,
       behavior: "smooth",
     });
-    setSelectedValue(options[index] || options[0]);
   };
 
   // Effect to scroll to the correct position when selectedValue changes
@@ -47,8 +53,8 @@ const ScrollSelect = ({ options, selectedValue, setSelectedValue }) => {
       }}
       ref={scrollContainerRef}
       onScroll={handleScroll}
-      onMouseUp={snapToNearest}
-      onTouchEnd={snapToNearest}
+      onMouseUp={snapToNearest} // Snap after mouse drag
+      onTouchEnd={snapToNearest} // Snap after touch drag
     >
       <div className="scroll-select-items text-center">
         {options.map((option, index) => (

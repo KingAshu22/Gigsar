@@ -187,9 +187,9 @@ function ArtistDetail({ artist }) {
   };
 
   return (
-    <div className="container mx-auto p-5">
+    <div className="container mx-auto p-0">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="flex justify-center md:justify-start">
+        <div className="flex justify-center ml-6">
           <img
             src={artist.profilePic}
             width={200}
@@ -239,71 +239,70 @@ function ArtistDetail({ artist }) {
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Pricing</h2>
         <div className="space-y-2">{renderPricing()}</div>
       </div>
-      <div className="p-5 border rounded-lg mt-5 shadow-lg">
-        <h2 className="font-bold text-2xl text-primary mb-4">Gallery</h2>
-        <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-20">
-          {artist.gallery.map((link, index) => (
-            <div key={index} className="w-full">
-              <img
-                src={link.link}
-                width={200}
-                height={200}
-                alt={artist.name}
-                className="border rounded-lg object-cover cursor-pointer"
-                onClick={() => openModal(link.link)}
-              />
-            </div>
-          ))}
-        </div>
-        <h2 className="font-bold text-2xl text-primary mb-4">
-          {artist.events.some((event) =>
-            event.links.some((link) => link.length > 0)
-          ) && "Videos"}
-        </h2>
-        <div className="space-y-6">
-          {artist.events.map((event, index) => {
-            const hasAvailableLinks = event.links.some(
-              (link) => link.length > 0
-            );
-
-            return (
-              <div key={index}>
-                {hasAvailableLinks && (
-                  <>
-                    <h3 className="font-semibold text-xl text-gray-700 mb-2">
-                      {event.name}
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {event.links.map(
-                        (link, linkIndex) =>
-                          link.length > 0 && (
-                            <div key={linkIndex} className="w-full h-64">
-                              <ReactPlayer
-                                url={`https://www.youtube.com/watch?v=${link}`}
-                                className="react-player"
-                                width="100%"
-                                height="100%"
-                              />
-                            </div>
-                          )
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        {artist.blog?.length > 0 && (
-          <>
-            <h2 className="font-bold text-2xl text-gray-800 mt-8">About Me</h2>
-            <div
-              className="text-gray-600 tracking-wide mt-4 text-justify"
-              dangerouslySetInnerHTML={{ __html: artist.blog }}
-            ></div>
-          </>
-        )}
+      <h2 className="font-bold text-2xl text-primary mb-4">Gallery</h2>
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-20">
+        {artist.gallery.map((link, index) => (
+          <div key={index} className="w-full">
+            <img
+              src={link.link}
+              width={200}
+              height={200}
+              alt={artist.name}
+              className="border rounded-lg object-cover cursor-pointer"
+              onClick={() => openModal(link.link)}
+            />
+          </div>
+        ))}
       </div>
+      <h2 className="font-bold text-2xl text-primary mb-4">
+        {artist.events.some((event) =>
+          event.links.some((link) => link.length > 0)
+        ) && "Videos"}
+      </h2>
+      <div className="">
+        {artist.events.map((event, index) => {
+          const hasAvailableLinks = event.links.some((link) => link.length > 0);
+
+          return (
+            <div key={index}>
+              {hasAvailableLinks && (
+                <>
+                  <h3 className="font-semibold text-xl text-gray-700 mb-2">
+                    {event.name}
+                  </h3>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {event.links.map(
+                      (link, linkIndex) =>
+                        link.length > 0 && (
+                          <div key={linkIndex} className="w-full h-64">
+                            <ReactPlayer
+                              url={`https://www.youtube.com/watch?v=${link}`}
+                              className="react-player"
+                              controls={false}
+                              light={true}
+                              width="100%"
+                              height="72%"
+                            />
+                          </div>
+                        )
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {artist.blog?.length > 0 && (
+        <>
+          <h2 className="font-bold text-2xl text-gray-800 mt-8">About Me</h2>
+          <div
+            className="text-gray-600 tracking-wide mt-4 text-justify"
+            dangerouslySetInnerHTML={{ __html: artist.blog }}
+          ></div>
+        </>
+      )}
 
       {/* Modal for Gallery imgs */}
       <Modal isOpen={modalOpen} onClose={closeModal} title="Gallery img">

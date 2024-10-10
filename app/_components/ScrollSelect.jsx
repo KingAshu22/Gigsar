@@ -14,7 +14,6 @@ const ScrollSelect = ({ options, selectedValue, setSelectedValue }) => {
 
     // Update pickerValue and selectedValue while scrolling
     setPickerValue(value);
-    console.log(value);
 
     setSelectedValue(value); // Automatically set the selected value as you scroll
   };

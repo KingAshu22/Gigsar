@@ -79,8 +79,7 @@ function ArtistFilter() {
     console.log(updatedFilters);
 
     setSelectedFilters(updatedFilters);
-
-    // Trigger the fetch after updating the filters
+    // Trigger fetching artists after filters are applied
     setApplyFilter(true);
   }, [searchParams]);
 
@@ -107,16 +106,17 @@ function ArtistFilter() {
   // Handle the conditional fetching of artists
   useEffect(() => {
     if (applyFilter || page > 1) {
-      fetchFilteredArtists(); // Fetch only when filters are applied or page changes
+      fetchFilteredArtists(); // Fetch only when filters are applied
       setApplyFilter(false);
     }
-  }, [applyFilter, selectedFilters, page, fetchFilteredArtists]);
+  }, [applyFilter, fetchFilteredArtists, page]);
 
   useEffect(() => {
-    if (page == 1) {
-      fetchFilteredArtists(); // Fetch when page changes to 1
+    // Check if there are no search params and if page is 1
+    if (!searchParams.toString() && page === 1) {
+      fetchFilteredArtists(); // Fetch when no search params and page is 1
     }
-  }, [page, !searchParams]);
+  }, [page, searchParams]);
 
   const handleFilterChange = (newFilters) => {
     setSelectedFilters((prevFilters) => ({
@@ -170,7 +170,6 @@ function ArtistFilter() {
   };
 
   const handleSearch = () => {
-    setApplyFilter(true);
     setPage(1); // Reset to page 1 on search
   };
 

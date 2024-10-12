@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 const ScrollSelect = ({ options, selectedValue, setSelectedValue }) => {
   const scrollContainerRef = useRef(null);
   const itemHeight = 60; // Height of each item
-  const visibleItems = 5;
+  const visibleItems = 3; // Show 3 items (1 above, 1 below, 1 selected)
   const [pickerValue, setPickerValue] = useState(selectedValue);
 
   // Function to handle scroll and set the value while scrolling
@@ -14,7 +14,6 @@ const ScrollSelect = ({ options, selectedValue, setSelectedValue }) => {
 
     // Update pickerValue and selectedValue while scrolling
     setPickerValue(value);
-
     setSelectedValue(value); // Automatically set the selected value as you scroll
   };
 
@@ -47,8 +46,8 @@ const ScrollSelect = ({ options, selectedValue, setSelectedValue }) => {
       className="scroll-select-container overflow-y-auto"
       style={{
         height: `${itemHeight * visibleItems}px`,
-        paddingTop: `${itemHeight * 2}px`,
-        paddingBottom: `${itemHeight * 2}px`,
+        paddingTop: `${itemHeight}px`, // 1 item height for padding on top
+        paddingBottom: `${itemHeight}px`, // 1 item height for padding on bottom
       }}
       ref={scrollContainerRef}
       onScroll={handleScroll}
@@ -61,10 +60,15 @@ const ScrollSelect = ({ options, selectedValue, setSelectedValue }) => {
             key={index}
             className={`py-2 text-lg ${
               pickerValue === option
-                ? "text-primary font-bold"
+                ? "text-primary font-bold border border-primary rounded" // Add a box around the selected item
                 : "text-gray-600"
             }`}
-            style={{ height: `${itemHeight}px` }}
+            style={{
+              height: `${itemHeight}px`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
             {option}
           </div>

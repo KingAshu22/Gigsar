@@ -170,6 +170,7 @@ function ArtistFilter() {
   };
 
   const handleSearch = () => {
+    setApplyFilter(true);
     setPage(1); // Reset to page 1 on search
   };
 
@@ -188,9 +189,9 @@ function ArtistFilter() {
             type="text"
             placeholder="Search By Artist Name..."
             value={selectedFilters.searchQuery}
-            onChange={(e) =>
-              handleFilterChange({ searchQuery: e.target.value })
-            }
+            onChange={(e) => {
+              handleFilterChange({ searchQuery: e.target.value });
+            }}
             onKeyDown={handleKeyDown}
           />
           <Button className="ml-2 w-auto" onClick={handleSearch}>

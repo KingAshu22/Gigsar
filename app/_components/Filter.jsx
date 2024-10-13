@@ -33,6 +33,20 @@ const FilterPanel = ({
   const router = useRouter();
   const [filterOpen, setFilterOpen] = useState(false);
 
+  const minBudgetOptions = budgetOptions.filter(
+    (option) =>
+      !selectedFilters.maxBudget ||
+      parseInt(option.replace(/,/g, "")) <=
+        parseInt(selectedFilters.maxBudget.replace(/,/g, ""))
+  );
+
+  const maxBudgetOptions = budgetOptions.filter(
+    (option) =>
+      !selectedFilters.minBudget ||
+      parseInt(option.replace(/,/g, "")) >=
+        parseInt(selectedFilters.minBudget.replace(/,/g, ""))
+  );
+
   useEffect(() => {
     // Parse filters from the URL and apply them to state
     const queryFilters = router.query;
@@ -138,7 +152,7 @@ const FilterPanel = ({
             <div className="w-1/2">
               <label className="block mb-2 font-semibold">Min Budget</label>
               <ScrollSelect
-                options={budgetOptions}
+                options={minBudgetOptions}
                 selectedValue={selectedFilters.minBudget}
                 setSelectedValue={(minBudget) =>
                   handleFilterChange({ minBudget })
@@ -148,7 +162,7 @@ const FilterPanel = ({
             <div className="w-1/2">
               <label className="block mb-2 font-semibold">Max Budget</label>
               <ScrollSelect
-                options={budgetOptions}
+                options={maxBudgetOptions}
                 selectedValue={selectedFilters.maxBudget}
                 setSelectedValue={(maxBudget) =>
                   handleFilterChange({ maxBudget })
@@ -272,7 +286,7 @@ const FilterPanel = ({
               <div className="w-1/2">
                 <label className="block mb-2 font-semibold">Min Budget</label>
                 <ScrollSelect
-                  options={budgetOptions}
+                  options={minBudgetOptions}
                   selectedValue={selectedFilters.minBudget}
                   setSelectedValue={(minBudget) =>
                     handleFilterChange({ minBudget })
@@ -282,7 +296,7 @@ const FilterPanel = ({
               <div className="w-1/2">
                 <label className="block mb-2 font-semibold">Max Budget</label>
                 <ScrollSelect
-                  options={budgetOptions}
+                  options={maxBudgetOptions}
                   selectedValue={selectedFilters.maxBudget}
                   setSelectedValue={(maxBudget) =>
                     handleFilterChange({ maxBudget })

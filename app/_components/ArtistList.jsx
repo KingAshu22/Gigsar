@@ -475,6 +475,7 @@ function ArtistList({
           setPage(newPage);
         }}
       />
+      <div className="py-4" />
     </div>
   );
 }

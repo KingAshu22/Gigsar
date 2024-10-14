@@ -202,49 +202,51 @@ const FilterPanel = ({
         </div>
       </div>
       {/* For mobile screen */}
-      <div className="mobile fixed bottom-0 w-full py-4 px-4 bg-white border-t flex justify-between gap-4 left-0">
-        <Button
-          className="w-full flex justify-center items-center py-2 bg-primary text-white rounded-md"
-          onClick={() => {
-            const newSortOption =
-              selectedFilters.sortOption === "Low to High"
-                ? "High to Low"
-                : "Low to High";
-            handleFilterChange({ sortOption: newSortOption });
-            setApplyFilter(true);
-          }}
-        >
-          {selectedFilters.sortOption === "Low to High" ? (
-            <ArrowDown01 className="mr-2" />
-          ) : (
-            <ArrowDown10 className="mr-2" />
-          )}
-          Sort: {selectedFilters.sortOption}
-        </Button>
-        <Button
-          className="w-full flex justify-center items-center py-2 bg-primary text-white rounded-md"
-          onClick={() => setFilterOpen(true)}
-        >
-          <FilterIcon className="mr-2" />
-          Filter
-        </Button>
+      <div className="mobile">
+        <div className="fixed bottom-0 w-full py-4 px-4 bg-white border-t flex justify-between gap-4 left-0">
+          <Button
+            className="w-full flex justify-center items-center py-2 bg-primary text-white rounded-md"
+            onClick={() => {
+              const newSortOption =
+                selectedFilters.sortOption === "Low to High"
+                  ? "High to Low"
+                  : "Low to High";
+              handleFilterChange({ sortOption: newSortOption });
+              setApplyFilter(true);
+            }}
+          >
+            {selectedFilters.sortOption === "Low to High" ? (
+              <ArrowDown01 className="mr-2" />
+            ) : (
+              <ArrowDown10 className="mr-2" />
+            )}
+            Sort: {selectedFilters.sortOption}
+          </Button>
+          <Button
+            className="w-full flex justify-center items-center py-2 bg-primary text-white rounded-md"
+            onClick={() => setFilterOpen(true)}
+          >
+            <FilterIcon className="mr-2" />
+            Filter
+          </Button>
+        </div>
+        <MobileFilterPanel
+          categories={categories}
+          genres={genres}
+          topGenres={topGenres}
+          locations={locations}
+          eventsTypes={eventsTypes}
+          topEventTypes={topEventTypes}
+          genders={genders}
+          selectedFilters={selectedFilters}
+          handleFilterChange={handleFilterChange}
+          handleClearFilter={handleClearFilter}
+          handleCopyLink={handleCopyLink}
+          setApplyFilter={setApplyFilter}
+          filterOpen={filterOpen}
+          setFilterOpen={setFilterOpen}
+        />
       </div>
-      <MobileFilterPanel
-        categories={categories}
-        genres={genres}
-        topGenres={topGenres}
-        locations={locations}
-        eventsTypes={eventsTypes}
-        topEventTypes={topEventTypes}
-        genders={genders}
-        selectedFilters={selectedFilters}
-        handleFilterChange={handleFilterChange}
-        handleClearFilter={handleClearFilter}
-        handleCopyLink={handleCopyLink}
-        setApplyFilter={setApplyFilter}
-        filterOpen={filterOpen}
-        setFilterOpen={setFilterOpen}
-      />
     </>
   );
 };

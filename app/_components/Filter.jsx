@@ -202,7 +202,7 @@ const FilterPanel = ({
         </div>
       </div>
       {/* For mobile screen */}
-      <div className="fixed bottom-0 w-full py-4 px-4 bg-white border-t flex justify-between gap-4 left-0">
+      <div className="mobile fixed bottom-0 w-full py-4 px-4 bg-white border-t flex justify-between gap-4 left-0">
         <Button
           className="w-full flex justify-center items-center py-2 bg-primary text-white rounded-md"
           onClick={() => {

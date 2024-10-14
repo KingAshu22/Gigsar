@@ -15,15 +15,7 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import Pagination from "./Pagination";
 
 function ArtistList({
   artists,

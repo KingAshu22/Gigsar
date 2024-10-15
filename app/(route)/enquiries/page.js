@@ -240,7 +240,11 @@ function Enquiries() {
           <h2 className="text-lg md:text-xl lg:text-2xl font-bold mb-2 md:mb-3">
             Available Artists ({availableArtists.length})
           </h2>
-          <ArtistList artists={availableArtists} showEnquiry={false} />
+          <ArtistList
+            artists={availableArtists}
+            showEnquiry={false}
+            showBooking={true}
+          />
         </div>
         <div className="bg-white p-4 md:p-5 lg:p-6 rounded-lg shadow-md">
           <h2 className="text-lg md:text-xl lg:text-2xl font-bold mb-2 md:mb-3">

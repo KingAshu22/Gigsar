@@ -75,8 +75,15 @@ function BookArtistPage() {
 
   useEffect(() => {
     const eventParam = searchParams.get("event");
+    const dateParam = searchParams.get("date");
     if (eventParam) {
       setEvent(eventParam);
+      setCurrentStep(2);
+    }
+    if (dateParam) {
+      const parsedDate = new Date(dateParam);
+      setDate(parsedDate);
+      setCurrentStep(3);
     }
   }, [searchParams]);
 
@@ -217,6 +224,36 @@ function BookArtistPage() {
       )}
       {currentStep === 2 && (
         <div>
+          <Label htmlFor="date" className="text-lg">
+            Event Date
+          </Label>
+          <br />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
+      {currentStep === 3 && (
+        <div>
           <Label htmlFor="location" className="text-lg">
             Event Location
           </Label>
@@ -246,36 +283,6 @@ function BookArtistPage() {
               onChange={(e) => setVenue(e.target.value)}
             />
           </div>
-        </div>
-      )}
-      {currentStep === 3 && (
-        <div>
-          <Label htmlFor="date" className="text-lg">
-            Event Date
-          </Label>
-          <br />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-full text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date ? format(date, "PPP") : <span>Pick a date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
         </div>
       )}
       {currentStep === 4 && (
@@ -500,15 +507,15 @@ function BookArtistPage() {
           </Button>
         )}
         <div className="flex-grow"></div> {/* Add this line */}
-        {currentStep < 6 && (
+        {currentStep < 7 && (
           <Button
             className="bg-primary text-white"
             variant="primary"
             onClick={nextStep}
             disabled={
               (currentStep === 1 && !event) ||
-              (currentStep === 2 && !location && !venue) ||
-              (currentStep === 3 && !date) ||
+              (currentStep === 2 && !date) ||
+              (currentStep === 3 && !location && !venue) ||
               (currentStep === 4 && !selectedSoundSystem)
             }
           >

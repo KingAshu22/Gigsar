@@ -33,6 +33,7 @@ function ArtistList({
   setPage,
   totalPages,
   showEnquiry = true,
+  showBooking = false,
 }) {
   const router = useRouter();
   const inputRef = useRef(null);
@@ -276,6 +277,16 @@ function ArtistList({
                       Send enquiry
                     </button>
                   )}
+                  {showBooking && (
+                    <Link
+                      className="w-full"
+                      href={`/book/${artist.linkid}?event=${selectedEventType}&date=${selectedDate}`}
+                    >
+                      <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
+                        Book Now
+                      </button>
+                    </Link>
+                  )}
                   {showModal && currentArtistId === artist.linkid && (
                     <Modal
                       isOpen={showModal}
@@ -459,15 +470,19 @@ function ArtistList({
           </div>
         )}
       </div>
-      <Pagination
-        className="mt-6"
-        totalPages={totalPages} // Total number of pages
-        currentPage={page} // Current active page
-        setPage={(newPage) => {
-          setPage(newPage);
-        }}
-      />
-      <div className="py-4" />
+      {showEnquiry && (
+        <>
+          <Pagination
+            className="mt-6"
+            totalPages={totalPages} // Total number of pages
+            currentPage={page} // Current active page
+            setPage={(newPage) => {
+              setPage(newPage);
+            }}
+          />
+          <div className="py-4" />
+        </>
+      )}
     </div>
   );
 }

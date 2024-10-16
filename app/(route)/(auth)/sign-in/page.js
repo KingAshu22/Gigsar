@@ -23,12 +23,10 @@ export default function SignIn() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const rawReturnUrl = searchParams.get("redirect_url") || "/user-dashboard";
-    if (typeof window !== "undefined") {
-      const returnUrlPath = new URL(rawReturnUrl, window.location.origin)
-        .pathname;
-      setReturnUrl(returnUrlPath);
-    }
+    // Use decodeURIComponent to decode the redirect_url
+    const rawReturnUrl =
+      decodeURIComponent(searchParams.get("redirect_url")) || "/user-dashboard";
+    setReturnUrl(rawReturnUrl);
   }, [searchParams]);
 
   useEffect(() => {
@@ -56,6 +54,7 @@ export default function SignIn() {
           localStorage.setItem("authExpiry", authExpiry.toString());
           localStorage.setItem("mobile", mobile.toString());
           localStorage.setItem("city", city.toString());
+          // Redirect to the full returnUrl
           router.push(returnUrl);
         };
 
@@ -90,12 +89,9 @@ export default function SignIn() {
       toast.error("Please fill your phone number");
       return;
     }
-    // Check for country code +91 and ensure the phone number is exactly 10 digits
-    if (countryCode === "+91") {
-      if (phone.length !== 10) {
-        toast.error("Please enter a valid 10-digit phone number.");
-        return;
-      }
+    if (countryCode === "+91" && phone.length !== 10) {
+      toast.error("Please enter a valid 10-digit phone number.");
+      return;
     }
     if (OTPlessSignin) {
       OTPlessSignin.initiate({
@@ -121,7 +117,7 @@ export default function SignIn() {
           if (response.success && response.response.requestID) {
             setShowVerifiedGif(true);
             setTimeout(() => {
-              router.push(returnUrl);
+              router.push(returnUrl); // Redirect to the full returnUrl
             }, 2000);
           } else {
             setError(
@@ -179,11 +175,9 @@ export default function SignIn() {
               </div>
               <button
                 onClick={handlePhoneAuth}
-                className={
-                  isButtonDisabled
-                    ? "w-full mt-4 px-4 py-2 bg-primary opacity-75 text-white rounded-lg hover:bg-red-800 transition duration-200"
-                    : "w-full mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-red-800 transition duration-200"
-                }
+                className={`w-full mt-4 px-4 py-2 bg-primary ${
+                  isButtonDisabled ? "opacity-75" : ""
+                } text-white rounded-lg hover:bg-red-800 transition duration-200`}
                 disabled={isButtonDisabled}
               >
                 {isButtonDisabled ? `Resend OTP in ${timer}s` : "Send OTP"}

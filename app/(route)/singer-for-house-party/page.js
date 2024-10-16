@@ -250,6 +250,7 @@ function BookArtistPage() {
             showEnquiry={false}
             selectedEventType="House Party"
             selectedDate={date}
+            name={name}
           />
         </div>
       )}
@@ -263,21 +264,22 @@ function BookArtistPage() {
             <ChevronLeft /> Back
           </Button>
         )}
-        <div className="flex space-x-4">
-          {currentStep < 5 && (
-            <Button onClick={nextStep}>
-              Next <ChevronRight />
-            </Button>
-          )}
-          {currentStep === 5 && (
-            <Button
-              onClick={() => console.log("Submit booking")}
-              disabled={loading}
-            >
-              {loading ? "Booking..." : "Book Now"}
-            </Button>
-          )}
-        </div>
+        <div className="flex-grow"></div> {/* Add this line */}
+        {currentStep < 5 && (
+          <Button
+            className="bg-primary text-white"
+            variant="primary"
+            onClick={nextStep}
+            disabled={
+              (currentStep === 1 && !date) ||
+              (currentStep === 2 && !location) ||
+              (currentStep === 3 && !name) ||
+              (currentStep === 4 && (!mobile || mobile.length !== 10))
+            }
+          >
+            Next <ChevronRight />
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -33,6 +33,7 @@ import soundSystems from "./components/soundSystems";
 import addOns from "./components/addOns";
 import SingleSearch from "@/app/_components/SingleSearch";
 import eventTypesOptions from "@/constants/eventTypes";
+import withAuth from "@/lib/withAuth";
 
 const eventTypeMapping = {
   Corporate: "corporateBudget",
@@ -60,12 +61,13 @@ function BookArtistPage() {
   const [event, setEvent] = useState("");
   const [priceName, setPriceName] = useState("");
   const [date, setDate] = useState(null);
-  const [location, setLocation] = useState("");
-  const [venue, setVenue] = useState("");
+  const [location, setLocation] = useState(null);
+  const [venue, setVenue] = useState(null);
   const [guestCount, setGuestCount] = useState("");
   const [selectedSoundSystem, setSelectedSoundSystem] = useState(null);
   const [selectedAddOns, setSelectedAddOns] = useState([]);
   const [artistPrice, setArtistPrice] = useState("");
+  const [name, setName] = useState(null);
   const [showSpecs, setShowSpecs] = useState({}); // State to manage specs visibility
   const [currentStep, setCurrentStep] = useState(1); // State to manage current step
 
@@ -76,6 +78,7 @@ function BookArtistPage() {
   useEffect(() => {
     const eventParam = searchParams.get("event");
     const dateParam = searchParams.get("date");
+    const nameParam = searchParams.get("name");
     if (eventParam) {
       setEvent(eventParam);
       setCurrentStep(2);
@@ -84,6 +87,10 @@ function BookArtistPage() {
       const parsedDate = new Date(dateParam);
       setDate(parsedDate);
       setCurrentStep(3);
+    }
+    if (nameParam) {
+      setName(nameParam);
+      setCurrentStep(4);
     }
   }, [searchParams]);
 
@@ -104,6 +111,80 @@ function BookArtistPage() {
       setArtist(response.data);
     } catch (error) {
       console.error("Error fetching artist:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatMessage = () => {
+    const { subtotal, gst, total } = calculatePrices(); // Ensure calculatePrices function is defined and returns correct values
+
+    // Get the selected sound system name
+    const selectedSoundSystemName = selectedSoundSystem
+      ? soundSystems.find((system) => system.id === selectedSoundSystem)
+          ?.name || "Not specified"
+      : "Not specified";
+
+    // Get the selected add-ons names
+    const selectedAddOnNames = selectedAddOns.map(
+      (id) => addOns.find((addOn) => addOn.id === id)?.name || "Unknown Add-On"
+    );
+
+    return `
+      Enquiry Details:
+      - Event: ${event}
+      - Date: ${date ? date.toLocaleDateString() : "Not specified"}
+      - Location: ${location}
+      - Artist: ${artistName}
+      - Guest Count: ${guestCount}
+      - Selected Sound System: ${selectedSoundSystemName}
+      - Selected Add-Ons: ${selectedAddOnNames.join(", ") || "None"}
+      
+      Pricing Details:
+      - Artist Price: ${artistPrice || "Not specified"}
+      - Sound System Price: ${
+        selectedSoundSystem
+          ? soundSystems.find((system) => system.id === selectedSoundSystem)
+              ?.price || "0"
+          : "0"
+      }
+      - Add-Ons Total: ${
+        selectedAddOns.reduce(
+          (total, id) =>
+            total + (addOns.find((addOn) => addOn.id === id)?.price || 0),
+          0
+        ) || "0"
+      }
+      - Subtotal: ${subtotal || "0"}
+      - GST: ${gst || "0"}
+      - Total: ${total || "0"}
+    `;
+  };
+
+  const sendEnquiry = async () => {
+    setLoading(true);
+    console.log("Inside send enquiry");
+
+    try {
+      const params = {
+        name,
+        email: "gigsar",
+        contact: localStorage?.getItem("mobile"),
+        location: `${venue} ${location}`,
+        eventType: event,
+        artistType: artist?.name,
+        date: date.toLocaleString(),
+        budget: total,
+        message: formatMessage(),
+      };
+      console.log(params);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/gigsar-enquiry`,
+        params
+      );
+      console.log("Enquiry sent successfully:", response.data);
+    } catch (err) {
+      console.error("Error sending enquiry:", err);
     } finally {
       setLoading(false);
     }
@@ -254,6 +335,24 @@ function BookArtistPage() {
       )}
       {currentStep === 3 && (
         <div>
+          <Label htmlFor="Name" className="text-lg">
+            Enter Your Name
+          </Label>
+          <div className="relative">
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              autoComplete="off"
+              className="w-full"
+              placeholder="Enter Your Name"
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
+      {currentStep === 4 && (
+        <div>
           <Label htmlFor="location" className="text-lg">
             Event City
           </Label>
@@ -286,7 +385,7 @@ function BookArtistPage() {
           </div>
         </div>
       )}
-      {currentStep === 4 && (
+      {currentStep === 5 && (
         <div>
           <Label htmlFor="guests" className="text-lg">
             Number of Guests
@@ -307,7 +406,7 @@ function BookArtistPage() {
           </Select>
         </div>
       )}
-      {currentStep === 5 && (
+      {currentStep === 6 && (
         <div>
           <Label htmlFor="soundSystem" className="block mb-2 text-xl">
             Select Sound System
@@ -379,7 +478,7 @@ function BookArtistPage() {
           </div>
         </div>
       )}
-      {currentStep === 6 && (
+      {currentStep === 7 && (
         <div>
           <Label htmlFor="addOns" className="block mb-2 text-lg">
             Any Add On?
@@ -414,7 +513,7 @@ function BookArtistPage() {
           </div>
         </div>
       )}
-      {currentStep === 7 && (
+      {currentStep === 8 && (
         <div>
           <h2 className="text-2xl font-bold mb-4">Pricing Details</h2>
           <div className="bg-gray-100 p-4 rounded-lg">
@@ -508,7 +607,7 @@ function BookArtistPage() {
           </Button>
         )}
         <div className="flex-grow"></div> {/* Add this line */}
-        {currentStep < 7 && (
+        {currentStep < 8 && (
           <Button
             className="bg-primary text-white"
             variant="primary"
@@ -516,11 +615,17 @@ function BookArtistPage() {
             disabled={
               (currentStep === 1 && !event) ||
               (currentStep === 2 && !date) ||
-              (currentStep === 3 && !location && !venue) ||
-              (currentStep === 4 && !selectedSoundSystem)
+              (currentStep === 3 && !name) ||
+              (currentStep === 4 && !(location && venue)) ||
+              (currentStep === 6 && !selectedSoundSystem)
             }
           >
             Next <ChevronRight />
+          </Button>
+        )}
+        {currentStep === 8 && (
+          <Button onClick={() => sendEnquiry()} disabled={loading}>
+            {loading ? "Booking..." : "Book Now"}
           </Button>
         )}
       </div>
@@ -528,4 +633,4 @@ function BookArtistPage() {
   );
 }
 
-export default BookArtistPage;
+export default withAuth(BookArtistPage);

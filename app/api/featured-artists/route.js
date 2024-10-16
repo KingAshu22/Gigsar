@@ -3,7 +3,7 @@ import { connectToDB } from "@/app/_utils/mongodb";
 
 // Helper function to get only the YYYY-MM-DD part of a date in ISO format
 function getISODateOnly(date) {
-  return new Date(date).toISOString().split("T")[0]; // Extract only the date part (YYYY-MM-DD)
+  return new Date(date).toLocaleDateString().split("T")[0]; // Extract only the date part (YYYY-MM-DD)
 }
 
 export async function GET(req) {
@@ -22,7 +22,7 @@ export async function GET(req) {
       feature: "Featured House Party Artists",
       showGigsar: true,
       busyDates: {
-        $nin: [new Date(date).toISOString()],
+        $nin: [new Date(date).toLocaleDateString()],
       },
       location: {
         $regex: new RegExp(location, "i"), // Case-insensitive search

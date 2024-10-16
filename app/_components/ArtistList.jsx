@@ -238,7 +238,7 @@ function ArtistList({
         </div>
       </Modal>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-7 mt-4 lg:grid-cols-4">
-        {artists.length > 0 ? (
+        {artists?.length > 0 ? (
           artists.map((artist, index) => {
             const eventTypeLink =
               eventType.length > 0 ? `?selectedEventType=${eventType}` : "";

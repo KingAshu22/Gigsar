@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, useParams } from "next/navigation";
+import { useSearchParams, useParams, useRouter } from "next/navigation"; // Import useRouter
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Script from "next/script";
@@ -23,18 +23,49 @@ import {
 import ArtistList from "@/app/_components/ArtistList";
 
 function BookArtistPage() {
+  const router = useRouter(); // Initialize useRouter
   const params = useParams();
+  const searchParams = useSearchParams();
   const inputRef = useRef(null);
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(null);
-  const [location, setLocation] = useState("");
-  const [name, setName] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [currentStep, setCurrentStep] = useState(1); // State to manage current step
+  const [location, setLocation] = useState(null);
+  const [name, setName] = useState(null);
+  const [mobile, setMobile] = useState(null);
+  const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
-    if (date && location && name && location) {
+    // Load state from query parameters on mount
+    const storedDate = searchParams.get("date");
+    const storedLocation = searchParams.get("location");
+    const storedName = searchParams.get("name");
+    const storedMobile = searchParams.get("mobile");
+    const storedStep = searchParams.get("step");
+
+    if (storedDate) setDate(new Date(storedDate));
+    if (storedLocation) setLocation(storedLocation);
+    if (storedName) setName(storedName);
+    if (storedMobile) setMobile(storedMobile);
+    if (storedStep) setCurrentStep(Number(storedStep));
+  }, []);
+
+  useEffect(() => {
+    // Update query parameters when any state changes
+    const params = new URLSearchParams();
+    if (date) params.set("date", date);
+    if (location) params.set("location", location.split(",")[0].trim());
+    if (name) params.set("name", name);
+    if (mobile) params.set("mobile", mobile);
+    params.set("step", currentStep);
+
+    router.push(`/singer-for-house-party?${params.toString()}`, undefined, {
+      shallow: true,
+    });
+  }, [date, location, name, mobile, currentStep]);
+
+  useEffect(() => {
+    if (currentStep >= 4 && date && location && name && mobile) {
       console.log(date);
       getArtist();
     }
@@ -43,7 +74,12 @@ function BookArtistPage() {
   const getArtist = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/featured-artists/${date}`);
+      const response = await axios.get("/api/featured-artists", {
+        params: {
+          date,
+          location: location.split(",")[0].trim(),
+        },
+      });
       console.log(response.data);
       setArtist(response.data);
     } catch (error) {
@@ -202,10 +238,12 @@ function BookArtistPage() {
           </div>
         </div>
       )}
-
       {currentStep === 5 && (
         <div>
-          <p>Here are the Available Artists.</p>
+          <p>
+            Following artists are available on your date:{" "}
+            {date.toLocaleDateString()} and location: {location}
+          </p>
           <ArtistList
             artists={artist}
             showBooking={true}
@@ -215,7 +253,6 @@ function BookArtistPage() {
           />
         </div>
       )}
-
       <div className="flex justify-between mt-4">
         {currentStep > 1 && (
           <Button
@@ -226,22 +263,21 @@ function BookArtistPage() {
             <ChevronLeft /> Back
           </Button>
         )}
-        <div className="flex-grow"></div> {/* Add this line */}
-        {currentStep < 5 && (
-          <Button
-            className="bg-primary text-white"
-            variant="primary"
-            onClick={nextStep}
-            disabled={
-              (currentStep === 1 && !date) ||
-              (currentStep === 2 && !location) ||
-              (currentStep === 3 && !name) ||
-              (currentStep === 4 && !mobile)
-            }
-          >
-            Next <ChevronRight />
-          </Button>
-        )}
+        <div className="flex space-x-4">
+          {currentStep < 5 && (
+            <Button onClick={nextStep}>
+              Next <ChevronRight />
+            </Button>
+          )}
+          {currentStep === 5 && (
+            <Button
+              onClick={() => console.log("Submit booking")}
+              disabled={loading}
+            >
+              {loading ? "Booking..." : "Book Now"}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -6,8 +6,11 @@ function getISODateOnly(date) {
   return new Date(date).toISOString().split("T")[0]; // Extract only the date part (YYYY-MM-DD)
 }
 
-export async function GET(req, { params }) {
-  const { date } = params; // Get the date from params
+export async function GET(req) {
+  const { searchParams } = new URL(req.url); // Extract search params from the request URL
+  const date = searchParams.get("date");
+  const location = searchParams.get("location");
+
   const selectedDate = getISODateOnly(new Date(date)); // Normalize the selected date to YYYY-MM-DD
   console.log(selectedDate);
 
@@ -20,6 +23,9 @@ export async function GET(req, { params }) {
       showGigsar: true,
       busyDates: {
         $nin: [new Date(date).toISOString()],
+      },
+      location: {
+        $regex: new RegExp(location, "i"), // Case-insensitive search
       },
     });
 

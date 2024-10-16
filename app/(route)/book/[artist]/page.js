@@ -255,7 +255,7 @@ function BookArtistPage() {
       {currentStep === 3 && (
         <div>
           <Label htmlFor="location" className="text-lg">
-            Event Location
+            Event City
           </Label>
           <div className="relative">
             <Input
@@ -270,7 +270,8 @@ function BookArtistPage() {
             />
           </div>
           <Label htmlFor="location" className="text-lg">
-            Venue Name
+            {event === "House Party" ? <span>House</span> : <span>Venue</span>}{" "}
+            Complete Address with Pin Code
           </Label>
           <div className="relative">
             <Input

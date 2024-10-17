@@ -137,7 +137,7 @@ function BookArtistPage() {
       Enquiry Details:
       - Event: ${event}
       - Date: ${date ? date.toLocaleDateString() : "Not specified"}
-      - Location: ${location}
+      - Location: ${address}, ${location} ${zipCode}
       - Artist: ${artistName}
       - Guest Count: ${guestCount}
       - Selected Sound System: ${selectedSoundSystemName}

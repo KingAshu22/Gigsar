@@ -62,6 +62,8 @@ function BookArtistPage() {
   const [priceName, setPriceName] = useState("");
   const [date, setDate] = useState(null);
   const [location, setLocation] = useState(null);
+  const [address, setAddress] = useState(null);
+  const [zipCode, setZipCode] = useState(null);
   const [venue, setVenue] = useState(null);
   const [guestCount, setGuestCount] = useState("");
   const [selectedSoundSystem, setSelectedSoundSystem] = useState(null);
@@ -79,6 +81,7 @@ function BookArtistPage() {
     const eventParam = searchParams.get("event");
     const dateParam = searchParams.get("date");
     const nameParam = searchParams.get("name");
+    setLocation(searchParams.get("location"));
     if (eventParam) {
       setEvent(eventParam);
       setCurrentStep(2);
@@ -156,7 +159,6 @@ function BookArtistPage() {
         ) || "0"
       }
       - Subtotal: ${subtotal || "0"}
-      - GST: ${gst || "0"}
       - Total: ${total || "0"}
     `;
   };
@@ -248,13 +250,12 @@ function BookArtistPage() {
     const subtotal =
       parseFloat(artistPrice) + soundSystemPrice + addOnsTotalPrice;
 
-    const gst = Number.isFinite(subtotal) ? (subtotal * 18) / 100 : 0;
-    const total = Number.isFinite(subtotal) ? subtotal + gst : 0;
+    const total = Number.isFinite(subtotal) ? subtotal + 99 : 0;
 
-    return { subtotal, gst, total };
+    return { subtotal, total };
   };
 
-  const { subtotal, gst, total } = calculatePrices();
+  const { subtotal, total } = calculatePrices();
 
   const toggleSpecs = (id) => {
     setShowSpecs((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -368,34 +369,56 @@ function BookArtistPage() {
       )}
       {currentStep === 4 && (
         <div>
-          <Label htmlFor="location" className="text-lg">
-            Event City
-          </Label>
-          <div className="relative">
+          {/* Street */}
+          <div className="relative my-4">
+            <Label htmlFor="address" className="text-lg">
+              {event === "House Party" ? (
+                <span>House</span>
+              ) : (
+                <span>Venue</span>
+              )}{" "}
+              Complete Address
+            </Label>
             <Input
-              id="location"
+              id="address"
               type="text"
-              value={location}
-              ref={inputRef}
-              autoComplete="off"
+              value={address}
+              autoComplete="on"
               className="w-full"
-              placeholder="Enter city name"
-              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Enter Address"
+              onChange={(e) => setAddress(e.target.value)}
             />
           </div>
-          <Label htmlFor="location" className="text-lg">
-            {event === "House Party" ? <span>House</span> : <span>Venue</span>}{" "}
-            Complete Address with Pin Code
-          </Label>
-          <div className="relative">
+
+          {/* City */}
+          <div className="relative my-4">
+            <Label htmlFor="city" className="text-md">
+              City
+            </Label>
             <Input
-              id="venue"
+              id="city"
               type="text"
-              value={venue}
+              value={location}
+              disabled={true}
+              className="w-full"
+              placeholder="Enter City"
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </div>
+
+          {/* ZipCode */}
+          <div className="relative my-4">
+            <Label htmlFor="zipcode" className="text-md">
+              Zip Code
+            </Label>
+            <Input
+              id="zipcode"
+              type="number"
+              value={zipCode}
               autoComplete="off"
               className="w-full"
-              placeholder="Enter Venue Name"
-              onChange={(e) => setVenue(e.target.value)}
+              placeholder="Enter Zip Code"
+              onChange={(e) => setZipCode(e.target.value)}
             />
           </div>
         </div>
@@ -413,10 +436,14 @@ function BookArtistPage() {
               <SelectItem value="Up to 10">Up to 10</SelectItem>
               <SelectItem value="11 to 20">11 to 20</SelectItem>
               <SelectItem value="21 to 50">21 to 50</SelectItem>
-              <SelectItem value="51 to 80">51 to 80</SelectItem>
-              <SelectItem value="81 to 120">81 to 120</SelectItem>
-              <SelectItem value="121 to 200">121 to 200</SelectItem>
-              <SelectItem value="More than 200">More than 200</SelectItem>
+              {event !== "House Party" && (
+                <>
+                  <SelectItem value="51 to 80">51 to 80</SelectItem>
+                  <SelectItem value="81 to 120">81 to 120</SelectItem>
+                  <SelectItem value="121 to 200">121 to 200</SelectItem>
+                  <SelectItem value="More than 200">More than 200</SelectItem>
+                </>
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -433,63 +460,75 @@ function BookArtistPage() {
             Sound System.
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {soundSystems.map((system) => (
-              <div
-                key={system.id}
-                className={`p-4 border rounded-lg cursor-pointer ${
-                  selectedSoundSystem === system.id
-                    ? "bg-primary text-white"
-                    : "border-gray-300"
-                }`}
-                onClick={() => setSelectedSoundSystem(system.id)}
-              >
-                <h2 className="text-xl font-bold mb-2">{system.name}</h2>
-                {showSpecs[system.id] && (
-                  <p
-                    className={`text-sm rounded p-1 mb-0 ${
-                      selectedSoundSystem === system.id
-                        ? "bg-red-600"
-                        : "bg-gray-200"
-                    }`}
-                    dangerouslySetInnerHTML={{ __html: system.specs }}
-                  ></p>
-                )}
-                <button
-                  onClick={() => toggleSpecs(system.id)}
-                  className={`flex items-center justify-between  p-2 rounded-lg w-full transition-colors duration-200 ${
+            {soundSystems
+              // Filter sound systems based on guest count if the event is "House Party"
+              .filter((system) => {
+                if (event === "House Party") {
+                  return (
+                    system.guests === "Up to 10" ||
+                    system.guests === "11 to 20" ||
+                    system.guests === "21 to 50"
+                  );
+                }
+                return true; // Otherwise, show all sound systems
+              })
+              .map((system) => (
+                <div
+                  key={system.id}
+                  className={`p-4 border rounded-lg cursor-pointer ${
                     selectedSoundSystem === system.id
-                      ? "bg-red-600 hover:bg-red-900 text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
+                      ? "bg-primary text-white"
+                      : "border-gray-300"
                   }`}
+                  onClick={() => setSelectedSoundSystem(system.id)}
                 >
-                  <span>
-                    {showSpecs[system.id] ? "Hide Specs" : "Show Specs"}
-                  </span>
-                  {showSpecs[system.id] ? (
-                    <ChevronUp className="ml-2" />
-                  ) : (
-                    <ChevronDown className="ml-2" />
+                  <h2 className="text-xl font-bold mb-2">{system.name}</h2>
+                  {showSpecs[system.id] && (
+                    <p
+                      className={`text-sm rounded p-1 mb-0 ${
+                        selectedSoundSystem === system.id
+                          ? "bg-red-600"
+                          : "bg-gray-200"
+                      }`}
+                      dangerouslySetInnerHTML={{ __html: system.specs }}
+                    ></p>
                   )}
-                </button>
-                <p className="text-sm mb-1">
-                  <span className="font-bold">Suitable Guest Count:</span>{" "}
-                  {system.guests}
-                </p>
-                <p className="text-sm mb-1">
-                  <span className="font-bold">Suitable Event Type:</span>{" "}
-                  {system.suitable}
-                </p>
-                <p
-                  className={`text-lg font-semibold ${
-                    selectedSoundSystem === system.id
-                      ? "text-white"
-                      : "text-primary"
-                  }`}
-                >
-                  Price: ₹ {formatToIndianNumber(system.price)}/-
-                </p>
-              </div>
-            ))}
+                  <button
+                    onClick={() => toggleSpecs(system.id)}
+                    className={`flex items-center justify-between  p-2 rounded-lg w-full transition-colors duration-200 ${
+                      selectedSoundSystem === system.id
+                        ? "bg-red-600 hover:bg-red-900 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                  >
+                    <span>
+                      {showSpecs[system.id] ? "Hide Specs" : "Show Specs"}
+                    </span>
+                    {showSpecs[system.id] ? (
+                      <ChevronUp className="ml-2" />
+                    ) : (
+                      <ChevronDown className="ml-2" />
+                    )}
+                  </button>
+                  <p className="text-sm mb-1">
+                    <span className="font-bold">Suitable Guest Count:</span>{" "}
+                    {system.guests}
+                  </p>
+                  <p className="text-sm mb-1">
+                    <span className="font-bold">Suitable Event Type:</span>{" "}
+                    {system.suitable}
+                  </p>
+                  <p
+                    className={`text-lg font-semibold ${
+                      selectedSoundSystem === system.id
+                        ? "text-white"
+                        : "text-primary"
+                    }`}
+                  >
+                    Price: ₹ {formatToIndianNumber(system.price)}/-
+                  </p>
+                </div>
+              ))}
           </div>
         </div>
       )}
@@ -531,6 +570,9 @@ function BookArtistPage() {
       {currentStep === 8 && (
         <div>
           <h2 className="text-2xl font-bold mb-4">Pricing Details</h2>
+          <p className="text-bold">
+            Pay ₹99 Booking Charges Now to Book {artist?.name}.
+          </p>
           <div className="bg-gray-100 p-4 rounded-lg">
             <div className="grid grid-cols-1 gap-4">
               {/* Artist Price */}
@@ -587,14 +629,12 @@ function BookArtistPage() {
                 <p className="text-lg">₹{formatToIndianNumber(subtotal)}</p>
               </div>
 
-              {/* GST */}
+              {/* Booking Charges */}
               <div className="flex justify-between">
                 <p className="text-lg">
-                  <span className="font-bold">GST (18%):</span>
+                  <span className="font-bold">Booking Charges:</span>
                 </p>
-                <p className="text-lg">
-                  ₹{formatToIndianNumber(Math.ceil(gst))}
-                </p>
+                <p className="text-lg">₹99</p>
               </div>
 
               {/* Total */}
@@ -631,8 +671,8 @@ function BookArtistPage() {
               (currentStep === 1 && !event) ||
               (currentStep === 2 && !date) ||
               (currentStep === 3 && !name) ||
-              (currentStep === 4 && !(location && venue)) ||
-              (currentStep === 6 && !selectedSoundSystem)
+              (currentStep === 4 && !(address && zipCode)) ||
+              (currentStep === 5 && !guestCount)
             }
           >
             Next <ChevronRight />

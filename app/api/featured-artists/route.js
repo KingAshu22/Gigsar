@@ -1,19 +1,14 @@
 import Artist from "@/models/Artist";
 import { connectToDB } from "@/app/_utils/mongodb";
 
-// Helper function to get only the YYYY-MM-DD part of a date in ISO format
-function getISODateOnly(date) {
-  return new Date(date).toLocaleDateString().split("T")[0]; // Extract only the date part (YYYY-MM-DD)
-}
-
 export async function GET(req) {
   const { searchParams } = new URL(req.url); // Extract search params from the request URL
+  console.log("Inside Route");
   const date = searchParams.get("date");
   const location = searchParams.get("location");
   console.log(location);
 
-  const selectedDate = getISODateOnly(new Date(date)); // Normalize the selected date to YYYY-MM-DD
-  console.log(selectedDate);
+  console.log(date);
 
   await connectToDB(); // Connect to the database
 
@@ -22,9 +17,6 @@ export async function GET(req) {
     const artists = await Artist.find({
       feature: "Featured House Party Artists",
       showGigsar: true,
-      busyDates: {
-        $nin: [new Date(date).toLocaleDateString()],
-      },
       location: {
         $regex: new RegExp(location, "i"), // Case-insensitive search
       },

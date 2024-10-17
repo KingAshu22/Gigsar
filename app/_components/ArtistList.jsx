@@ -35,6 +35,7 @@ function ArtistList({
   showEnquiry = true,
   showBooking = false,
   name,
+  bookLocation,
 }) {
   const router = useRouter();
   const inputRef = useRef(null);
@@ -281,7 +282,7 @@ function ArtistList({
                   {showBooking && (
                     <Link
                       className="w-full"
-                      href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&date=${selectedDate}`}
+                      href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
                     >
                       <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
                         Book Now

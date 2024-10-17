@@ -10,6 +10,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url); // Extract search params from the request URL
   const date = searchParams.get("date");
   const location = searchParams.get("location");
+  console.log(location);
 
   const selectedDate = getISODateOnly(new Date(date)); // Normalize the selected date to YYYY-MM-DD
   console.log(selectedDate);

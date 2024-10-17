@@ -65,14 +65,14 @@ function BookArtistPage() {
   }, [date, location, name, mobile, currentStep]);
 
   useEffect(() => {
-    if (currentStep >= 4 && date && location && name && mobile) {
-      console.log(date);
-      getArtist();
+    if (currentStep > 4) {
+      getArtist(); // Fetch artist data the first time or on returning
     }
-  }, [date, location, name, mobile]);
+  }, [currentStep]);
 
   const getArtist = async () => {
     setLoading(true);
+    setArtist(null); // Clear previous artists before making a new request
     try {
       const response = await axios.get("/api/featured-artists", {
         params: {
@@ -80,10 +80,15 @@ function BookArtistPage() {
           location: location.split(",")[0].trim(),
         },
       });
-      console.log(response.data);
-      setArtist(response.data);
+
+      if (response.data && response.data.length > 0) {
+        setArtist(response.data); // Set artist data if found
+      } else {
+        setArtist([]); // Set empty array if no artists are found
+      }
     } catch (error) {
       console.error("Error fetching artist:", error);
+      setArtist([]); // Handle the case when there's an error or no artists
     } finally {
       setLoading(false);
     }
@@ -244,14 +249,18 @@ function BookArtistPage() {
             Following artists are available on your date:{" "}
             {date.toLocaleDateString()} and location: {location}
           </p>
-          <ArtistList
-            artists={artist}
-            showBooking={true}
-            showEnquiry={false}
-            selectedEventType="House Party"
-            selectedDate={date}
-            name={name}
-          />
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <ArtistList
+              artists={artist}
+              showBooking={true}
+              showEnquiry={false}
+              selectedEventType="House Party"
+              selectedDate={date}
+              name={name}
+            />
+          )}
         </div>
       )}
       <div className="flex justify-between mt-4">

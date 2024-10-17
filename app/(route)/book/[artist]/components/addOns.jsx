@@ -18,18 +18,6 @@ const addOns = [
     price: 5000,
   },
   {
-    id: 4,
-    name: "Drummer Player",
-    specs: "1 x Drummer with Instruments",
-    price: 5000,
-  },
-  {
-    id: 5,
-    name: "DJ Player",
-    specs: "1 x DJ Player with Instruments",
-    price: 5000,
-  },
-  {
     id: 6,
     name: "Octopad Player",
     specs: "1 x Octopad Player with Instruments",

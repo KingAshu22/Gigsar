@@ -268,6 +268,21 @@ function BookArtistPage() {
     setCurrentStep((prevStep) => prevStep - 1);
   };
 
+  useEffect(() => {
+    if (currentStep === 8) {
+      sendEnquiry();
+      const rzpPaymentForm = document.getElementById("rzp_payment_form");
+
+      if (!rzpPaymentForm.hasChildNodes()) {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/payment-button.js";
+        script.async = true;
+        script.dataset.payment_button_id = "pl_PA0LSqjXpwqKtX";
+        rzpPaymentForm.appendChild(script);
+      }
+    }
+  }, [currentStep]);
+
   return (
     <div className="container mx-auto p-4">
       <Script
@@ -623,11 +638,7 @@ function BookArtistPage() {
             Next <ChevronRight />
           </Button>
         )}
-        {currentStep === 8 && (
-          <Button onClick={() => sendEnquiry()} disabled={loading}>
-            {loading ? "Booking..." : "Book Now"}
-          </Button>
-        )}
+        {currentStep === 8 && <form id="rzp_payment_form"></form>}
       </div>
     </div>
   );

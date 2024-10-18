@@ -36,7 +36,7 @@ function ArtistFilter() {
     minBudget: "",
     maxBudget: "",
     searchQuery: "",
-    sortOption: "Low to High",
+    sortOption: "High to Low",
   });
 
   const [page, setPage] = useState(1);
@@ -73,7 +73,7 @@ function ArtistFilter() {
       minBudget: params.minBudget || "",
       maxBudget: params.maxBudget || "",
       searchQuery: params.searchQuery || "",
-      sortOption: params.sortOption || "Low to High",
+      sortOption: params.sortOption || "High to Low",
     };
 
     console.log(updatedFilters);
@@ -136,7 +136,7 @@ function ArtistFilter() {
       minBudget: "",
       maxBudget: "",
       searchQuery: "",
-      sortOption: "Low to High",
+      sortOption: "High to Low",
     });
     setApplyFilter(true);
     setPage(1); // Reset to page 1 when filters are cleared

@@ -278,7 +278,7 @@ function BookArtistPage() {
         const script = document.createElement("script");
         script.src = "https://checkout.razorpay.com/v1/payment-button.js";
         script.async = true;
-        script.dataset.payment_button_id = "pl_PAPsc6iWdL3gDl";
+        script.dataset.payment_button_id = "pl_PA0LSqjXpwqKtX";
         rzpPaymentForm.appendChild(script);
       }
     }

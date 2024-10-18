@@ -154,6 +154,13 @@ function ArtistList({
 
   const handleSendEnquiryClick = (artist) => {
     setCurrentArtistId(artist.linkid);
+    console.log(
+      "Current Budget",
+      budget && artist[budget]
+        ? formatToIndianNumber(artist[budget])
+        : formatToIndianNumber(artist.price)
+    );
+
     setCurrentBudget(
       budget && artist[budget]
         ? formatToIndianNumber(artist[budget])
@@ -200,6 +207,21 @@ function ArtistList({
     setCurrentArtistId(null);
     setCurrentBudget(""); // Reset current budget
   };
+
+  useEffect(() => {
+    if (step === 5) {
+      sendEnquiry();
+      const rzpPaymentForm = document.getElementById("rzp_payment_form");
+
+      if (!rzpPaymentForm.hasChildNodes()) {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/payment-button.js";
+        script.async = true;
+        script.dataset.payment_button_id = "pl_PAW3XEg9owspeG";
+        rzpPaymentForm.appendChild(script);
+      }
+    }
+  }, [step]);
 
   return (
     <div className="mb-10 px-8">
@@ -366,36 +388,59 @@ function ArtistList({
                           </>
                         )}
                         {step === 5 && (
-                          <div className="flex flex-col items-start">
-                            <p className="font-bold mb-2">
-                              Confirm Your Enquiry
+                          <div className="flex flex-col items-start p-4 bg-white shadow-lg rounded-lg">
+                            <p className="font-bold text-lg mb-4 text-gray-800">
+                              {Number(currentBudget.replace(/,/g, "")) > 1000000
+                                ? "Premium Artist Enquiry"
+                                : "Confirm your Enquiry"}
                             </p>
-                            <p>
-                              <strong>Artist Type:</strong>{" "}
-                              {formatString(artistType)}
-                            </p>
-                            <p>
-                              <strong>Event Type:</strong> {eventType}
-                            </p>
-                            <p>
-                              <strong>Event Date:</strong>{" "}
-                              {eventDate
-                                ? eventDate.toLocaleDateString("en-GB", {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                  })
-                                : selectedDate
-                                ? selectedDate.toLocaleDateString("en-GB", {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                  })
-                                : "Not selected"}
-                            </p>
-                            <p>
-                              <strong>Location:</strong> {location}
-                            </p>
+                            <div className="mb-4">
+                              <p className="text-gray-700">
+                                <strong>Artist Type:</strong>{" "}
+                                {formatString(artistType)}
+                              </p>
+                              <p className="text-gray-700">
+                                <strong>Event Type:</strong> {eventType}
+                              </p>
+                              <p className="text-gray-700">
+                                <strong>Event Date:</strong>{" "}
+                                {eventDate || selectedDate
+                                  ? (
+                                      eventDate || selectedDate
+                                    ).toLocaleDateString("en-GB", {
+                                      day: "2-digit",
+                                      month: "short",
+                                      year: "numeric",
+                                    })
+                                  : "Not selected"}
+                              </p>
+                              <p className="text-gray-700">
+                                <strong>Location:</strong> {location}
+                              </p>
+                            </div>
+
+                            {Number(currentBudget.replace(/,/g, "")) >
+                              1000000 && (
+                              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                <p className="text-gray-800 font-medium mb-2">
+                                  To ensure the best experience and prioritize
+                                  genuine inquiries, a small, non-refundable fee
+                                  of <strong>₹99</strong> is required when
+                                  submitting your request. This guarantees that
+                                  only serious clients are connected with our
+                                  celebrity artists.
+                                </p>
+                                <p className="text-gray-700 mb-2">
+                                  By paying this fee, you're confirming your
+                                  commitment and helping us provide top-quality
+                                  service for both you and the artists.
+                                </p>
+                                <p className="text-gray-700 font-semibold">
+                                  Secure your preferred celebrity artist by
+                                  taking this next step!
+                                </p>
+                              </div>
+                            )}
                           </div>
                         )}
                         <div className="flex justify-between w-full mt-4">
@@ -423,30 +468,34 @@ function ArtistList({
                               Next
                             </button>
                           )}
-                          {step === 5 && (
-                            <button
-                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => {
-                                toast.promise(
-                                  sendEnquiry(currentArtistId, currentBudget),
-                                  {
-                                    loading: "Sending Enquiry...",
-                                    success: "Enquiry Sent Successfully",
-                                    error:
-                                      "Error sending Enquiry, Please try again later",
-                                  },
-                                  {
-                                    style: {
-                                      width: "full",
+                          {step === 5 &&
+                            (Number(currentBudget.replace(/,/g, "")) >
+                            1000000 ? (
+                              <form id="rzp_payment_form"></form>
+                            ) : (
+                              <button
+                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                onClick={() => {
+                                  toast.promise(
+                                    sendEnquiry(currentArtistId, currentBudget),
+                                    {
+                                      loading: "Sending Enquiry...",
+                                      success: "Enquiry Sent Successfully",
+                                      error:
+                                        "Error sending Enquiry, Please try again later",
                                     },
-                                  }
-                                );
-                                handleModalClose();
-                              }}
-                            >
-                              Confirm & Send
-                            </button>
-                          )}
+                                    {
+                                      style: {
+                                        width: "full",
+                                      },
+                                    }
+                                  );
+                                  handleModalClose();
+                                }}
+                              >
+                                Confirm & Send
+                              </button>
+                            ))}
                         </div>
                       </div>
                     </Modal>

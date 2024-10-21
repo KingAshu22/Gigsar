@@ -80,8 +80,13 @@ export async function GET(req) {
       {
         $addFields: {
           numericPrice: {
-            $toInt: {
-              $replaceAll: { input: "$price", find: ",", replacement: "" },
+            $convert: {
+              input: {
+                $replaceAll: { input: "$price", find: ",", replacement: "" },
+              },
+              to: "int",
+              onError: 0, // Default to 0 on conversion error
+              onNull: 0, // Default to 0 if input is null
             },
           },
         },

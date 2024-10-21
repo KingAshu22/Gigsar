@@ -580,7 +580,9 @@ function BookArtistPage() {
                 <p className="text-lg">
                   <span className="font-bold">Artist Price:</span>
                 </p>
-                <p className="text-lg">₹{formatToIndianNumber(artistPrice)}</p>
+                <p className="text-lg">
+                  ₹{Number(artistPrice).toLocaleString("en-IN")}
+                </p>
               </div>
 
               {/* Sound System Price */}
@@ -594,11 +596,11 @@ function BookArtistPage() {
                   </p>
                   <p className="text-lg">
                     ₹
-                    {formatToIndianNumber(
+                    {Number(
                       soundSystems.find(
                         (system) => system.id === selectedSoundSystem
                       )?.price || 0
-                    )}
+                    ).toLocaleString("en-IN")}
                   </p>
                 </div>
               )}
@@ -610,14 +612,14 @@ function BookArtistPage() {
                 </p>
                 <p className="text-lg">
                   ₹
-                  {formatToIndianNumber(
+                  {Number(
                     selectedAddOns
                       .map(
                         (id) =>
                           addOns.find((addOn) => addOn.id === id)?.price || 0
                       )
                       .reduce((total, price) => total + price, 0)
-                  )}
+                  ).toLocaleString("en-IN")}
                 </p>
               </div>
 
@@ -626,7 +628,9 @@ function BookArtistPage() {
                 <p className="text-lg">
                   <span className="font-bold">Subtotal:</span>
                 </p>
-                <p className="text-lg">₹{formatToIndianNumber(subtotal)}</p>
+                <p className="text-lg">
+                  ₹{Number(subtotal).toLocaleString("en-IN")}
+                </p>
               </div>
 
               {/* Booking Charges */}
@@ -643,7 +647,7 @@ function BookArtistPage() {
                   <span className="text-primary">Total:</span>
                 </p>
                 <p className="text-xl font-bold">
-                  ₹{formatToIndianNumber(Math.ceil(total))}
+                  ₹{Number(Math.ceil(total)).toLocaleString("en-IN")}
                 </p>
               </div>
             </div>

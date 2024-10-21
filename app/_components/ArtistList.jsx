@@ -154,17 +154,11 @@ function ArtistList({
 
   const handleSendEnquiryClick = (artist) => {
     setCurrentArtistId(artist.linkid);
-    console.log(
-      "Current Budget",
-      budget && artist[budget]
-        ? formatToIndianNumber(artist[budget])
-        : formatToIndianNumber(artist.price)
-    );
 
     setCurrentBudget(
       budget && artist[budget]
-        ? formatToIndianNumber(artist[budget])
-        : formatToIndianNumber(artist.price)
+        ? Number(artist[budget]).toLocaleString("en-IN")
+        : Number(artist.price).toLocaleString("en-IN")
     );
 
     if (!isAuthenticated) {

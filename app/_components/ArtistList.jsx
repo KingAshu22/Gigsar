@@ -4,7 +4,6 @@ import useAuth from "@/lib/hook";
 import Modal from "./Modal";
 import eventTypesOptions from "@/constants/eventTypes";
 import SingleSearch from "./SingleSearch";
-import artistTypesOptions from "@/constants/artistTypes";
 import { formatToIndianNumber } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import Pagination from "./Pagination";
+import SignIn from "../(route)/(auth)/sign-in/page";
 
 function ArtistList({
   artists,
@@ -41,7 +41,6 @@ function ArtistList({
   const inputRef = useRef(null);
   const isAuthenticated = useAuth();
   const [contact, setContact] = useState("");
-  const [artistType, setArtistType] = useState(selectedCategory);
   const [eventType, setEventType] = useState("");
   const [eventDate, setEventDate] = useState(selectedDate); // New state for event date
   const [location, setLocation] = useState("");
@@ -51,13 +50,33 @@ function ArtistList({
   const [currentBudget, setCurrentBudget] = useState(""); // New state for current artist budget
   const [showLogin, setShowLogin] = useState(false);
   const [isValid, setIsValid] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [client, setClient] = useState(null);
 
   useEffect(() => {
-    const storedContact = localStorage.getItem("mobile");
+    const storedContact = localStorage?.getItem("mobile");
+
     if (storedContact) {
       setContact(`+${storedContact}`);
+      getClient();
     }
   }, []);
+
+  const getClient = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/client/contact/+${localStorage?.getItem(
+          "mobile"
+        )}`
+      );
+
+      if (response.data) {
+        setClient(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching Client:", error);
+    }
+  };
 
   useEffect(() => {
     if (inputRef.current) {
@@ -85,12 +104,6 @@ function ArtistList({
   }, [location]);
 
   useEffect(() => {
-    if (selectedCategory !== "All Artist Types") {
-      setArtistType(selectedCategory);
-    }
-  }, [selectedCategory]);
-
-  useEffect(() => {
     if (selectedEventType !== "All Event Types") {
       setEventType(selectedEventType);
     }
@@ -113,7 +126,6 @@ function ArtistList({
         {
           linkid,
           contact,
-          selectedCategory: formatString(artistType),
           selectedGenre,
           selectedLocation: location,
           selectedEventType: eventType,
@@ -138,18 +150,41 @@ function ArtistList({
     }
   };
 
-  const handleArtistTypeSelect = (item) => {
-    setArtistType(item);
-    setStep(2);
+  const sendExcelEnquiry = async (linkid, budget) => {
+    try {
+      const params = {
+        name: client?.name || "Not Registered User",
+        email: client?.email || "gigsar",
+        contact: contact,
+        location,
+        eventType,
+        artistType: linkid,
+        date: eventDate.toLocaleString(),
+        budget,
+        message: "Gigsar Enquiry",
+      };
+      console.log(params);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/gigsar-enquiry`,
+        params
+      );
+      console.log("Enquiry sent successfully:", response.data);
+    } catch (err) {
+      console.error("Error sending enquiry:", err);
+    }
   };
 
   const handleEventTypeSelect = (item) => {
     setEventType(item);
-    setStep(3);
+    setStep(2);
   };
 
   const handlePreviousStep = () => {
-    setStep(step - 1);
+    if (step === 5) {
+      setStep(3);
+    } else {
+      setStep(step - 1);
+    }
   };
 
   const handleSendEnquiryClick = (artist) => {
@@ -161,42 +196,43 @@ function ArtistList({
         : Number(artist.price).toLocaleString("en-IN")
     );
 
-    if (!isAuthenticated) {
-      setShowLogin(true);
-      return;
-    }
-
-    console.log(artistType);
     console.log(eventDate);
     console.log(selectedDate);
 
-    const isArtistTypeDefault =
-      artistType === "All Artist Types" || artistType === "";
     const isEventTypeDefault =
       eventType === "" || eventType === "All Event Types";
 
-    console.log("isArtistTypeDefault: " + isArtistTypeDefault);
     console.log("isEventTypeDefault: " + isEventTypeDefault);
 
-    if (isArtistTypeDefault) {
+    if (isEventTypeDefault) {
       setStep(1);
       setShowModal(true);
-    } else if (isEventTypeDefault) {
+    } else if (!selectedDate || selectedDate === "Not selected") {
       setStep(2);
       setShowModal(true);
-    } else if (!selectedDate || selectedDate === "Not selected") {
+    } else if (location !== "") {
       setStep(3);
-      setShowModal(true);
-    } else {
-      setStep(4);
       setShowModal(true);
     }
   };
 
+  useEffect(() => {
+    if (step === 4) {
+      const intervalId = setInterval(() => {
+        const mobile = localStorage.getItem("mobile");
+        if (mobile && mobile.length > 0) {
+          setStep(5);
+        }
+      }, 200); // Check every 200 ms
+
+      // Cleanup the interval on component unmount or when step changes
+      return () => clearInterval(intervalId);
+    }
+  }, [step]);
+
   const handleModalClose = () => {
     setShowModal(false);
-    setArtistType("");
-    setEventDate(null); // Reset event date
+    setEventDate(); // Reset event date
     setStep(1);
     setCurrentArtistId(null);
     setCurrentBudget(""); // Reset current budget
@@ -204,10 +240,10 @@ function ArtistList({
 
   useEffect(() => {
     if (step === 5) {
-      sendEnquiry();
+      sendExcelEnquiry(currentArtistId, currentBudget);
       const rzpPaymentForm = document.getElementById("rzp_payment_form");
 
-      if (!rzpPaymentForm.hasChildNodes()) {
+      if (!rzpPaymentForm?.hasChildNodes()) {
         const script = document.createElement("script");
         script.src = "https://checkout.razorpay.com/v1/payment-button.js";
         script.async = true;
@@ -311,12 +347,10 @@ function ArtistList({
                       onClose={handleModalClose}
                       title={
                         step === 1
-                          ? "Select Artist Type"
-                          : step === 2
                           ? "Select Event Type"
-                          : step === 3
+                          : step === 2
                           ? "Select Event Date"
-                          : step === 4
+                          : step === 3
                           ? "Select Event City"
                           : "Confirm Enquiry"
                       }
@@ -324,33 +358,15 @@ function ArtistList({
                       <div className="flex flex-col items-center">
                         {step === 1 && (
                           <SingleSearch
-                            type="Artist Type"
-                            list={artistTypesOptions.filter(
-                              (option) => option !== "All Artist Types"
-                            )}
-                            topList={artistTypesOptions.filter(
-                              (option) => option !== "All Artist Types"
-                            )}
-                            selectedItem={
-                              artistType === "All Artist Types"
-                                ? null
-                                : artistType
-                            }
-                            setSelectedItem={handleArtistTypeSelect}
-                            showSearch={true}
+                            type="Event Type"
+                            list={artist.eventsType.split(", ")}
+                            topList={artist.eventsType.split(", ")}
+                            selectedItem={eventType}
+                            setSelectedItem={handleEventTypeSelect}
+                            showSearch={false}
                           />
                         )}
                         {step === 2 && (
-                          <SingleSearch
-                            type="Event Type"
-                            list={eventTypesOptions}
-                            topList={eventTypesOptions}
-                            selectedItem={eventType}
-                            setSelectedItem={handleEventTypeSelect}
-                            showSearch={true}
-                          />
-                        )}
-                        {step === 3 && (
                           <>
                             <label className="block mb-2 text-sm font-medium text-gray-700">
                               Select Event Date
@@ -364,7 +380,7 @@ function ArtistList({
                             />
                           </>
                         )}
-                        {step === 4 && (
+                        {step === 3 && (
                           <>
                             <label className="block mb-2 text-sm font-medium text-gray-700">
                               Event City
@@ -381,6 +397,11 @@ function ArtistList({
                             />
                           </>
                         )}
+                        {step === 4 && (
+                          <>
+                            <SignIn />
+                          </>
+                        )}
                         {step === 5 && (
                           <div className="flex flex-col items-start p-4 bg-white shadow-lg rounded-lg">
                             <p className="font-bold text-lg mb-4 text-gray-800">
@@ -389,10 +410,6 @@ function ArtistList({
                                 : "Confirm your Enquiry"}
                             </p>
                             <div className="mb-4">
-                              <p className="text-gray-700">
-                                <strong>Artist Type:</strong>{" "}
-                                {formatString(artistType)}
-                              </p>
                               <p className="text-gray-700">
                                 <strong>Event Type:</strong> {eventType}
                               </p>
@@ -446,18 +463,24 @@ function ArtistList({
                               Previous
                             </button>
                           )}
-                          {step === 3 && (
+                          {step === 2 && (
                             <button
                               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => setStep(4)}
+                              onClick={() => setStep(3)}
                             >
                               Next
                             </button>
                           )}
-                          {isValid && step === 4 && (
+                          {isValid && step === 3 && (
                             <button
                               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => setStep(5)}
+                              onClick={() => {
+                                if (!isAuthenticated) {
+                                  setStep(4);
+                                } else {
+                                  setStep(5);
+                                }
+                              }}
                             >
                               Next
                             </button>

@@ -23,10 +23,11 @@ export default function SignIn() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Use decodeURIComponent to decode the redirect_url
-    const rawReturnUrl =
-      decodeURIComponent(searchParams.get("redirect_url")) || "/user-dashboard";
-    setReturnUrl(rawReturnUrl);
+    const rawReturnUrl = searchParams.get("redirect_url");
+    if (rawReturnUrl) {
+      // Only decode if rawReturnUrl is not null or empty
+      setReturnUrl(decodeURIComponent(rawReturnUrl));
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -116,9 +117,9 @@ export default function SignIn() {
           console.log("Verification Response:", response);
           if (response.success && response.response.requestID) {
             setShowVerifiedGif(true);
-            setTimeout(() => {
-              router.push(returnUrl); // Redirect to the full returnUrl
-            }, 2000);
+            if (returnUrl) {
+              router.push(returnUrl);
+            }
           } else {
             setError(
               "OTP is incorrect. Please try again or Session storage issue"
@@ -133,7 +134,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4">
       {showVerifiedGif ? (
         <div className="flex items-center justify-center">
           <LottieImg animationData={animationData} loop="false" />

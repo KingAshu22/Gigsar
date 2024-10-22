@@ -113,6 +113,7 @@ export async function GET(req) {
           price: 1,
           location: 1,
           artistType: 1,
+          eventsType: 1,
         },
       },
     ];

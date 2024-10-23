@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import Script from "next/script";
 import Pagination from "./Pagination";
 import SignIn from "../(route)/(auth)/sign-in/page";
+import ClientRegistration from "../(route)/user-dashboard/registration/page";
 
 function ArtistList({
   artists,
@@ -58,21 +59,25 @@ function ArtistList({
 
     if (storedContact) {
       setContact(`+${storedContact}`);
-      getClient();
     }
   }, []);
 
   const getClient = async () => {
     try {
+      console.log("Inside Get Client API");
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API}/client/contact/+${localStorage?.getItem(
           "mobile"
         )}`
       );
 
+      console.log("Client:", response.data);
+
       if (response.data) {
+        setIsLoggedIn(true);
         setClient(response.data);
       }
+      return response.data;
     } catch (error) {
       console.error("Error fetching Client:", error);
     }
@@ -145,9 +150,9 @@ function ArtistList({
   const sendExcelEnquiry = async (linkid, budget) => {
     try {
       const params = {
-        name: client?.name || "Not Registered User",
-        email: client?.email || "gigsar",
-        contact: contact,
+        name: client?.name,
+        email: client?.email,
+        contact: client?.contact,
         location,
         eventType,
         artistType: linkid,
@@ -220,7 +225,11 @@ function ArtistList({
       const intervalId = setInterval(() => {
         const mobile = localStorage.getItem("mobile");
         if (mobile && mobile.length > 0) {
-          setStep(5);
+          if (client && client?.name && client?.email) {
+            setStep(6);
+          } else {
+            setStep(5);
+          }
         }
       }, 200); // Check every 200 ms
 
@@ -228,6 +237,25 @@ function ArtistList({
       return () => clearInterval(intervalId);
     }
   }, [step]);
+
+  useEffect(() => {
+    if (step === 5) {
+      const intervalId = setInterval(() => {
+        const mobile = localStorage.getItem("mobile");
+        if (mobile && mobile.length > 0) {
+          console.log("Trying to fetch Client");
+          getClient();
+          if (isLoggedIn && client && client?.name && client?.email) {
+            console.log("Client fetched successfully");
+            setStep(6);
+          }
+        }
+      }, 200); // Check every 200 ms
+
+      // Cleanup the interval on component unmount or when step changes
+      return () => clearInterval(intervalId);
+    }
+  }, [step, isLoggedIn, client]);
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -237,7 +265,7 @@ function ArtistList({
   };
 
   useEffect(() => {
-    if (step === 5) {
+    if (step === 6) {
       sendExcelEnquiry(currentArtistId, currentBudget);
       const rzpPaymentForm = document.getElementById("rzp_payment_form");
 
@@ -352,6 +380,8 @@ function ArtistList({
                           ? "Select Event City"
                           : step === 4
                           ? "Mobile Number"
+                          : step === 5
+                          ? "Basic Details"
                           : "Confirm Enquiry"
                       }
                     >
@@ -393,6 +423,11 @@ function ArtistList({
                           </>
                         )}
                         {step === 5 && (
+                          <>
+                            <ClientRegistration isModal={true} />
+                          </>
+                        )}
+                        {step === 6 && (
                           <div className="flex flex-col items-start p-4 bg-white shadow-lg rounded-lg">
                             <p className="font-bold text-lg mb-4 text-gray-800">
                               {Number(currentBudget.replace(/,/g, "")) > 1000000
@@ -467,7 +502,7 @@ function ArtistList({
                               Next
                             </button>
                           )}
-                          {step === 5 &&
+                          {step === 6 &&
                             (Number(currentBudget.replace(/,/g, "")) >
                             1000000 ? (
                               <form id="rzp_payment_form"></form>

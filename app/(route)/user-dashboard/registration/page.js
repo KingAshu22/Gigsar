@@ -6,8 +6,9 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
+import SingleSearch from "@/app/_components/SingleSearch";
 
-const ArtistRegistration = () => {
+const ClientRegistration = (isModal = false) => {
   const [expiryTime, setExpiryTime] = useState();
   const [name, setName] = useState();
   const [contact, setContact] = useState("");
@@ -44,9 +45,13 @@ const ArtistRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setShowConfirmationModal(true);
-    setError(null);
-    setSuccess(false);
+    if (!isModal) {
+      setShowConfirmationModal(true);
+      setError(null);
+      setSuccess(false);
+    } else {
+      handleConfirmSubmit();
+    }
   };
 
   const handleConfirmSubmit = async () => {
@@ -83,7 +88,9 @@ const ArtistRegistration = () => {
 
   return (
     <div className="container mx-auto p-5">
-      <h1 className="text-xl font-bold mb-4">User Registration</h1>
+      {!isModal && (
+        <h1 className="text-xl font-bold mb-4">User Registration</h1>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label
@@ -99,44 +106,6 @@ const ArtistRegistration = () => {
             required
             onChange={(e) => setName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="type"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Role
-          </label>
-          <select
-            id="type"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-          >
-            <option value="">Select Type</option>
-            <option value="Client">Direct Client</option>
-            <option value="Event Manager">Event Manager</option>
-            <option value="Wedding Planner">Wedding Planner</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="contactNumber"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Contact Number
-          </label>
-          <input
-            type="text"
-            id="contact"
-            value={contact}
-            readOnly
-            onChange={(e) => setContact(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
           />
         </div>
         <div className="mb-4">
@@ -155,12 +124,22 @@ const ArtistRegistration = () => {
             required
           />
         </div>
-        <button
-          type="submit"
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Submit
-        </button>
+        <SingleSearch
+          type="Role"
+          list={["Client", "Wedding Planner/Event Manager"]}
+          topList={["Client", "Wedding Planner/Event Manager"]}
+          selectedItem={type}
+          setSelectedItem={setType}
+          showSearch={false}
+        />
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Submit
+          </button>
+        </div>
       </form>
       {/* Confirmation modal */}
       <Modal
@@ -187,31 +166,35 @@ const ArtistRegistration = () => {
         </div>
       </Modal>
 
-      <Modal isOpen={isLoading} title="Submitting Form...">
-        <div className="flex justify-center items-center">
-          <HashLoader color="#dc2626" size={80} />
-        </div>
-      </Modal>
+      {!isModal && (
+        <Modal isOpen={isLoading} title="Submitting Form...">
+          <div className="flex justify-center items-center">
+            <HashLoader color="#dc2626" size={80} />
+          </div>
+        </Modal>
+      )}
 
       {error && <p className="error">{error}</p>}
-      <Modal
-        isOpen={success}
-        onClose={() => setSuccess(false)}
-        title={`${type} Registered`}
-        description={`${name}'s Profile is created successfully`}
-      >
-        <div className="flex justify-center">
-          <button
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            type="button"
-            onClick={() => router.push("/user-dashboard")}
-          >
-            Dashboard
-          </button>
-        </div>
-      </Modal>
+      {!isModal && (
+        <Modal
+          isOpen={success}
+          onClose={() => setSuccess(false)}
+          title={`${type} Registered`}
+          description={`${name}'s Profile is created successfully`}
+        >
+          <div className="flex justify-center">
+            <button
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              type="button"
+              onClick={() => router.push("/user-dashboard")}
+            >
+              Dashboard
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
 
-export default ArtistRegistration;
+export default ClientRegistration;

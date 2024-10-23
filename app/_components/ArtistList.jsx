@@ -352,13 +352,15 @@ function ArtistList({
                           ? "Select Event Date"
                           : step === 3
                           ? "Select Event City"
+                          : step === 4
+                          ? "Mobile Number"
                           : "Confirm Enquiry"
                       }
                     >
                       <div className="flex flex-col items-center">
                         {step === 1 && (
                           <SingleSearch
-                            type="Event Type"
+                            type=""
                             list={artist.eventsType.split(", ")}
                             topList={artist.eventsType.split(", ")}
                             selectedItem={eventType}
@@ -367,46 +369,36 @@ function ArtistList({
                           />
                         )}
                         {step === 2 && (
-                          <>
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
-                              Select Event Date
-                            </label>
-                            <Calendar
-                              mode="single"
-                              selected={eventDate}
-                              onSelect={(date) => setEventDate(date)}
-                              className="border border-gray-300 rounded-md p-2"
-                              initialFocus
-                            />
-                          </>
+                          <Calendar
+                            mode="single"
+                            selected={eventDate}
+                            onSelect={(date) => setEventDate(date)}
+                            className="border border-gray-300 rounded-md p-2"
+                            initialFocus
+                          />
                         )}
                         {step === 3 && (
-                          <>
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
-                              Event City
-                            </label>
-                            <input
-                              type="text"
-                              id="xabx"
-                              value={location}
-                              autoComplete="new-password"
-                              ref={inputRef}
-                              onChange={(e) => setLocation(e.target.value)}
-                              placeholder="City"
-                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            />
-                          </>
+                          <input
+                            type="text"
+                            id="xabx"
+                            value={location}
+                            autoComplete="new-password"
+                            ref={inputRef}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="City"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
                         )}
                         {step === 4 && (
                           <>
-                            <SignIn />
+                            <SignIn isModal={true} />
                           </>
                         )}
                         {step === 5 && (
                           <div className="flex flex-col items-start p-4 bg-white shadow-lg rounded-lg">
                             <p className="font-bold text-lg mb-4 text-gray-800">
                               {Number(currentBudget.replace(/,/g, "")) > 1000000
-                                ? "Premium Artist Enquiry"
+                                ? "Premium Enquiry"
                                 : "Confirm your Enquiry"}
                             </p>
                             <div className="mb-4">
@@ -435,20 +427,14 @@ function ArtistList({
                               <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                                 <p className="text-gray-800 font-medium mb-2">
                                   To ensure the best experience and prioritize
-                                  genuine inquiries, a small, non-refundable fee
-                                  of <strong>₹99</strong> is required when
+                                  genuine enquiries & reduce SPAM enquiries, a
+                                  small, non-refundable fee of{" "}
+                                  <strong>₹99</strong> is required when
                                   submitting your request. This guarantees that
-                                  only serious clients are connected with our
-                                  celebrity artists.
-                                </p>
-                                <p className="text-gray-700 mb-2">
-                                  By paying this fee, you're confirming your
-                                  commitment and helping us provide top-quality
-                                  service for both you and the artists.
-                                </p>
-                                <p className="text-gray-700 font-semibold">
-                                  Secure your preferred celebrity artist by
-                                  taking this next step!
+                                  only genuine clients are connected with our
+                                  celebrity artists and our Dedicated Artist
+                                  Manager will call you to assist you for the
+                                  enquiry.
                                 </p>
                               </div>
                             )}

@@ -7,7 +7,7 @@ import * as animationData from "../../../../public/verified.json";
 import LottieImg from "@/app/_components/Lottie";
 import toast from "react-hot-toast";
 
-export default function SignIn() {
+export default function SignIn({ isModal = false }) {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [showOtpSection, setShowOtpSection] = useState(false);
@@ -116,7 +116,9 @@ export default function SignIn() {
         .then((response) => {
           console.log("Verification Response:", response);
           if (response.success && response.response.requestID) {
-            setShowVerifiedGif(true);
+            if (!isModal) {
+              setShowVerifiedGif(true);
+            }
             if (returnUrl) {
               router.push(returnUrl);
             }
@@ -141,48 +143,52 @@ export default function SignIn() {
         </div>
       ) : (
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-          <h2 className="text-3xl font-bold mb-6 text-center text-primary">
-            Sign In
-          </h2>
-          <p className="text-center text-gray-500 mb-8">
-            Sign in to access your dashboard
-          </p>
+          {!isModal && (
+            <>
+              <h2 className="text-3xl font-bold mb-6 text-center text-primary">
+                Sign In
+              </h2>
+              <p className="text-center text-gray-500 mb-8">
+                Sign in to access your dashboard
+              </p>
+            </>
+          )}
           <div className="space-y-6">
             <div id="mobile-section">
-              <label
-                htmlFor="mobile-input"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Mobile Number
-              </label>
               <div className="flex items-center space-x-2">
-                {countryFlag && (
-                  <Image
-                    src={countryFlag}
-                    alt="Country Flag"
-                    width={25}
-                    height={25}
-                  />
+                {!showOtpSection && (
+                  <>
+                    {countryFlag && (
+                      <Image
+                        src={countryFlag}
+                        alt="Country Flag"
+                        width={25}
+                        height={25}
+                      />
+                    )}
+                    <span className="text-lg">{countryCode}</span>
+                    <input
+                      type="number"
+                      id="mobile-input"
+                      placeholder="Enter mobile number"
+                      className="flex-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </>
                 )}
-                <span className="text-lg">{countryCode}</span>
-                <input
-                  type="number"
-                  id="mobile-input"
-                  placeholder="Enter mobile number"
-                  className="flex-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
               </div>
-              <button
-                onClick={handlePhoneAuth}
-                className={`w-full mt-4 px-4 py-2 bg-primary ${
-                  isButtonDisabled ? "opacity-75" : ""
-                } text-white rounded-lg hover:bg-red-800 transition duration-200`}
-                disabled={isButtonDisabled}
-              >
-                {isButtonDisabled ? `Resend OTP in ${timer}s` : "Send OTP"}
-              </button>
+              {!showOtpSection && isModal && (
+                <button
+                  onClick={handlePhoneAuth}
+                  className={`w-full mt-4 px-4 py-2 bg-primary ${
+                    isButtonDisabled ? "opacity-75" : ""
+                  } text-white rounded-lg hover:bg-red-800 transition duration-200`}
+                  disabled={isButtonDisabled}
+                >
+                  {isButtonDisabled ? `Resend OTP in ${timer}s` : "Next"}
+                </button>
+              )}
             </div>
 
             {showOtpSection && (

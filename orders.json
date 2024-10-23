@@ -1,0 +1,16 @@
+[
+  {
+    "order_id": "order_PCObUewkh5Pp7y",
+    "amount": 10000,
+    "currency": "INR",
+    "receipt": "receipt#1",
+    "status": "created"
+  },
+  {
+    "order_id": "order_PCObgFqbvNmfbO",
+    "amount": 10000,
+    "currency": "INR",
+    "receipt": "receipt#1",
+    "status": "created"
+  }
+]

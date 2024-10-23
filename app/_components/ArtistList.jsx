@@ -109,14 +109,6 @@ function ArtistList({
     }
   }, [selectedEventType]);
 
-  const formatString = (str) => {
-    return str
-      .split("-") // Split by hyphen
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
-      .join(" ") // Join words with a space
-      .trim(); // Ensure no extra spaces
-  };
-
   const sendEnquiry = async (linkid, budget) => {
     if (!linkid) return;
 
@@ -207,11 +199,18 @@ function ArtistList({
     if (isEventTypeDefault) {
       setStep(1);
       setShowModal(true);
+    } else if (selectedDate || selectedDate !== "Not selected") {
+      setStep(3);
+      setShowModal(true);
     } else if (!selectedDate || selectedDate === "Not selected") {
       setStep(2);
       setShowModal(true);
-    } else if (location !== "") {
+    } else if (location == "") {
       setStep(3);
+      setShowModal(true);
+    } else if (location.length > 0) {
+      console.log("Location is greater");
+      setStep(4);
       setShowModal(true);
     }
   };
@@ -232,7 +231,6 @@ function ArtistList({
 
   const handleModalClose = () => {
     setShowModal(false);
-    setEventDate(); // Reset event date
     setStep(1);
     setCurrentArtistId(null);
     setCurrentBudget(""); // Reset current budget
@@ -425,17 +423,15 @@ function ArtistList({
                             {Number(currentBudget.replace(/,/g, "")) >
                               1000000 && (
                               <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                <p className="text-gray-800 font-medium mb-2">
-                                  To ensure the best experience and prioritize
-                                  genuine enquiries & reduce SPAM enquiries, a
-                                  small, non-refundable fee of{" "}
-                                  <strong>₹99</strong> is required when
-                                  submitting your request. This guarantees that
-                                  only genuine clients are connected with our
-                                  celebrity artists and our Dedicated Artist
-                                  Manager will call you to assist you for the
-                                  enquiry.
-                                </p>
+                                <h2 className="text-primary font-semibold mb-4">
+                                  Why Pay ₹99 as Enquiry Charges?
+                                </h2>
+                                <ul className="list-disc list-inside text-gray-800 font-medium mb-2">
+                                  <li>Prioritize Enquiries</li>
+                                  <li>Avoid SPAM Enquiries</li>
+                                  <li>Fast Service</li>
+                                  <li>Dedicated Artist Manager</li>
+                                </ul>
                               </div>
                             )}
                           </div>

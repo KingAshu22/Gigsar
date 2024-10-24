@@ -12,5 +12,19 @@
     "currency": "INR",
     "receipt": "receipt#1",
     "status": "created"
+  },
+  {
+    "order_id": "order_PCUGJ5XuOB6Tfw",
+    "amount": 50000,
+    "currency": "INR",
+    "receipt": "receipt#1",
+    "status": "created"
+  },
+  {
+    "order_id": "order_PCUHOtM9CRNtrn",
+    "amount": 50000,
+    "currency": "INR",
+    "receipt": "receipt#1",
+    "status": "created"
   }
 ]

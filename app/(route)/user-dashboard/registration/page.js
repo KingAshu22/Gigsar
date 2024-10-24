@@ -8,9 +8,9 @@ import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
 import SingleSearch from "@/app/_components/SingleSearch";
 
-const ClientRegistration = (isModal = false) => {
+const ClientRegistration = ({ isModal = false }) => {
   const [expiryTime, setExpiryTime] = useState();
-  const [name, setName] = useState();
+  const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
   const [type, setType] = useState("");
@@ -68,21 +68,19 @@ const ClientRegistration = (isModal = false) => {
         clientId,
       };
 
-      const response = axios.post(
+      await axios.post(
         `${process.env.NEXT_PUBLIC_API}/client-registration`,
         formData,
         { withCredentials: true }
       );
+      setSuccess(true); // Set success state after successful submission
     } catch (error) {
       // Handle error
       console.error("Error submitting form:", error);
       setError(error.message || "An error occurred during submission.");
     } finally {
       // Reset loading state
-      setTimeout(() => {
-        setIsLoading(false);
-        setSuccess(true);
-      }, 3000);
+      setIsLoading(false);
     }
   };
 
@@ -133,14 +131,18 @@ const ClientRegistration = (isModal = false) => {
           showSearch={false}
         />
         <div className="flex justify-end">
-          <button
-            type="submit"
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Submit
-          </button>
+          {/* Conditionally render the Submit button */}
+          {name && email && type && (
+            <button
+              type="submit"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Submit
+            </button>
+          )}
         </div>
       </form>
+
       {/* Confirmation modal */}
       <Modal
         isOpen={showConfirmationModal}
@@ -156,13 +158,15 @@ const ClientRegistration = (isModal = false) => {
           >
             Cancel
           </button>
-          <button
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            type="button"
-            onClick={handleConfirmSubmit}
-          >
-            Submit
-          </button>
+          {name && email && type && (
+            <button
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              type="button"
+              onClick={handleConfirmSubmit}
+            >
+              Submit
+            </button>
+          )}
         </div>
       </Modal>
 

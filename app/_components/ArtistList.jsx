@@ -17,10 +17,10 @@ import Script from "next/script";
 import Pagination from "./Pagination";
 import SignIn from "../(route)/(auth)/sign-in/page";
 import ClientRegistration from "../(route)/user-dashboard/registration/page";
+import PayButton from "./PayButton";
 
 function ArtistList({
   artists,
-  selectedCategory,
   selectedGenre,
   selectedEventType = "All Event Types",
   selectedDate,
@@ -114,39 +114,6 @@ function ArtistList({
     }
   }, [selectedEventType]);
 
-  const sendEnquiry = async (linkid, budget) => {
-    if (!linkid) return;
-
-    try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API}/client-message`,
-        {
-          linkid,
-          contact,
-          selectedGenre,
-          selectedLocation: location,
-          selectedEventType: eventType,
-          selectedDate: eventDate
-            ? eventDate.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })
-            : "", // Format date as "18 Aug 2024"
-          selectedLanguage,
-          selectedInstrument,
-          selectedGender,
-          budget,
-          selectedMinBudget,
-          selectedMaxBudget,
-        },
-        { withCredentials: true }
-      );
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
-
   const sendExcelEnquiry = async (linkid, budget) => {
     try {
       const params = {
@@ -177,8 +144,8 @@ function ArtistList({
   };
 
   const handlePreviousStep = () => {
-    if (step === 5) {
-      setStep(3);
+    if (step === 6) {
+      setStep(4);
     } else {
       setStep(step - 1);
     }
@@ -263,21 +230,6 @@ function ArtistList({
     setCurrentArtistId(null);
     setCurrentBudget(""); // Reset current budget
   };
-
-  useEffect(() => {
-    if (step === 6) {
-      sendExcelEnquiry(currentArtistId, currentBudget);
-      const rzpPaymentForm = document.getElementById("rzp_payment_form");
-
-      if (!rzpPaymentForm?.hasChildNodes()) {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/payment-button.js";
-        script.async = true;
-        script.dataset.payment_button_id = "pl_PAW3XEg9owspeG";
-        rzpPaymentForm.appendChild(script);
-      }
-    }
-  }, [step]);
 
   return (
     <div className="mb-10 px-8">
@@ -455,20 +407,24 @@ function ArtistList({
                               </p>
                             </div>
 
-                            {Number(currentBudget.replace(/,/g, "")) >
-                              1000000 && (
-                              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                <h2 className="text-primary font-semibold mb-4">
-                                  Why Pay ₹99 as Enquiry Charges?
-                                </h2>
-                                <ul className="list-disc list-inside text-gray-800 font-medium mb-2">
-                                  <li>Prioritize Enquiries</li>
-                                  <li>Avoid SPAM Enquiries</li>
-                                  <li>Fast Service</li>
-                                  <li>Dedicated Artist Manager</li>
-                                </ul>
-                              </div>
-                            )}
+                            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                              <h2 className="text-primary font-semibold mb-4">
+                                Why Pay ₹
+                                {Number(currentBudget.replace(/,/g, "")) >
+                                1000000 ? (
+                                  <span>99</span>
+                                ) : (
+                                  <span>49</span>
+                                )}{" "}
+                                as Enquiry Charges?
+                              </h2>
+                              <ul className="list-disc list-inside text-gray-800 font-medium mb-2">
+                                <li>Prioritize Enquiries</li>
+                                <li>Avoid SPAM Enquiries</li>
+                                <li>Fast Service</li>
+                                <li>Dedicated Artist Manager</li>
+                              </ul>
+                            </div>
                           </div>
                         )}
                         <div className="flex justify-between w-full mt-4">
@@ -505,30 +461,29 @@ function ArtistList({
                           {step === 6 &&
                             (Number(currentBudget.replace(/,/g, "")) >
                             1000000 ? (
-                              <form id="rzp_payment_form"></form>
+                              <PayButton
+                                amount={99}
+                                name={client.name}
+                                email={client.email}
+                                contact={client.contact}
+                                linkid={currentArtistId}
+                                eventType={eventType}
+                                eventDate={eventDate}
+                                location={location}
+                                budget={currentBudget}
+                              />
                             ) : (
-                              <button
-                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={() => {
-                                  toast.promise(
-                                    sendEnquiry(currentArtistId, currentBudget),
-                                    {
-                                      loading: "Sending Enquiry...",
-                                      success: "Enquiry Sent Successfully",
-                                      error:
-                                        "Error sending Enquiry, Please try again later",
-                                    },
-                                    {
-                                      style: {
-                                        width: "full",
-                                      },
-                                    }
-                                  );
-                                  handleModalClose();
-                                }}
-                              >
-                                Confirm & Send
-                              </button>
+                              <PayButton
+                                amount={49}
+                                name={client.name}
+                                email={client.email}
+                                contact={client.contact}
+                                linkid={currentArtistId}
+                                eventType={eventType}
+                                eventDate={eventDate}
+                                location={location}
+                                budget={currentBudget}
+                              />
                             ))}
                         </div>
                       </div>

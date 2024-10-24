@@ -71,7 +71,7 @@ const Bill = () => {
                   Artist Name
                 </td>
                 <td className="border border-gray-300 p-2">
-                  {linkid.replace("-", " ")}
+                  {linkid.toUpperCase().replace("-", " ")}
                 </td>
               </tr>
               <tr>

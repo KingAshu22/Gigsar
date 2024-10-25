@@ -18,7 +18,7 @@ import {
 function Enquiries() {
   const router = useRouter();
 
-  const [contact, setContact] = useState("" || localStorage?.getItem("mobile"));
+  const [contact, setContact] = useState(localStorage?.getItem("mobile") || "");
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState("");
@@ -44,8 +44,8 @@ function Enquiries() {
       if (response.data) {
         setClient(response.data);
         const uniqueDates = getUniqueDatesFromMessages(response.data);
-        setAvailableDates(uniqueDates); // Set unique dates for dropdown
-        setSelectedDate(uniqueDates[0]); // Set the latest date as default
+        setAvailableDates(uniqueDates);
+        setSelectedDate(uniqueDates[0] || ""); // Set the latest date as default if available
       } else {
         router.push("/user-dashboard/registration");
       }
@@ -57,13 +57,12 @@ function Enquiries() {
     }
   };
 
-  // Function to extract unique event dates from the "Category" messages
   const getUniqueDatesFromMessages = (clientData) => {
     const uniqueDates = new Set();
 
     clientData.messages.forEach((messageGroup) => {
       messageGroup.message.forEach((msg) => {
-        if (msg.content.includes("Category")) {
+        if (msg.content.includes("Location")) {
           const eventDateMatch = msg.content.match(/Date: ([^\n]*)/);
           if (eventDateMatch && eventDateMatch[1]) {
             uniqueDates.add(eventDateMatch[1]); // Add event date to the Set
@@ -73,7 +72,11 @@ function Enquiries() {
     });
 
     // Convert Set to Array and sort in descending order
-    return Array.from(uniqueDates).sort((a, b) => new Date(b) - new Date(a));
+    const sortedDates = Array.from(uniqueDates).sort(
+      (a, b) => new Date(b) - new Date(a)
+    );
+    console.log("Unique dates extracted:", sortedDates); // Log extracted dates
+    return sortedDates;
   };
 
   const handleDateChange = (newDate) => {
@@ -90,9 +93,8 @@ function Enquiries() {
     const artistPromises = client.messages.map(async (messageGroup) => {
       let relevantCategoryMessage = null;
 
-      // Find the "Category" message with the matching event date
       messageGroup.message.forEach((msg) => {
-        if (msg.content.includes("Category")) {
+        if (msg.content.includes("Location")) {
           const eventDateMatch = msg.content.match(/Date: ([^\n]*)/);
           if (eventDateMatch && eventDateMatch[1] === date) {
             relevantCategoryMessage = msg;
@@ -102,64 +104,35 @@ function Enquiries() {
 
       if (!relevantCategoryMessage) return;
 
-      enquiriesCount += 1; // Count enquiries for this date
+      enquiriesCount += 1;
 
-      let categoryMessageIndex = -1;
-      let nextCategoryMessageIndex = -1;
+      let artistResponse;
 
-      // Find the index of the "Category" message and its range
-      messageGroup.message.forEach((msg, index) => {
-        if (msg.content.includes("Category")) {
-          if (msg === relevantCategoryMessage) {
-            categoryMessageIndex = index;
-          } else if (
-            categoryMessageIndex !== -1 &&
-            nextCategoryMessageIndex === -1
-          ) {
-            nextCategoryMessageIndex = index;
-          }
-        }
-      });
-
-      // Check messages between the "Category" message and the next one (or end)
-      let artistCategorized = false;
-      for (
-        let i = categoryMessageIndex + 1;
-        i <
-        (nextCategoryMessageIndex !== -1
-          ? nextCategoryMessageIndex
-          : messageGroup.message.length);
-        i++
-      ) {
-        const msg = messageGroup.message[i];
+      // Check for available artists
+      for (let msg of messageGroup.message) {
         if (!msg.isSenderMe) {
           if (msg.content.includes("Yes")) {
-            // Fetch the artist details by linkid
-            const artistResponse = await axios.get(
+            artistResponse = await axios.get(
               `/api/artists/${messageGroup.artistId}`
             );
             if (artistResponse.data) {
               available.push(artistResponse.data);
             }
-            artistCategorized = true;
-            break;
+            break; // Found available artist
           } else if (msg.content.includes("No")) {
-            // Fetch the artist details by linkid
-            const artistResponse = await axios.get(
+            artistResponse = await axios.get(
               `/api/artists/${messageGroup.artistId}`
             );
             if (artistResponse.data) {
               notAvailable.push(artistResponse.data);
             }
-            artistCategorized = true;
-            break;
+            break; // Found not available artist
           }
         }
       }
 
-      if (!artistCategorized) {
-        // Fetch the artist details by linkid
-        const artistResponse = await axios.get(
+      if (available.length + notAvailable.length === 0) {
+        artistResponse = await axios.get(
           `/api/artists/${messageGroup.artistId}`
         );
         if (artistResponse.data) {
@@ -168,23 +141,18 @@ function Enquiries() {
       }
     });
 
-    // Await all artist data fetching
     await Promise.all(artistPromises);
 
     setAvailableArtists(available);
     setPendingArtists(pending);
     setNotAvailableArtists(notAvailable);
-    setTotalEnquiries(enquiriesCount); // Set total enquiries
+    setTotalEnquiries(enquiriesCount);
   };
 
   useEffect(() => {
-    const fetchArtists = async () => {
-      if (selectedDate) {
-        await filterArtistsByDate(selectedDate);
-      }
-    };
-
-    fetchArtists();
+    if (selectedDate && client) {
+      filterArtistsByDate(selectedDate);
+    }
   }, [selectedDate, client]);
 
   if (loading) {

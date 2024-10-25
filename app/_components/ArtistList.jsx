@@ -224,6 +224,12 @@ function ArtistList({
     }
   }, [step, isLoggedIn, client]);
 
+  useEffect(() => {
+    if (step === 6) {
+      sendExcelEnquiry(currentArtistId, currentBudget);
+    }
+  }, [step]);
+
   const handleModalClose = () => {
     setShowModal(false);
     setStep(1);

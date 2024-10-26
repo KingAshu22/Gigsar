@@ -238,6 +238,9 @@ function ArtistList({
 
   const handleModalClose = () => {
     setShowModal(false);
+    setEventType("");
+    setEventDate("");
+    setLocation("");
     setStep(1);
     setCurrentArtistId(null);
     setCurrentBudget(""); // Reset current budget

@@ -28,9 +28,11 @@ const SingleSearch = ({
   return (
     <div className="mt-4">
       <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
-          {type}:
-        </label>
+        {type && (
+          <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+            {type}:
+          </label>
+        )}
         <div className="flex flex-wrap">
           {showSearch && selectedItem && (
             <div className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize">

@@ -1,7 +1,8 @@
-import PaymentSystem from "@/app/_components/PayButton";
+"use client";
+
 import React from "react";
-import PayButton from "../../_components/PayButton";
+import ScrollDatePicker from "@/app/_components/ScrollDatePicker";
 
 export default function Payment() {
-  return <PayButton amount={100} />;
+  return <ScrollDatePicker />;
 }

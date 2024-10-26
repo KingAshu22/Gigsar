@@ -143,6 +143,12 @@ function ArtistList({
     setStep(2);
   };
 
+  const handleLocationSelect = (item) => {
+    setLocation(item);
+    setIsValid(true);
+    setStep(4);
+  };
+
   const handlePreviousStep = () => {
     if (step === 6) {
       setStep(4);
@@ -358,22 +364,81 @@ function ArtistList({
                           <Calendar
                             mode="single"
                             selected={eventDate}
-                            onSelect={(date) => setEventDate(date)}
+                            onSelect={(date) => {
+                              setStep(3);
+                              setEventDate(date);
+                            }}
                             className="border border-gray-300 rounded-md p-2"
                             initialFocus
                           />
                         )}
                         {step === 3 && (
-                          <input
-                            type="text"
-                            id="xabx"
-                            value={location}
-                            autoComplete="new-password"
-                            ref={inputRef}
-                            onChange={(e) => setLocation(e.target.value)}
-                            placeholder="City"
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          />
+                          <>
+                            <input
+                              type="text"
+                              id="xabx"
+                              value={location}
+                              autoComplete="new-password"
+                              ref={inputRef}
+                              onChange={(e) => setLocation(e.target.value)}
+                              placeholder="City"
+                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                            <SingleSearch
+                              type="Top Cities"
+                              list={[
+                                "Mumbai",
+                                "Navi Mumbai",
+                                "Delhi",
+                                "Kolkata",
+                                "Chennai",
+                                "Bangalore",
+                                "Udaipur",
+                                "Jaipur",
+                                "Goa",
+                                "Nagpur",
+                                "Hyderabad",
+                                "Pune",
+                                "Bhopal",
+                                "Indore",
+                                "Lucknow",
+                                "Visakhapatnam",
+                                "Vadodara",
+                                "Surat",
+                                "Ahmedabad",
+                                "Ranchi",
+                                "Patna",
+                                "Shimla",
+                              ]}
+                              topList={[
+                                "Mumbai",
+                                "Navi Mumbai",
+                                "Delhi",
+                                "Kolkata",
+                                "Chennai",
+                                "Bangalore",
+                                "Udaipur",
+                                "Jaipur",
+                                "Goa",
+                                "Nagpur",
+                                "Hyderabad",
+                                "Pune",
+                                "Bhopal",
+                                "Indore",
+                                "Lucknow",
+                                "Visakhapatnam",
+                                "Vadodara",
+                                "Surat",
+                                "Ahmedabad",
+                                "Ranchi",
+                                "Patna",
+                                "Shimla",
+                              ]}
+                              selectedItem={location}
+                              setSelectedItem={handleLocationSelect}
+                              showSearch={false}
+                            />
+                          </>
                         )}
                         {step === 4 && (
                           <>
@@ -440,14 +505,6 @@ function ArtistList({
                               onClick={handlePreviousStep}
                             >
                               Previous
-                            </button>
-                          )}
-                          {step === 2 && (
-                            <button
-                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => setStep(3)}
-                            >
-                              Next
                             </button>
                           )}
                           {isValid && step === 3 && (

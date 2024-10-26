@@ -151,7 +151,7 @@ function ArtistList({
 
   const handlePreviousStep = () => {
     if (step === 6) {
-      setStep(4);
+      setStep(3);
     } else {
       setStep(step - 1);
     }

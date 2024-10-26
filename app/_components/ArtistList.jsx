@@ -561,16 +561,7 @@ function ArtistList({
           })
         ) : (
           <div className="items-center justify-center text-center p-4">
-            {showEnquiry ? (
-              <>
-                <LottieImg
-                  animationData={animationData}
-                  width={300}
-                  height={300}
-                />
-                <p className="text-lg font-bold mt-4">No artists found.</p>
-              </>
-            ) : (
+            {!showEnquiry && (
               <p className="text-lg font-bold mt-4">No artists.</p>
             )}
           </div>

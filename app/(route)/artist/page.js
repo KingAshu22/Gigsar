@@ -233,11 +233,11 @@ function ArtistFilter() {
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <LottieImg
+              {/* <LottieImg
                 animationData={animationData}
                 width={400}
                 height={400}
-              />
+              /> */}
               <p className="text-lg font-bold mt-4">No artists found.</p>
             </div>
           )}

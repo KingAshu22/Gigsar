@@ -1,3 +1,4 @@
+import { formatToIndianNumber } from "@/lib/utils";
 import React, { useState } from "react";
 
 const SingleSearch = ({
@@ -53,7 +54,9 @@ const SingleSearch = ({
                   isOneLine ? "w-screen" : "",
                 ].join(" ")}
               >
-                {item}
+                {isOneLine
+                  ? formatToIndianNumber(parseInt(item.replace(/,/g, "")))
+                  : item}
               </button>
             ))}
         </div>

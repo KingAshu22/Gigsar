@@ -7,6 +7,7 @@ const SingleSearch = ({
   selectedItem,
   setSelectedItem,
   showSearch = true,
+  isOneLine = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -45,11 +46,12 @@ const SingleSearch = ({
                 type="button"
                 key={index}
                 onClick={() => handleSelectItem(item)}
-                className={
+                className={[
                   item === selectedItem
                     ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize text-sm"
-                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-sm"
-                }
+                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-sm",
+                  isOneLine ? "w-screen" : "",
+                ].join(" ")}
               >
                 {item}
               </button>

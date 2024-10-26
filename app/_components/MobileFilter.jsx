@@ -140,23 +140,23 @@ const MobileFilterPanel = ({
       case "Min Budget":
         return (
           <SingleSearch
-            type="Minimum Budget"
             list={minBudgetOptions}
             topList={minBudgetOptions}
             selectedItem={selectedFilters.minBudget}
             setSelectedItem={(minBudget) => handleFilterChange({ minBudget })}
             showSearch={false}
+            isOneLine={true}
           />
         );
       case "Max Budget":
         return (
           <SingleSearch
-            type="Maximum Budget"
             list={maxBudgetOptions}
             topList={maxBudgetOptions}
             selectedItem={selectedFilters.maxBudget}
             setSelectedItem={(maxBudget) => handleFilterChange({ maxBudget })}
             showSearch={false}
+            isOneLine={true}
           />
         );
       default:

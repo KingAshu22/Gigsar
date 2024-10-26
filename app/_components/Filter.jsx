@@ -155,30 +155,30 @@ const FilterPanel = ({
             setSelectedItem={(sortOption) => handleFilterChange({ sortOption })}
             showSearch={false}
           />
-          <div className="flex gap-4 mb-4">
-            <div className="w-1/2">
-              <label className="block mb-2 font-semibold">Min Budget</label>
-              <ScrollSelect
-                options={minBudgetOptions}
-                selectedValue={selectedFilters.minBudget}
-                setSelectedValue={(minBudget) =>
-                  handleFilterChange({ minBudget })
-                }
-              />
-            </div>
-            <div className="w-1/2">
-              <label className="block mb-2 font-semibold">Max Budget</label>
-              <ScrollSelect
-                options={maxBudgetOptions}
-                selectedValue={selectedFilters.maxBudget}
-                setSelectedValue={(maxBudget) =>
-                  handleFilterChange({ maxBudget })
-                }
-              />
-            </div>
+          <div className="overflow-y-auto max-h-36">
+            <label className="block mb-2 font-semibold">Minimum Budget</label>
+            <SingleSearch
+              list={minBudgetOptions}
+              topList={minBudgetOptions}
+              selectedItem={selectedFilters.minBudget}
+              setSelectedItem={(minBudget) => handleFilterChange({ minBudget })}
+              showSearch={false}
+              isOneLine={true}
+            />
+          </div>
+          <div className="overflow-y-auto max-h-36">
+            <label className="block mb-2 font-semibold">Maximum Budget</label>
+            <SingleSearch
+              list={maxBudgetOptions}
+              topList={maxBudgetOptions}
+              selectedItem={selectedFilters.maxBudget}
+              setSelectedItem={(maxBudget) => handleFilterChange({ maxBudget })}
+              showSearch={false}
+              isOneLine={true}
+            />
           </div>
           <Button
-            className="border-primary border-2 py-2 px-4 rounded mb-4 w-full"
+            className="border-primary border-2 py-2 px-4 mt-8 rounded mb-4 w-full"
             onClick={() => {
               console.log("Applied Filter");
 

@@ -18,6 +18,7 @@ import Pagination from "./Pagination";
 import SignIn from "../(route)/(auth)/sign-in/page";
 import ClientRegistration from "../(route)/user-dashboard/registration/page";
 import PayButton from "./PayButton";
+import { IndianRupee, MapPin, Music } from "lucide-react";
 
 function ArtistList({
   artists,
@@ -247,7 +248,7 @@ function ArtistList({
   };
 
   return (
-    <div className="mb-10 px-8">
+    <div className="mb-10">
       <Script
         src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`}
         strategy="afterInteractive" // Load after the page is interactive
@@ -284,279 +285,344 @@ function ArtistList({
           </Button>
         </div>
       </Modal>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-7 mt-4 lg:grid-cols-4">
+      <div className="grid grid-rows-2 sm:grid-rows-2 md:grid-cols-3 gap-2 mt-4 lg:grid-cols-4">
         {artists?.length > 0 ? (
           artists.map((artist, index) => {
             const eventTypeLink =
               eventType.length > 0 ? `?selectedEventType=${eventType}` : "";
             return (
-              <div
-                className="border-[1px] rounded-lg p-3 cursor-pointer hover:border-primary hover:shadow-sm transition-all ease-in-out"
-                key={index}
-              >
-                <Link href={`/artist/${artist.linkid}${eventTypeLink}`}>
-                  <img
-                    src={artist.profilePic}
-                    alt={artist.name}
-                    width={350}
-                    height={350}
-                    loading="lazy"
-                    className="object-cover rounded-lg"
-                  />
-                </Link>
-                <div className="mt-3 items-baseline flex flex-col gap-1">
-                  <h2 className="text-[10px] bg-blue-100 p-1 rounded-full px-2 text-primary">
-                    {artist.artistType}
-                  </h2>
-                  <h2 className="font-bold">{artist.name}</h2>
-                  <h2 className="text-primary text-sm">
-                    ₹{" "}
-                    {budget && artist[budget]
-                      ? formatToIndianNumber(artist[budget])
-                      : formatToIndianNumber(artist.price)}
-                  </h2>
-                  <h2 className="text-gray-500 text-sm">{artist.location}</h2>
-                  {showEnquiry && (
-                    <button
-                      onClick={() => handleSendEnquiryClick(artist)}
-                      className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
-                    >
-                      Send enquiry
-                    </button>
-                  )}
-                  {showBooking && (
-                    <Link
-                      className="w-full"
-                      href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
-                    >
-                      <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
-                        Book Now
+              <>
+                <div
+                  className="desktop border-[1px] rounded-lg p-3 cursor-pointer hover:border-primary shadow-lg"
+                  key={index}
+                >
+                  <Link href={`/artist/${artist.linkid}${eventTypeLink}`}>
+                    <img
+                      src={artist.profilePic}
+                      alt={artist.name}
+                      width={350}
+                      height={350}
+                      loading="lazy"
+                      className="object-cover rounded-lg"
+                    />
+                  </Link>
+                  <div className="mt-3 items-baseline flex flex-col gap-1">
+                    <h2 className="text-[10px] bg-blue-100 p-1 rounded-full px-2 text-primary">
+                      {artist.artistType}
+                    </h2>
+                    <h2 className="font-bold">{artist.name}</h2>
+                    <h2 className="text-primary text-sm">
+                      ₹{" "}
+                      {budget && artist[budget]
+                        ? formatToIndianNumber(artist[budget])
+                        : formatToIndianNumber(artist.price)}
+                    </h2>
+                    <h2 className="text-gray-500 text-sm">{artist.location}</h2>
+                    {showEnquiry && (
+                      <button
+                        onClick={() => handleSendEnquiryClick(artist)}
+                        className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
+                      >
+                        Send enquiry
                       </button>
-                    </Link>
-                  )}
-                  {showModal && currentArtistId === artist.linkid && (
-                    <Modal
-                      isOpen={showModal}
-                      onClose={handleModalClose}
-                      title={
-                        step === 1
-                          ? "Select Event Type"
-                          : step === 2
-                          ? "Select Event Date"
-                          : step === 3
-                          ? "Select Event City"
-                          : step === 4
-                          ? "Mobile Number"
-                          : step === 5
-                          ? "Basic Details"
-                          : "Confirm Enquiry"
-                      }
-                    >
-                      <div className="flex flex-col items-center">
-                        {step === 1 && (
+                    )}
+                    {showBooking && (
+                      <Link
+                        className="w-full"
+                        href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
+                      >
+                        <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
+                          Book Now
+                        </button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+                <div
+                  className="lg:hidden flex md:flex-row p-1 pt-0 gap-2"
+                  key={index}
+                >
+                  <Link
+                    href={`/artist/${artist.linkid}${eventTypeLink}`}
+                    className="w-2/4 mt-2"
+                  >
+                    <img
+                      src={artist.profilePic}
+                      alt={artist.name}
+                      width={200} // Adjust width as needed
+                      height={200} // Adjust height as needed
+                      loading="lazy"
+                      className="object-cover rounded-2xl border-[1px] shadow-xl"
+                    />
+                  </Link>
+                  <div className="w-3/4 justify-between text-left pt-3">
+                    <h2 className="font-bold text-sm tracking-wider pl-2">
+                      {artist.name}
+                    </h2>
+                    <h2 className="text-[10px] bg-slate-200 opacity-50 px-2 rounded-full w-fit capitalize">
+                      {artist.artistType}
+                    </h2>
+                    <div className="flex flex-row m-0 p-0">
+                      <Music className="h-[12px] mt-[6px] opacity-50 -z-10" />
+                      <h2 className="text-[10px] pl-2 rounded-full w-fit capitalize">
+                        {artist.genre.slice(0, 30)}...
+                      </h2>
+                    </div>
+                    <div className="flex flex-row text-primary m-0 p-0">
+                      <IndianRupee className="h-[12px] mt-[6px] opacity-50 -z-10" />
+                      <h2 className="text-sm">
+                        {budget && artist[budget]
+                          ? formatToIndianNumber(artist[budget])
+                          : formatToIndianNumber(artist.price)}
+                      </h2>
+                      <MapPin className="text-gray-500 h-[12px] mt-1 opacity-50 -z-10" />
+                      <h2 className="text-gray-500 text-sm">
+                        {artist.location}
+                      </h2>
+                    </div>
+
+                    {showEnquiry && (
+                      <button
+                        onClick={() => handleSendEnquiryClick(artist)}
+                        className="p-1 px-2 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
+                      >
+                        Send enquiry
+                      </button>
+                    )}
+                    {showBooking && (
+                      <Link
+                        className="w-full"
+                        href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
+                      >
+                        <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
+                          Book Now
+                        </button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+
+                {showModal && currentArtistId === artist.linkid && (
+                  <Modal
+                    isOpen={showModal}
+                    onClose={handleModalClose}
+                    title={
+                      step === 1
+                        ? "Select Event Type"
+                        : step === 2
+                        ? "Select Event Date"
+                        : step === 3
+                        ? "Select Event City"
+                        : step === 4
+                        ? "Mobile Number"
+                        : step === 5
+                        ? "Basic Details"
+                        : "Confirm Enquiry"
+                    }
+                  >
+                    <div className="flex flex-col items-center">
+                      {step === 1 && (
+                        <SingleSearch
+                          type=""
+                          list={artist.eventsType.split(", ")}
+                          topList={artist.eventsType.split(", ")}
+                          selectedItem={eventType}
+                          setSelectedItem={handleEventTypeSelect}
+                          showSearch={false}
+                        />
+                      )}
+                      {step === 2 && (
+                        <Calendar
+                          mode="single"
+                          selected={eventDate}
+                          onSelect={(date) => {
+                            setStep(3);
+                            setEventDate(date);
+                          }}
+                          className="border border-gray-300 rounded-md p-2"
+                          initialFocus
+                        />
+                      )}
+                      {step === 3 && (
+                        <>
+                          <input
+                            type="text"
+                            id="xabx"
+                            value={location}
+                            autoComplete="new-password"
+                            ref={inputRef}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="City"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
                           <SingleSearch
-                            type=""
-                            list={artist.eventsType.split(", ")}
-                            topList={artist.eventsType.split(", ")}
-                            selectedItem={eventType}
-                            setSelectedItem={handleEventTypeSelect}
+                            type="Top Cities"
+                            list={[
+                              "Mumbai",
+                              "Navi Mumbai",
+                              "Delhi",
+                              "Kolkata",
+                              "Chennai",
+                              "Bangalore",
+                              "Udaipur",
+                              "Jaipur",
+                              "Goa",
+                              "Nagpur",
+                              "Hyderabad",
+                              "Pune",
+                              "Bhopal",
+                              "Indore",
+                              "Lucknow",
+                              "Visakhapatnam",
+                              "Vadodara",
+                              "Surat",
+                              "Ahmedabad",
+                              "Ranchi",
+                              "Patna",
+                              "Shimla",
+                            ]}
+                            topList={[
+                              "Mumbai",
+                              "Navi Mumbai",
+                              "Delhi",
+                              "Kolkata",
+                              "Chennai",
+                              "Bangalore",
+                              "Udaipur",
+                              "Jaipur",
+                              "Goa",
+                              "Nagpur",
+                              "Hyderabad",
+                              "Pune",
+                              "Bhopal",
+                              "Indore",
+                              "Lucknow",
+                              "Visakhapatnam",
+                              "Vadodara",
+                              "Surat",
+                              "Ahmedabad",
+                              "Ranchi",
+                              "Patna",
+                              "Shimla",
+                            ]}
+                            selectedItem={location}
+                            setSelectedItem={handleLocationSelect}
                             showSearch={false}
                           />
-                        )}
-                        {step === 2 && (
-                          <Calendar
-                            mode="single"
-                            selected={eventDate}
-                            onSelect={(date) => {
-                              setStep(3);
-                              setEventDate(date);
-                            }}
-                            className="border border-gray-300 rounded-md p-2"
-                            initialFocus
-                          />
-                        )}
-                        {step === 3 && (
-                          <>
-                            <input
-                              type="text"
-                              id="xabx"
-                              value={location}
-                              autoComplete="new-password"
-                              ref={inputRef}
-                              onChange={(e) => setLocation(e.target.value)}
-                              placeholder="City"
-                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            />
-                            <SingleSearch
-                              type="Top Cities"
-                              list={[
-                                "Mumbai",
-                                "Navi Mumbai",
-                                "Delhi",
-                                "Kolkata",
-                                "Chennai",
-                                "Bangalore",
-                                "Udaipur",
-                                "Jaipur",
-                                "Goa",
-                                "Nagpur",
-                                "Hyderabad",
-                                "Pune",
-                                "Bhopal",
-                                "Indore",
-                                "Lucknow",
-                                "Visakhapatnam",
-                                "Vadodara",
-                                "Surat",
-                                "Ahmedabad",
-                                "Ranchi",
-                                "Patna",
-                                "Shimla",
-                              ]}
-                              topList={[
-                                "Mumbai",
-                                "Navi Mumbai",
-                                "Delhi",
-                                "Kolkata",
-                                "Chennai",
-                                "Bangalore",
-                                "Udaipur",
-                                "Jaipur",
-                                "Goa",
-                                "Nagpur",
-                                "Hyderabad",
-                                "Pune",
-                                "Bhopal",
-                                "Indore",
-                                "Lucknow",
-                                "Visakhapatnam",
-                                "Vadodara",
-                                "Surat",
-                                "Ahmedabad",
-                                "Ranchi",
-                                "Patna",
-                                "Shimla",
-                              ]}
-                              selectedItem={location}
-                              setSelectedItem={handleLocationSelect}
-                              showSearch={false}
-                            />
-                          </>
-                        )}
-                        {step === 4 && (
-                          <>
-                            <SignIn isModal={true} />
-                          </>
-                        )}
-                        {step === 5 && (
-                          <>
-                            <ClientRegistration isModal={true} />
-                          </>
-                        )}
-                        {step === 6 && (
-                          <div className="flex flex-col items-start p-4 bg-white shadow-lg rounded-lg">
-                            <p className="font-bold text-lg mb-4 text-gray-800">
-                              {Number(currentBudget.replace(/,/g, "")) > 1000000
-                                ? "Premium Enquiry"
-                                : "Confirm your Enquiry"}
+                        </>
+                      )}
+                      {step === 4 && (
+                        <>
+                          <SignIn isModal={true} />
+                        </>
+                      )}
+                      {step === 5 && (
+                        <>
+                          <ClientRegistration isModal={true} />
+                        </>
+                      )}
+                      {step === 6 && (
+                        <div className="flex flex-col items-start p-4 bg-white shadow-lg rounded-lg">
+                          <p className="font-bold text-lg mb-4 text-gray-800">
+                            {Number(currentBudget.replace(/,/g, "")) > 1000000
+                              ? "Premium Enquiry"
+                              : "Confirm your Enquiry"}
+                          </p>
+                          <div className="mb-4">
+                            <p className="text-gray-700">
+                              <strong>Event Type:</strong> {eventType}
                             </p>
-                            <div className="mb-4">
-                              <p className="text-gray-700">
-                                <strong>Event Type:</strong> {eventType}
-                              </p>
-                              <p className="text-gray-700">
-                                <strong>Event Date:</strong>{" "}
-                                {eventDate || selectedDate
-                                  ? (
-                                      eventDate || selectedDate
-                                    ).toLocaleDateString("en-GB", {
-                                      day: "2-digit",
-                                      month: "short",
-                                      year: "numeric",
-                                    })
-                                  : "Not selected"}
-                              </p>
-                              <p className="text-gray-700">
-                                <strong>Location:</strong> {location}
-                              </p>
-                            </div>
-
-                            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                              <h2 className="text-primary font-semibold mb-4">
-                                Why Pay ₹
-                                {Number(currentBudget.replace(/,/g, "")) >
-                                1000000 ? (
-                                  <span>99</span>
-                                ) : (
-                                  <span>49</span>
-                                )}{" "}
-                                as Enquiry Charges?
-                              </h2>
-                              <ul className="list-disc list-inside text-gray-800 font-medium mb-2">
-                                <li>Prioritize Enquiries</li>
-                                <li>Avoid SPAM Enquiries</li>
-                                <li>Fast Service</li>
-                                <li>Dedicated Artist Manager</li>
-                              </ul>
-                            </div>
+                            <p className="text-gray-700">
+                              <strong>Event Date:</strong>{" "}
+                              {eventDate || selectedDate
+                                ? (
+                                    eventDate || selectedDate
+                                  ).toLocaleDateString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
+                                : "Not selected"}
+                            </p>
+                            <p className="text-gray-700">
+                              <strong>Location:</strong> {location}
+                            </p>
                           </div>
-                        )}
-                        <div className="flex justify-between w-full mt-4">
-                          {step > 1 && (
-                            <button
-                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={handlePreviousStep}
-                            >
-                              Previous
-                            </button>
-                          )}
-                          {isValid && step === 3 && (
-                            <button
-                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => {
-                                if (!isAuthenticated) {
-                                  setStep(4);
-                                } else {
-                                  setStep(5);
-                                }
-                              }}
-                            >
-                              Next
-                            </button>
-                          )}
-                          {step === 6 &&
-                            (Number(currentBudget.replace(/,/g, "")) >
-                            1000000 ? (
-                              <PayButton
-                                amount={99}
-                                name={client.name}
-                                email={client.email}
-                                contact={client.contact}
-                                linkid={currentArtistId}
-                                eventType={eventType}
-                                eventDate={eventDate}
-                                location={location}
-                                budget={currentBudget}
-                              />
-                            ) : (
-                              <PayButton
-                                amount={49}
-                                name={client.name}
-                                email={client.email}
-                                contact={client.contact}
-                                linkid={currentArtistId}
-                                eventType={eventType}
-                                eventDate={eventDate}
-                                location={location}
-                                budget={currentBudget}
-                              />
-                            ))}
+
+                          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <h2 className="text-primary font-semibold mb-4">
+                              Why Pay ₹
+                              {Number(currentBudget.replace(/,/g, "")) >
+                              1000000 ? (
+                                <span>99</span>
+                              ) : (
+                                <span>49</span>
+                              )}{" "}
+                              as Enquiry Charges?
+                            </h2>
+                            <ul className="list-disc list-inside text-gray-800 font-medium mb-2">
+                              <li>Prioritize Enquiries</li>
+                              <li>Avoid SPAM Enquiries</li>
+                              <li>Fast Service</li>
+                              <li>Dedicated Artist Manager</li>
+                            </ul>
+                          </div>
                         </div>
+                      )}
+                      <div className="flex justify-between w-full mt-4">
+                        {step > 1 && (
+                          <button
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={handlePreviousStep}
+                          >
+                            Previous
+                          </button>
+                        )}
+                        {isValid && step === 3 && (
+                          <button
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => {
+                              if (!isAuthenticated) {
+                                setStep(4);
+                              } else {
+                                setStep(5);
+                              }
+                            }}
+                          >
+                            Next
+                          </button>
+                        )}
+                        {step === 6 &&
+                          (Number(currentBudget.replace(/,/g, "")) > 1000000 ? (
+                            <PayButton
+                              amount={99}
+                              name={client.name}
+                              email={client.email}
+                              contact={client.contact}
+                              linkid={currentArtistId}
+                              eventType={eventType}
+                              eventDate={eventDate}
+                              location={location}
+                              budget={currentBudget}
+                            />
+                          ) : (
+                            <PayButton
+                              amount={49}
+                              name={client.name}
+                              email={client.email}
+                              contact={client.contact}
+                              linkid={currentArtistId}
+                              eventType={eventType}
+                              eventDate={eventDate}
+                              location={location}
+                              budget={currentBudget}
+                            />
+                          ))}
                       </div>
-                    </Modal>
-                  )}
-                </div>
-              </div>
+                    </div>
+                  </Modal>
+                )}
+              </>
             );
           })
         ) : (

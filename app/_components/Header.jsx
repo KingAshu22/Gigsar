@@ -102,8 +102,9 @@ const Header = () => {
     <>
       <div className="flex items-center justify-between p-4 shadow-sm bg-white">
         <div className="flex items-center gap-10">
-          <Link href="/">
-            <h1 className="font-bold text-4xl text-primary">Gigsar</h1>
+          <Link href="/" className="flex flex-row">
+            <h1 className="font-bold text-4xl text-primary">Gigsar </h1>
+            <span className="font-bold">®</span>
           </Link>
           <ul className="hidden md:flex gap-8">
             {Menu.map((item, index) => (

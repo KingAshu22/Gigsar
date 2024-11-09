@@ -114,6 +114,7 @@ export async function GET(req) {
           location: 1,
           artistType: 1,
           eventsType: 1,
+          genre: 1,
         },
       },
     ];

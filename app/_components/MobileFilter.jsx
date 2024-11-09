@@ -49,7 +49,6 @@ const MobileFilterPanel = ({
       case "Artist Type":
         return (
           <SingleSearch
-            type="Artist Type"
             list={categories}
             topList={categories}
             selectedItem={selectedFilters.category}
@@ -60,7 +59,6 @@ const MobileFilterPanel = ({
       case "Genre":
         return (
           <SearchList
-            type="Genre"
             list={genres}
             topList={topGenres}
             selectedItems={selectedFilters.genre}
@@ -70,7 +68,6 @@ const MobileFilterPanel = ({
       case "Event Type":
         return (
           <SingleSearch
-            type="Event Type"
             list={eventsTypes}
             topList={topEventTypes}
             selectedItem={selectedFilters.eventType}
@@ -78,36 +75,35 @@ const MobileFilterPanel = ({
             showSearch={true}
           />
         );
-      case "Event Date":
-        return (
-          <Popover>
-            <label className="block mb-2 font-semibold">Event Date</label>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={`w-full justify-start text-left font-normal
-                  ${!selectedFilters.selectedDate && "text-muted-foreground"}`}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedFilters.selectedDate
-                  ? format(selectedFilters.selectedDate, "PPP")
-                  : "Event Date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={selectedFilters.selectedDate}
-                onSelect={(date) => handleFilterChange({ selectedDate: date })}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        );
+      // case "Event Date":
+      //   return (
+      //     <Popover>
+      //       <label className="block mb-2 font-semibold">Event Date</label>
+      //       <PopoverTrigger asChild>
+      //         <Button
+      //           variant={"outline"}
+      //           className={`w-full justify-start text-left font-normal
+      //             ${!selectedFilters.selectedDate && "text-muted-foreground"}`}
+      //         >
+      //           <CalendarIcon className="mr-2 h-4 w-4" />
+      //           {selectedFilters.selectedDate
+      //             ? format(selectedFilters.selectedDate, "PPP")
+      //             : "Event Date"}
+      //         </Button>
+      //       </PopoverTrigger>
+      //       <PopoverContent className="w-auto p-0">
+      //         <Calendar
+      //           mode="single"
+      //           selected={selectedFilters.selectedDate}
+      //           onSelect={(date) => handleFilterChange({ selectedDate: date })}
+      //           initialFocus
+      //         />
+      //       </PopoverContent>
+      //     </Popover>
+      //   );
       case "Location":
         return (
           <SingleSearch
-            type="Location"
             list={locations}
             topList={locations}
             selectedItem={selectedFilters.location}
@@ -118,22 +114,10 @@ const MobileFilterPanel = ({
       case "Gender":
         return (
           <SingleSearch
-            type="Gender"
             list={genders}
             topList={genders}
             selectedItem={selectedFilters.gender}
             setSelectedItem={(gender) => handleFilterChange({ gender })}
-            showSearch={false}
-          />
-        );
-      case "Sort By Budget":
-        return (
-          <SingleSearch
-            type="Sort By Budget"
-            list={["Low to High", "High to Low"]}
-            topList={["Low to High", "High to Low"]}
-            selectedItem={selectedFilters.sortOption}
-            setSelectedItem={(sortOption) => handleFilterChange({ sortOption })}
             showSearch={false}
           />
         );
@@ -167,37 +151,37 @@ const MobileFilterPanel = ({
   return (
     <>
       {filterOpen && (
-        <div className="fixed inset-0 bg-white z-50 flex">
+        <div className="fixed inset-0 bg-white z-50 flex w-screen h-screen">
           <div className="w-2/5 bg-gray-200 py-4 pl-2">
-            <h1 className="pl-2 font-bold text-lg text-primary">
-              Gigsar Filters
-            </h1>
+            <h1 className="pl-2 font-bold text-lg text-primary">Filters</h1>
             <hr className="bg-black pt-[1px] ml-[-5px]" />
-            <nav className="flex flex-col space-y-8 pt-8">
+            <nav className="flex flex-col pt-2">
               {[
                 "Artist Type",
                 "Genre",
                 "Event Type",
-                "Event Date",
+                // "Event Date",
                 "Location",
                 "Gender",
-                "Sort By Budget",
                 "Min Budget",
                 "Max Budget",
               ].map((navItem) => (
-                <button
-                  key={navItem}
-                  className={`text-left px-2 py-1 
+                <>
+                  <button
+                    key={navItem}
+                    className={`text-left px-2 py-4
                     ${
                       activeNav === navItem
-                        ? "text-primary font-semibold bg-white pt-2 pb-2 rounded-l-lg ml-3"
+                        ? "text-primary font-semibold bg-white pt-4 pb-4 rounded-l-lg"
                         : ""
                     }
                   `}
-                  onClick={() => setActiveNav(navItem)}
-                >
-                  {navItem}
-                </button>
+                    onClick={() => setActiveNav(navItem)}
+                  >
+                    {navItem}
+                  </button>
+                  <hr className="bg-white pb-[1px] ml-[-5px]" />
+                </>
               ))}
             </nav>
           </div>

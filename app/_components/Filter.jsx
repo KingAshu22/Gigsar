@@ -105,7 +105,7 @@ const FilterPanel = ({
             setSelectedItem={(eventType) => handleFilterChange({ eventType })}
             showSearch={true}
           />
-          <Popover>
+          {/* <Popover>
             <label className="block mb-2 font-semibold">Event Date</label>
             <PopoverTrigger asChild>
               <Button
@@ -130,7 +130,7 @@ const FilterPanel = ({
                 initialFocus
               />
             </PopoverContent>
-          </Popover>
+          </Popover> */}
           <SingleSearch
             type="Location"
             list={locations}
@@ -203,9 +203,9 @@ const FilterPanel = ({
       </div>
       {/* For mobile screen */}
       <div className="mobile">
-        <div className="fixed bottom-0 w-full py-4 px-4 bg-white border-t flex justify-between gap-4 left-0">
+        <div className="fixed bottom-0 w-full py-2 mb-[-5px] bg-primary flex justify-between left-0">
           <Button
-            className="w-full flex justify-center items-center py-2 bg-primary text-white rounded-md"
+            className="w-full flex justify-center items-center py-2 bg-primary text-white border-r-2 border-white rounded-r-none"
             onClick={() => {
               const newSortOption =
                 selectedFilters.sortOption === "Low to High"
@@ -223,7 +223,7 @@ const FilterPanel = ({
             Sort: {selectedFilters.sortOption}
           </Button>
           <Button
-            className="w-full flex justify-center items-center py-2 bg-primary text-white rounded-md"
+            className="w-full flex justify-center items-center py-2 bg-primary text-white rounded-l-none"
             onClick={() => setFilterOpen(true)}
           >
             <FilterIcon className="mr-2" />

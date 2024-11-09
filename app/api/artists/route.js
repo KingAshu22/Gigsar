@@ -142,7 +142,7 @@ export async function GET(req) {
         .then((res) => (res[0] ? res[0].total : 0)), // If no result, return 0
     ]);
 
-    const totalPages = Math.ceil(filteredArtistsCount / 12);
+    const totalPages = Math.ceil(filteredArtistsCount / 20);
     console.log("Total pages", totalPages);
     console.log("Total artists", filteredArtistsCount);
 

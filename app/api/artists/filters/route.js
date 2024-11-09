@@ -24,7 +24,7 @@ export async function GET(req) {
 
     const topGenres = Object.entries(genreFrequency)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
+      .slice(0, 15)
       .map(([genre]) => genre);
 
     const uniqueLocations = [

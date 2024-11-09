@@ -51,7 +51,7 @@ const SingleSearch = ({
                   item === selectedItem
                     ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize text-sm"
                     : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-sm",
-                  isOneLine ? "w-screen" : "",
+                  isOneLine ? "w-full" : "",
                 ].join(" ")}
               >
                 {isOneLine
@@ -98,7 +98,7 @@ const SingleSearch = ({
                 type="button"
                 key={index}
                 onClick={() => handleSelectItem(item)}
-                className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300"
+                className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 text-sm"
               >
                 {item}
               </button>

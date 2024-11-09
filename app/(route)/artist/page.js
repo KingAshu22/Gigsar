@@ -217,7 +217,7 @@ function ArtistFilter() {
         <div className="w-full lg:w-3/4">
           {loading ? (
             <div className="flex flex-col justify-center items-center h-full text-center">
-              <HashLoader color="#dc2626" size={180} />
+              <HashLoader color="#dc2626" size={100} />
             </div>
           ) : artists.length > 0 ? (
             <ArtistList

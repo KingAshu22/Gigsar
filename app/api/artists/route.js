@@ -102,8 +102,8 @@ export async function GET(req) {
         },
       },
       // Pagination
-      { $skip: (filters.page - 1) * 12 },
-      { $limit: 12 },
+      { $skip: (filters.page - 1) * 20 },
+      { $limit: 20 },
       // Selecting only required fields
       {
         $project: {

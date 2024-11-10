@@ -33,7 +33,7 @@ const Bill = () => {
       <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6">
           <h1 className="text-3xl font-bold text-center mb-4">
-            Event Enquiry Bill
+            Event Enquiry Details
           </h1>
 
           <table className="min-w-full border-collapse border border-gray-300">
@@ -64,14 +64,14 @@ const Bill = () => {
                 <td className="border border-gray-300 p-2 font-semibold">
                   Contact
                 </td>
-                <td className="border border-gray-300 p-2">{contact}</td>
+                <td className="border border-gray-300 p-2">+{contact}</td>
               </tr>
               <tr className="bg-gray-100">
                 <td className="border border-gray-300 p-2 font-semibold">
                   Artist Name
                 </td>
-                <td className="border border-gray-300 p-2">
-                  {linkid.toUpperCase().replace("-", " ")}
+                <td className="border border-gray-300 p-2 capitalize">
+                  {linkid.replace("-", " ")}
                 </td>
               </tr>
               <tr>
@@ -100,20 +100,20 @@ const Bill = () => {
                 </td>
                 <td className="border border-gray-300 p-2">₹{budget}</td>
               </tr>
-              <tr className="bg-gray-100">
+              {/* <tr className="bg-gray-100">
                 <td className="border border-gray-300 p-2 font-semibold">
                   Enquiry Charges
                 </td>
                 <td className="border border-gray-300 p-2">₹{amount}</td>
-              </tr>
-              <tr>
+              </tr> */}
+              {/* <tr>
                 <td
                   className="border border-gray-300 p-2 font-semibold text-red-600"
                   colSpan={2}
                 >
                   Note: This is a non-refundable amount.
                 </td>
-              </tr>
+              </tr> */}
               {/* <tr>
                 <td className="border border-gray-300 p-2 font-semibold">
                   Order ID

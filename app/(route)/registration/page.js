@@ -317,7 +317,7 @@ const ArtistRegistration = () => {
         spotifyLink,
         musicTraining,
         aboutArtist,
-        showGigsar: false,
+        showGigsar: "false",
         showBookMySinger: false,
       };
 

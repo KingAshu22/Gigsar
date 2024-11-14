@@ -5,7 +5,9 @@ export async function GET(req) {
   await connectToDB();
   try {
     // Fetch all artists from MongoDB
-    const artists = await Artist.find({ showGigsar: "live" }).exec();
+    const artists = await Artist.find({
+      showGigsar: "live" || "unlisted",
+    }).exec();
 
     // Extract unique filters
     const uniqueCategories = [

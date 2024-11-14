@@ -26,7 +26,7 @@ export async function GET(req) {
     console.log(filters);
 
     // Build MongoDB query based on filters
-    const query = { showGigsar: "live" };
+    const query = { showGigsar: { $in: ["live", "unlisted"] } };
 
     if (filters.selectedCategory !== "All Artist Types") {
       query.artistType = filters.selectedCategory;

@@ -19,6 +19,7 @@ import SignIn from "../(route)/(auth)/sign-in/page";
 import ClientRegistration from "../(route)/user-dashboard/registration/page";
 import PayButton from "./PayButton";
 import { IndianRupee, MapPin, Music } from "lucide-react";
+import SignUp from "../(route)/(auth)/sign-up/page";
 
 function ArtistList({
   artists,
@@ -513,7 +514,7 @@ function ArtistList({
                       )}
                       {step === 4 && (
                         <>
-                          <SignIn isModal={true} />
+                          <SignUp isModal={true} />
                         </>
                       )}
                       {step === 5 && (

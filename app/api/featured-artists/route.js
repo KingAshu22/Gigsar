@@ -16,7 +16,7 @@ export async function GET(req) {
     // Find artists that are featured, whose showGigsar is true, and where the busyDates do not include the given date (normalized to YYYY-MM-DD)
     const artists = await Artist.find({
       feature: "Featured House Party Artists",
-      showGigsar: "true",
+      showGigsar: "live",
       location: {
         $regex: new RegExp(location, "i"), // Case-insensitive search
       },

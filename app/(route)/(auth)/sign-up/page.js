@@ -2,19 +2,45 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Head from "next/head";
+import Image from "next/image";
+import * as animationData from "../../../../public/verified.json";
+import LottieImg from "@/app/_components/Lottie";
+import toast from "react-hot-toast";
 
-export default function SignIn() {
+export default function SignIn({ isModal = false }) {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [showOtpSection, setShowOtpSection] = useState(false);
   const [OTPlessSignin, setOTPlessSignin] = useState(null);
+  const [returnUrl, setReturnUrl] = useState("");
   const [error, setError] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+  const [countryFlag, setCountryFlag] = useState("");
+  const [timer, setTimer] = useState(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [showVerifiedGif, setShowVerifiedGif] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl");
 
   useEffect(() => {
+    const rawReturnUrl = searchParams.get("redirect_url");
+    if (rawReturnUrl) {
+      // Only decode if rawReturnUrl is not null or empty
+      setReturnUrl(decodeURIComponent(rawReturnUrl));
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    fetch("https://ipapi.co/json/")
+      .then((response) => response.json())
+      .then((data) => {
+        const countryCode = data.country_calling_code;
+        const countryFlag = `https://flagicons.lipis.dev/flags/4x3/${data.country.toLowerCase()}.svg`;
+        setCountryCode(countryCode);
+        setCountryFlag(countryFlag);
+      })
+      .catch((error) => console.error("Error fetching IP data:", error));
+
     const script = document.createElement("script");
     script.src = "https://otpless.com/v2/headless.js";
     script.id = "otpless-sdk";
@@ -22,7 +48,15 @@ export default function SignIn() {
     script.onload = () => {
       if (typeof window.OTPless !== "undefined") {
         const callback = (userinfo) => {
-          console.log(userinfo);
+          console.log("OTPless callback userinfo:", userinfo);
+          const authExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000;
+          const mobile = userinfo.identities[0].identityValue;
+          const city = userinfo.network.ipLocation.city.name;
+          localStorage.setItem("authExpiry", authExpiry.toString());
+          localStorage.setItem("mobile", mobile.toString());
+          localStorage.setItem("city", city.toString());
+          // Redirect to the full returnUrl
+          router.push(returnUrl);
         };
 
         const instance = new window.OTPless(callback);
@@ -30,16 +64,44 @@ export default function SignIn() {
       }
     };
     document.head.appendChild(script);
-  }, []);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [router, returnUrl]);
+
+  const startTimer = () => {
+    setIsButtonDisabled(true);
+    setTimer(120);
+    const countdown = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer === 1) {
+          clearInterval(countdown);
+          setIsButtonDisabled(false);
+          return 0;
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+  };
 
   const handlePhoneAuth = () => {
+    if (!phone) {
+      toast.error("Please fill your phone number");
+      return;
+    }
+    if (countryCode === "+91" && phone.length !== 10) {
+      toast.error("Please enter a valid 10-digit phone number.");
+      return;
+    }
     if (OTPlessSignin) {
       OTPlessSignin.initiate({
         channel: "PHONE",
         phone,
-        countryCode: "+91",
+        countryCode,
       });
       setShowOtpSection(true);
+      startTimer();
     }
   };
 
@@ -49,95 +111,118 @@ export default function SignIn() {
         channel: "PHONE",
         phone,
         otp,
-        countryCode: "+91",
+        countryCode,
       })
         .then((response) => {
-          if (response.success) {
-            const user = { phone };
-            sessionStorage.setItem("user", JSON.stringify(user));
-            sessionStorage.setItem("authToken", response.token);
-            sessionStorage.setItem(
-              "authExpiry",
-              Date.now() + 7 * 24 * 60 * 60 * 1000
-            );
-
-            router.push(returnUrl);
+          console.log("Verification Response:", response);
+          if (response.success && response.response.requestID) {
+            if (!isModal) {
+              setShowVerifiedGif(true);
+            }
+            if (returnUrl) {
+              router.push(returnUrl);
+            }
           } else {
-            setError("OTP is incorrect. Please try again.");
+            setError(
+              "OTP is incorrect. Please try again or Session storage issue"
+            );
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error("Error verifying OTP:", error);
           setError("OTP is incorrect. Please try again.");
         });
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Head>
-        <title>Sign In</title>
-      </Head>
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">
-          Sign In to {returnUrl}
-        </h2>
-        <p className="text-center text-gray-500 mb-8">
-          Sign in to access your artist dashboard {returnUrl}
-        </p>
-        <div className="space-y-6">
-          <div id="mobile-section">
-            <label
-              htmlFor="mobile-input"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Mobile Number
-            </label>
-            <input
-              type="text"
-              id="mobile-input"
-              placeholder="Enter mobile number"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-            <button
-              onClick={handlePhoneAuth}
-              className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
-            >
-              Request OTP
-            </button>
-          </div>
-
-          {showOtpSection && (
-            <div id="otp-section">
-              <label
-                htmlFor="otp-input"
-                className="block text-sm font-medium text-gray-700"
-              >
-                OTP
-              </label>
-              <input
-                type="text"
-                id="otp-input"
-                placeholder="Enter OTP"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
-              <button
-                onClick={handleVerifyOTP}
-                className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
-              >
-                Verify OTP
-              </button>
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-4 text-red-500 text-center">{error}</div>
-          )}
+    <div className="flex items-center justify-center p-4">
+      {showVerifiedGif ? (
+        <div className="flex items-center justify-center">
+          <LottieImg animationData={animationData} loop="false" />
         </div>
-      </div>
+      ) : (
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+          {!isModal && (
+            <>
+              <h2 className="text-3xl font-bold mb-6 text-center text-primary">
+                Sign In
+              </h2>
+              <p className="text-center text-gray-500 mb-8">
+                Sign in to access your dashboard
+              </p>
+            </>
+          )}
+          <div className="space-y-6">
+            <div id="mobile-section">
+              <div className="flex items-center space-x-2">
+                {!showOtpSection && (
+                  <>
+                    {countryFlag && (
+                      <Image
+                        src={countryFlag}
+                        alt="Country Flag"
+                        width={25}
+                        height={25}
+                      />
+                    )}
+                    <span className="text-lg">{countryCode}</span>
+                    <input
+                      type="number"
+                      id="mobile-input"
+                      placeholder="Enter mobile number"
+                      className="flex-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </>
+                )}
+              </div>
+              {!showOtpSection && isModal && (
+                <button
+                  onClick={handlePhoneAuth}
+                  className={`w-full mt-4 px-4 py-2 bg-primary ${
+                    isButtonDisabled ? "opacity-75" : ""
+                  } text-white rounded-lg hover:bg-red-800 transition duration-200`}
+                  disabled={isButtonDisabled}
+                >
+                  {isButtonDisabled ? `Resend OTP in ${timer}s` : "Next"}
+                </button>
+              )}
+            </div>
+
+            {showOtpSection && (
+              <div id="otp-section">
+                <label
+                  htmlFor="otp-input"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  OTP
+                </label>
+                <input
+                  type="text"
+                  id="otp-input"
+                  placeholder="Enter OTP"
+                  maxLength={6}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+                <button
+                  onClick={handleVerifyOTP}
+                  className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+                >
+                  Verify OTP
+                </button>
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-4 text-red-500 text-center">{error}</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

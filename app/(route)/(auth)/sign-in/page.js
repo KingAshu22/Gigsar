@@ -7,7 +7,7 @@ import * as animationData from "../../../../public/verified.json";
 import LottieImg from "@/app/_components/Lottie";
 import toast from "react-hot-toast";
 
-export default function SignIn({ isModal = false }) {
+export default function SignIn() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [showOtpSection, setShowOtpSection] = useState(false);
@@ -23,10 +23,11 @@ export default function SignIn({ isModal = false }) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const rawReturnUrl = searchParams.get("redirect_url");
-    if (rawReturnUrl) {
-      // Only decode if rawReturnUrl is not null or empty
-      setReturnUrl(decodeURIComponent(rawReturnUrl));
+    const rawReturnUrl = searchParams.get("redirect_url") || "/";
+    if (typeof window !== "undefined") {
+      const returnUrlPath = new URL(rawReturnUrl, window.location.origin)
+        .pathname;
+      setReturnUrl(returnUrlPath);
     }
   }, [searchParams]);
 
@@ -55,7 +56,7 @@ export default function SignIn({ isModal = false }) {
           localStorage.setItem("authExpiry", authExpiry.toString());
           localStorage.setItem("mobile", mobile.toString());
           localStorage.setItem("city", city.toString());
-          // Redirect to the full returnUrl
+          localStorage.setItem("hasRefreshed", "false");
           router.push(returnUrl);
         };
 
@@ -90,9 +91,12 @@ export default function SignIn({ isModal = false }) {
       toast.error("Please fill your phone number");
       return;
     }
-    if (countryCode === "+91" && phone.length !== 10) {
-      toast.error("Please enter a valid 10-digit phone number.");
-      return;
+    // Check for country code +91 and ensure the phone number is exactly 10 digits
+    if (countryCode === "+91") {
+      if (phone.length !== 10) {
+        toast.error("Please enter a valid 10-digit phone number.");
+        return;
+      }
     }
     if (OTPlessSignin) {
       OTPlessSignin.initiate({
@@ -116,12 +120,10 @@ export default function SignIn({ isModal = false }) {
         .then((response) => {
           console.log("Verification Response:", response);
           if (response.success && response.response.requestID) {
-            if (!isModal) {
-              setShowVerifiedGif(true);
-            }
-            if (returnUrl) {
+            setShowVerifiedGif(true);
+            setTimeout(() => {
               router.push(returnUrl);
-            }
+            }, 2000);
           } else {
             setError(
               "OTP is incorrect. Please try again or Session storage issue"
@@ -136,59 +138,57 @@ export default function SignIn({ isModal = false }) {
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       {showVerifiedGif ? (
         <div className="flex items-center justify-center">
-          <LottieImg animationData={animationData} loop="false" />
+          <LottieImg animationData={animationData} loop={false} />
         </div>
       ) : (
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-          {!isModal && (
-            <>
-              <h2 className="text-3xl font-bold mb-6 text-center text-primary">
-                Sign In
-              </h2>
-              <p className="text-center text-gray-500 mb-8">
-                Sign in to access your dashboard
-              </p>
-            </>
-          )}
+        <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-lg w-full max-w-md">
+          <h2 className="text-3xl font-bold mb-6 text-center text-primary">
+            User Sign In
+          </h2>
+          <p className="text-center text-gray-500 mb-8">
+            Sign in to access your dashboard
+          </p>
           <div className="space-y-6">
             <div id="mobile-section">
-              <div className="flex items-center space-x-2">
-                {!showOtpSection && (
-                  <>
-                    {countryFlag && (
-                      <Image
-                        src={countryFlag}
-                        alt="Country Flag"
-                        width={25}
-                        height={25}
-                      />
-                    )}
-                    <span className="text-lg">{countryCode}</span>
-                    <input
-                      type="number"
-                      id="mobile-input"
-                      placeholder="Enter mobile number"
-                      className="flex-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                  </>
+              <label
+                htmlFor="mobile-input"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Mobile Number
+              </label>
+              <div className="flex items-center space-x-2 w-full">
+                {countryFlag && (
+                  <Image
+                    src={countryFlag}
+                    alt="Country Flag"
+                    width={25}
+                    height={25}
+                  />
                 )}
+                <span className="text-lg">{countryCode}</span>
+                <input
+                  type="number"
+                  id="mobile-input"
+                  placeholder="Enter mobile number"
+                  className="flex-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
               </div>
-              {!showOtpSection && !isModal && (
-                <button
-                  onClick={handlePhoneAuth}
-                  className={`w-full mt-4 px-4 py-2 bg-primary ${
-                    isButtonDisabled ? "opacity-75" : ""
-                  } text-white rounded-lg hover:bg-red-800 transition duration-200`}
-                  disabled={isButtonDisabled}
-                >
-                  {isButtonDisabled ? `Resend OTP in ${timer}s` : "Next"}
-                </button>
-              )}
+              <button
+                onClick={handlePhoneAuth}
+                className={
+                  isButtonDisabled
+                    ? "w-full mt-4 px-4 py-2 bg-primary opacity-75 text-white rounded-lg hover:bg-red-800 transition duration-200"
+                    : "w-full mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-red-800 transition duration-200"
+                }
+                disabled={isButtonDisabled}
+              >
+                {isButtonDisabled ? `Resend OTP in ${timer}s` : "Send OTP"}
+              </button>
             </div>
 
             {showOtpSection && (

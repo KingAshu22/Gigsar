@@ -79,7 +79,7 @@ const FilterPanel = ({
 
   return (
     <>
-      <div className="desktop w-full lg:w-1/4 lg:sticky lg:top-4 lg:h-full overflow-y-auto max-h-screen">
+      <div className="desktop w-full lg:w-2/5 lg:sticky lg:top-4 lg:h-full overflow-y-auto max-h-screen -ml-20">
         <div className="bg-white p-4 rounded shadow-md mb-4">
           <h2 className="text-xl font-bold mb-2">Filter</h2>
           <SingleSearch
@@ -155,27 +155,39 @@ const FilterPanel = ({
             setSelectedItem={(sortOption) => handleFilterChange({ sortOption })}
             showSearch={false}
           />
-          <div className="overflow-y-auto max-h-36">
-            <label className="block mb-2 font-semibold">Minimum Budget</label>
-            <SingleSearch
-              list={minBudgetOptions}
-              topList={minBudgetOptions}
-              selectedItem={selectedFilters.minBudget}
-              setSelectedItem={(minBudget) => handleFilterChange({ minBudget })}
-              showSearch={false}
-              isOneLine={true}
-            />
+          <div className="rounded-lg border-2 mb-4">
+            <label className="block mb-2 ml-2 font-semibold">
+              Minimum Budget
+            </label>
+            <div className="overflow-y-auto max-h-36">
+              <SingleSearch
+                list={minBudgetOptions}
+                topList={minBudgetOptions}
+                selectedItem={selectedFilters.minBudget}
+                setSelectedItem={(minBudget) =>
+                  handleFilterChange({ minBudget })
+                }
+                showSearch={false}
+                isOneLine={true}
+              />
+            </div>
           </div>
-          <div className="overflow-y-auto max-h-36">
-            <label className="block mb-2 font-semibold">Maximum Budget</label>
-            <SingleSearch
-              list={maxBudgetOptions}
-              topList={maxBudgetOptions}
-              selectedItem={selectedFilters.maxBudget}
-              setSelectedItem={(maxBudget) => handleFilterChange({ maxBudget })}
-              showSearch={false}
-              isOneLine={true}
-            />
+          <div className="rounded-lg border-2">
+            <label className="block mb-2 ml-2 font-semibold">
+              Maximum Budget
+            </label>
+            <div className="overflow-y-auto max-h-36">
+              <SingleSearch
+                list={maxBudgetOptions}
+                topList={maxBudgetOptions}
+                selectedItem={selectedFilters.maxBudget}
+                setSelectedItem={(maxBudget) =>
+                  handleFilterChange({ maxBudget })
+                }
+                showSearch={false}
+                isOneLine={true}
+              />
+            </div>
           </div>
           <Button
             className="border-primary border-2 py-2 px-4 mt-8 rounded mb-4 w-full"

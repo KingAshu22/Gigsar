@@ -28,16 +28,16 @@ const SingleSearch = ({
   );
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 rounded-lg border-2 shadow">
       <div className="mb-2">
         {type && (
-          <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+          <label className="block text-sm font-bold text-gray-700 mb-1 capitalize ml-2">
             {type}:
           </label>
         )}
         <div className="flex flex-wrap">
           {showSearch && selectedItem && (
-            <div className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize">
+            <div className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize text-xs">
               {selectedItem}
             </div>
           )}
@@ -49,8 +49,8 @@ const SingleSearch = ({
                 onClick={() => handleSelectItem(item)}
                 className={[
                   item === selectedItem
-                    ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize text-sm"
-                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-sm",
+                    ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize text-xs"
+                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-xs",
                   isOneLine ? "w-full" : "",
                 ].join(" ")}
               >
@@ -87,7 +87,7 @@ const SingleSearch = ({
 
       <div className="mb-2">
         {showSearch && (
-          <label className="block text-sm font-medium text-gray-400 mb-1">
+          <label className="block text-xs font-medium text-gray-400 mb-1">
             Suggestions:
           </label>
         )}
@@ -98,7 +98,7 @@ const SingleSearch = ({
                 type="button"
                 key={index}
                 onClick={() => handleSelectItem(item)}
-                className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 text-sm"
+                className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-30 text-xs"
               >
                 {item}
               </button>

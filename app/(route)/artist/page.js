@@ -199,7 +199,7 @@ function ArtistFilter() {
           </Button>
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row p-4">
+      <div className="flex flex-col lg:flex-row">
         <FilterPanel
           categories={filters.categories}
           genres={filters.genres}

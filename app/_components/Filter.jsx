@@ -90,6 +90,7 @@ const FilterPanel = ({
             setSelectedItem={(category) => handleFilterChange({ category })}
             showSearch={false}
           />
+          <hr />
           <SearchList
             type="Genre"
             list={genres}
@@ -97,6 +98,7 @@ const FilterPanel = ({
             selectedItems={selectedFilters.genre}
             setSelectedItems={(genre) => handleFilterChange({ genre })}
           />
+          <hr />
           <SingleSearch
             type="Event Type"
             list={eventsTypes}
@@ -105,6 +107,7 @@ const FilterPanel = ({
             setSelectedItem={(eventType) => handleFilterChange({ eventType })}
             showSearch={true}
           />
+          <hr />
           {/* <Popover>
             <label className="block mb-2 font-semibold">Event Date</label>
             <PopoverTrigger asChild>
@@ -139,6 +142,7 @@ const FilterPanel = ({
             setSelectedItem={(location) => handleFilterChange({ location })}
             showSearch={true}
           />
+          <hr />
           <SingleSearch
             type="Gender"
             list={genders}
@@ -147,6 +151,7 @@ const FilterPanel = ({
             setSelectedItem={(gender) => handleFilterChange({ gender })}
             showSearch={false}
           />
+          <hr />
           <SingleSearch
             type="Sort By Budget"
             list={["Low to High", "High to Low"]}
@@ -155,6 +160,7 @@ const FilterPanel = ({
             setSelectedItem={(sortOption) => handleFilterChange({ sortOption })}
             showSearch={false}
           />
+          <hr />
           <div className="rounded-lg border-2 mb-4">
             <label className="block mb-2 ml-2 font-semibold">
               Minimum Budget

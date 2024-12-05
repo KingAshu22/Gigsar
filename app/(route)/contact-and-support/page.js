@@ -18,7 +18,7 @@ export default function ContactUs() {
               <Phone className="text-blue-600 w-6 h-6" />
               <div>
                 <p className="text-lg font-semibold">Phone</p>
-                <p className="text-gray-600">+91 98700 62178</p>
+                <p className="text-gray-600">+91 98929 62178</p>
               </div>
             </div>
             <div className="flex items-center space-x-4 p-4 border border-gray-300 rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
@@ -33,8 +33,20 @@ export default function ContactUs() {
               <div>
                 <p className="text-lg font-semibold">Address</p>
                 <p className="text-gray-600">
-                  Orchid Mall, B Wing, Royal Palms, Mayur Nagar, Aarey Milk
-                  Colony, Goregaon East, Mumbai 400 065
+                  243, B Wing, Orchid Road Mall, Royal Palms, Goregaon(E), Aarey Milk Colony, Goregaon East, Mumbai- 400065,
+                  Maharashtra
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4 p-4 border border-gray-300 rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+              <MapPin className="text-blue-600 w-6 h-6" />
+              <div>
+                <p className="text-lg font-semibold">Important Details</p>
+                <p className="text-gray-600">
+                  Legal Name: Gigsar India Private Limited<br />
+                  Corporate Identification Number: U82300MH2024PTC435832<br />
+                  Permanent Account Number: AALCG6323Q<br />
+                  Tax Deduction & Collection Account Number: MUMG27543F
                 </p>
               </div>
             </div>

@@ -219,7 +219,7 @@ function ArtistFilter() {
             <div className="flex flex-col justify-center items-center h-full text-center">
               <HashLoader color="#dc2626" size={100} />
             </div>
-          ) : artists.length > 0 ? (
+          ) : artists?.length > 0 ? (
             <ArtistList
               artists={artists}
               selectedCategory={selectedFilters.category}

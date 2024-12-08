@@ -31,7 +31,6 @@ function ArtistList({
   selectedGender,
   selectedMinBudget,
   selectedMaxBudget,
-  budget,
   page,
   setPage,
   totalPages,
@@ -45,6 +44,7 @@ function ArtistList({
   const isAuthenticated = useAuth();
   const [contact, setContact] = useState("");
   const [eventType, setEventType] = useState("");
+  const [budget, setBudget] = useState("");
   const [eventDate, setEventDate] = useState(selectedDate); // New state for event date
   const [location, setLocation] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -113,6 +113,15 @@ function ArtistList({
   useEffect(() => {
     if (selectedEventType !== "All Event Types") {
       setEventType(selectedEventType);
+      if (selectedEventType === "Corporate") {
+        setBudget("corporateBudget");
+      } else if (selectedEventType === "Wedding") {
+        setBudget("price");
+      } else if (selectedEventType === "College") {
+        setBudget("collegeBudget");
+      } else if (selectedEventType === "Ticketing Concert") {
+        setBudget("ticketingConcertBudget");
+      }
     }
   }, [selectedEventType]);
 
@@ -306,43 +315,46 @@ function ArtistList({
                       loading="lazy"
                       className="object-cover rounded-lg"
                     />
+                    <div className="mt-3 items-baseline flex flex-col gap-1">
+                      <h2 className="text-[10px] bg-blue-100 p-1 rounded-full px-2 text-primary">
+                        {artist.artistType}
+                      </h2>
+                      <h2 className="font-bold">{artist.name}</h2>
+                      <h2 className="text-primary text-sm">
+                        ₹{" "}
+                        {budget && artist[budget]
+                          ? formatToIndianNumber(artist[budget])
+                          : formatToIndianNumber(artist.price)}
+                      </h2>
+                      <h2 className="text-gray-500 text-sm">
+                        {artist.location}
+                      </h2>
+                    </div>
                   </Link>
-                  <div className="mt-3 items-baseline flex flex-col gap-1">
-                    <h2 className="text-[10px] bg-blue-100 p-1 rounded-full px-2 text-primary">
-                      {artist.artistType}
-                    </h2>
-                    <h2 className="font-bold">{artist.name}</h2>
-                    <h2 className="text-primary text-sm">
-                      ₹{" "}
-                      {budget && artist[budget]
-                        ? formatToIndianNumber(artist[budget])
-                        : formatToIndianNumber(artist.price)}
-                    </h2>
-                    <h2 className="text-gray-500 text-sm">{artist.location}</h2>
-                    {showEnquiry && (
-                      <button
-                        onClick={() => handleSendEnquiryClick(artist)}
-                        className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
-                      >
-                        Send enquiry
+                  {showEnquiry && (
+                    <button
+                      onClick={() => handleSendEnquiryClick(artist)}
+                      className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
+                    >
+                      Send enquiry
+                    </button>
+                  )}
+                  {showBooking && (
+                    <Link
+                      className="w-full"
+                      href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
+                    >
+                      <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
+                        Book Now
                       </button>
-                    )}
-                    {showBooking && (
-                      <Link
-                        className="w-full"
-                        href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
-                      >
-                        <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
-                          Book Now
-                        </button>
-                      </Link>
-                    )}
-                  </div>
+                    </Link>
+                  )}
                 </div>
                 <div
                   className="lg:hidden flex md:flex-row p-1 pt-0 gap-2"
                   key={index}
                 >
+                  {/* Link only wraps the image */}
                   <Link
                     href={`/artist/${artist.linkid}${eventTypeLink}`}
                     className="w-2/4 mt-2"
@@ -356,44 +368,64 @@ function ArtistList({
                       className="object-cover rounded-2xl border-[1px] shadow-xl"
                     />
                   </Link>
-                  <div className="w-3/4 justify-between text-left pt-3">
-                    <h2 className="font-bold text-sm tracking-wider pl-2">
-                      {artist.name}
-                    </h2>
-                    <h2 className="text-[10px] bg-slate-200 opacity-50 px-2 rounded-full w-fit capitalize">
-                      {artist.artistType}
-                    </h2>
-                    <div className="flex flex-row m-0 p-0">
-                      <Music className="h-[12px] mt-[6px] opacity-50 -z-10" />
-                      <h2 className="text-[10px] pl-2 rounded-full w-fit capitalize">
-                        {artist.genre.slice(0, 30)}...
-                      </h2>
-                    </div>
-                    <div className="flex flex-row text-primary m-0 p-0">
-                      <IndianRupee className="h-[12px] mt-[6px] opacity-50 -z-10" />
-                      <h2 className="text-sm">
-                        {budget && artist[budget]
-                          ? formatToIndianNumber(artist[budget])
-                          : formatToIndianNumber(artist.price)}
-                      </h2>
-                      <MapPin className="text-gray-500 h-[12px] mt-1 opacity-50 -z-10" />
-                      <h2 className="text-gray-500 text-sm">
-                        {artist.location}
-                      </h2>
-                    </div>
 
+                  {/* Content section */}
+                  <div className="w-3/4 mt-2">
+                    <Link
+                      href={`/artist/${artist.linkid}${eventTypeLink}`}
+                      className=""
+                    >
+                      <div className="justify-between text-left pt-3">
+                        {/* Name and Artist Type */}
+                        <h2 className="font-bold text-sm tracking-wider pl-2">
+                          {artist.name}
+                        </h2>
+                        <h2 className="text-[10px] bg-slate-200 opacity-50 px-2 rounded-full w-fit capitalize">
+                          {artist.artistType}
+                        </h2>
+
+                        {/* Genre */}
+                        <div className="flex flex-row m-0 p-0">
+                          <Music className="h-[12px] mt-[6px] opacity-50 -z-10" />
+                          <h2 className="text-[10px] pl-2 rounded-full w-fit capitalize">
+                            {artist.genre.slice(0, 30)}...
+                          </h2>
+                        </div>
+
+                        {/* Price and Location */}
+                        <div className="flex flex-row text-primary m-0 p-0">
+                          <IndianRupee className="h-[12px] mt-[6px] opacity-50 -z-10" />
+                          <h2 className="text-sm">
+                            {budget && artist[budget]
+                              ? formatToIndianNumber(artist[budget])
+                              : formatToIndianNumber(artist.price)}
+                          </h2>
+                          <MapPin className="text-gray-500 h-[12px] mt-1 opacity-50 -z-10" />
+                          <h2 className="text-gray-500 text-sm">
+                            {artist.location}
+                          </h2>
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Send Enquiry Button */}
                     {showEnquiry && (
                       <button
-                        onClick={() => handleSendEnquiryClick(artist)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSendEnquiryClick(artist);
+                        }}
                         className="p-1 px-2 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
                       >
                         Send enquiry
                       </button>
                     )}
+
+                    {/* Booking Button */}
                     {showBooking && (
                       <Link
-                        className="w-full"
                         href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
+                        className="w-full"
                       >
                         <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
                           Book Now

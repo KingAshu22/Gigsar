@@ -6,6 +6,7 @@ import Image from "next/image";
 import * as animationData from "../../../../public/verified.json";
 import LottieImg from "@/app/_components/Lottie";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function SignIn({ isModal = false }) {
   const [phone, setPhone] = useState("");
@@ -175,6 +176,16 @@ export default function SignIn({ isModal = false }) {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                     />
+                    <p className="text-sm mt-2">
+                      By Signing In you are accepting our{" "}
+                      <Link
+                        href="/terms-and-conditions"
+                        target="_blank"
+                        className="text-primary"
+                      >
+                        Terms & Conditions
+                      </Link>
+                    </p>
                   </>
                 )}
               </div>

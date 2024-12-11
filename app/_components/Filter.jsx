@@ -79,9 +79,11 @@ const FilterPanel = ({
 
   return (
     <>
-      <div className="desktop w-full lg:w-2/5 lg:sticky lg:top-4 lg:h-full overflow-y-auto max-h-screen -ml-20">
-        <div className="bg-white p-4 rounded shadow-md mb-4">
-          <h2 className="text-xl font-bold mb-2">Filter</h2>
+      <div className="desktop w-full lg:w-2/5 lg:sticky lg:top-2 lg:h-full overflow-y-auto max-h-screen -ml-20">
+        <div className="fixed bg-white px-44 py-0 shadow-lg">
+          <h2 className="text-xl font-bold p-2">Filters</h2>
+        </div>
+        <div className="bg-white mt-4 p-4 rounded shadow-md mb-4">
           <SingleSearch
             type="Artist Type"
             list={categories}
@@ -195,28 +197,30 @@ const FilterPanel = ({
               />
             </div>
           </div>
-          <Button
-            className="border-primary border-2 py-2 px-4 mt-8 rounded mb-4 w-full"
-            onClick={() => {
-              console.log("Applied Filter");
+          <div className="pt-4 bg-white border-t flex justify-between gap-2">
+            <Button
+              className="bg-primary text-white py-2 px-4 rounded w-full"
+              onClick={handleCopyLink}
+            >
+              <Copy />
+            </Button>
+            <Button
+              className="border-primary bg-white border-2 text-primary py-2 px-4 rounded mb-4 w-full"
+              onClick={handleClearFilter}
+            >
+              Clear
+            </Button>
+            <Button
+              className="border-primary border-2 py-2 px-4 rounded mb-4 w-full"
+              onClick={() => {
+                console.log("Applied Filter");
 
-              setApplyFilter(true);
-            }}
-          >
-            Apply Filter
-          </Button>
-          <button
-            className="border-primary border-2 text-primary py-2 px-4 rounded mb-4 w-full"
-            onClick={handleClearFilter}
-          >
-            Clear Filters
-          </button>
-          <button
-            className="bg-primary text-white py-2 px-4 rounded w-full"
-            onClick={handleCopyLink}
-          >
-            Copy Filters Link
-          </button>
+                setApplyFilter(true);
+              }}
+            >
+              Apply
+            </Button>
+          </div>
         </div>
       </div>
       {/* For mobile screen */}

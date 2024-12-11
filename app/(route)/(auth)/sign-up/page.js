@@ -182,19 +182,19 @@ export default function SignIn({ isModal = false }) {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                     />
-                    <p className="text-sm mt-2">
-                      By Signing In, you agree to accept the{" "}
-                      <Link
-                        href="/terms-and-conditions"
-                        target="_blank"
-                        className="text-primary"
-                      >
-                        Terms & Conditions
-                      </Link>
-                    </p>
                   </>
                 )}
               </div>
+              <p className="text-sm mt-2">
+                By Signing In, you agree to accept the{" "}
+                <Link
+                  href="/terms-and-conditions"
+                  target="_blank"
+                  className="text-primary"
+                >
+                  Terms & Conditions
+                </Link>
+              </p>
               {!showOtpSection && isModal && (
                 <button
                   onClick={handlePhoneAuth}

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import About from "./About";
 import MainMenu from "./MainMenu";

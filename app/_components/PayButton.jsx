@@ -122,7 +122,8 @@ export default function PayButton({
         const verifyData = await res.json();
         console.log(verifyData);
         if (verifyData.isOk) {
-          await sendEnquiry();
+          // await sendEnquiry();
+          await sendDataEnquiry();
           router.push(
             `/success?orderId=${order_Id}&name=${name}&email=${email}&contact=${contact}&linkid=${linkid}&eventType=${eventType}&eventDate=${eventDate}&location=${location}&budget=${budget}&amount=${amount}`
           );
@@ -134,11 +135,6 @@ export default function PayButton({
 
     const payment = new window.Razorpay(paymentData);
     payment.open();
-
-    await sendDataEnquiry();
-    router.push(
-      `/success?orderId=${order_Id}&name=${name}&email=${email}&contact=${contact}&linkid=${linkid}&eventType=${eventType}&eventDate=${eventDate}&location=${location}&budget=${budget}&amount=${amount}`
-    );
   };
 
   return (

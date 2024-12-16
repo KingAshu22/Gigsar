@@ -582,7 +582,7 @@ function ArtistList({
                             </p>
                           </div>
 
-                          {/* <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                             <h2 className="text-primary font-semibold mb-4">
                               Why Pay ₹
                               {Number(currentBudget.replace(/,/g, "")) >
@@ -599,7 +599,7 @@ function ArtistList({
                               <li>Fast Service</li>
                               <li>Dedicated Artist Manager</li>
                             </ul>
-                          </div> */}
+                          </div>
                         </div>
                       )}
                       <div className="flex justify-between w-full mt-4">

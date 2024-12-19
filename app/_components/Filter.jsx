@@ -80,9 +80,6 @@ const FilterPanel = ({
   return (
     <>
       <div className="desktop w-full lg:w-2/5 lg:sticky lg:top-2 lg:h-full overflow-y-auto max-h-screen">
-        <div className="fixed bg-white px-44 py-0 shadow-lg">
-          <h2 className="text-xl font-bold p-2">Filters</h2>
-        </div>
         <div className="bg-white mt-4 p-4 rounded shadow-md mb-4">
           <SingleSearch
             type="Artist Type"

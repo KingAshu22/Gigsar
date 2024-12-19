@@ -35,7 +35,7 @@ function ArtistDetails({ params }) {
           <Spinner />
         </div>
       ) : (
-        <div className="container grid grid-cols-12 lg:gap-10">
+        <div className="grid grid-cols-12 lg:gap-10 mx-4">
           <Sidebar
             artist={artist}
             profilePic={artist?.profilePic}

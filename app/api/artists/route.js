@@ -75,6 +75,16 @@ export async function GET(req) {
       priceFilter.$lte = maxBudget;
     }
 
+    // Determine sorting field based on selectedEventType
+    const sortFieldMap = {
+      Corporate: "corporateBudget",
+      Wedding: "price",
+      College: "collegeBudget",
+      "Ticketing Concert": "ticketingConcertBudget",
+    };
+
+    const sortField = sortFieldMap[filters.selectedEventType] || "price";
+
     const aggregationPipeline = [
       { $match: query }, // Apply filters before aggregation
       {
@@ -82,7 +92,11 @@ export async function GET(req) {
           numericPrice: {
             $convert: {
               input: {
-                $replaceAll: { input: "$price", find: ",", replacement: "" },
+                $replaceAll: {
+                  input: `$${sortField}`,
+                  find: ",",
+                  replacement: "",
+                },
               },
               to: "int",
               onError: 0, // Default to 0 on conversion error
@@ -95,7 +109,7 @@ export async function GET(req) {
       ...(Object.keys(priceFilter).length > 0
         ? [{ $match: { numericPrice: priceFilter } }]
         : []),
-      // Sorting by price (numericPrice field)
+      // Sorting by the selected field (numericPrice field)
       {
         $sort: {
           numericPrice: filters.selectedSortOption === "Low to High" ? 1 : -1,
@@ -130,8 +144,17 @@ export async function GET(req) {
         {
           $addFields: {
             numericPrice: {
-              $toInt: {
-                $replaceAll: { input: "$price", find: ",", replacement: "" },
+              $convert: {
+                input: {
+                  $replaceAll: {
+                    input: `$${sortField}`,
+                    find: ",",
+                    replacement: "",
+                  },
+                },
+                to: "int",
+                onError: 0, // Default to 0 on conversion error
+                onNull: 0, // Default to 0 if input is null
               },
             },
           },

@@ -56,21 +56,21 @@ const MainContent = ({
             <h2 className="text-2xl text-slate-900 dark:text-slate-50 font-bold mb-2">
               About Me
             </h2>
-            <div className="grid gap-2 grid-cols-2 md:grid-cols-3">
-              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+            <div className="grid gap-2 grid-cols-3 md:grid-cols-3">
+              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <Hash />
                 </div>
                 <div>
                   <h4 className="dark:text-white text-xs md:text-xl font-semibold">
-                    Artist Code
+                    Code
                   </h4>
                   <p className="text-xs md:text-xl text-gray-lite dark:text-[#A6A6A6]">
                     {code}
                   </p>
                 </div>
               </div>
-              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <MapPin />
                 </div>
@@ -83,7 +83,20 @@ const MainContent = ({
                   </p>
                 </div>
               </div>
-              {/* <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
+                <div>
+                  <Timer />
+                </div>
+                <div>
+                  <h4 className="dark:text-white text-xs md:text-xl font-semibold">
+                    Time
+                  </h4>
+                  <p className="text-xs md:text-xl text-gray-lite dark:text-[#A6A6A6]">
+                    {time} Mins
+                  </p>
+                </div>
+              </div>
+              {/* <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <Ticket />
                 </div>
@@ -96,7 +109,7 @@ const MainContent = ({
                   </p>
                 </div>
               </div> */}
-              {/* <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+              {/* <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <Music />
                 </div>
@@ -109,7 +122,7 @@ const MainContent = ({
                   </p>
                 </div>
               </div> */}
-              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <Languages />
                 </div>
@@ -122,20 +135,7 @@ const MainContent = ({
                   </p>
                 </div>
               </div>
-              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
-                <div>
-                  <Timer />
-                </div>
-                <div>
-                  <h4 className="dark:text-white text-xs md:text-xl font-semibold">
-                    Performance Time
-                  </h4>
-                  <p className="text-xs md:text-xl text-gray-lite dark:text-[#A6A6A6]">
-                    {time}
-                  </p>
-                </div>
-              </div>
-              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <Clapperboard />
                 </div>
@@ -148,7 +148,7 @@ const MainContent = ({
                   </p>
                 </div>
               </div>
-              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <Disc3 />
                 </div>
@@ -161,7 +161,7 @@ const MainContent = ({
                   </p>
                 </div>
               </div>
-              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+              <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <Drum />
                 </div>
@@ -174,7 +174,7 @@ const MainContent = ({
                   </p>
                 </div>
               </div>
-              {/* <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-5">
+              {/* <div className="p-2 rounded-md border border-slate-200 dark:border-slate-800 flex justify-items-center content-center items-center gap-1 md:gap-5">
                 <div>
                   <Trophy />
                 </div>

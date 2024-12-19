@@ -44,7 +44,7 @@ const SearchList = ({
           {selectedItems.map((item, index) => (
             <div
               key={index}
-              className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center text-sm"
+              className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center text-xs"
             >
               {item}
               <button
@@ -90,7 +90,7 @@ const SearchList = ({
               type="button"
               key={index}
               onClick={() => handleSelectItem(item)}
-              className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 text-sm"
+              className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 text-xs"
             >
               {item}
             </button>

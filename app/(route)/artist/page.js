@@ -182,7 +182,43 @@ function ArtistFilter() {
 
   return (
     <>
-      <div className="items-center px-5 flex flex-col gap-2">
+      <div className="desktop">
+        <div className="items-center px-5 flex flex-row gap-2 shadow-lg">
+          <div className="items-center flex flex-row w-2/5 gap-20 border-r-8">
+            <h1 className="text-xl font-bold text-left">Filters</h1>
+            <Button
+              className="bg-white text-primary py-2 px-4 text-sm rounded w-auto"
+              onClick={handleClearFilter}
+            >
+              Clear Filters
+            </Button>
+            <Button
+              className="bg-primary text-white py-2 px-4 text-sm rounded w-auto"
+              onClick={handleCopyLink}
+            >
+              Apply
+            </Button>
+          </div>
+          <div className="items-center px-5 flex flex-row justify-center w-3/4">
+            <div className="flex w-full mt-3 max-w-sm items-center">
+              <Input
+                className="flex-grow"
+                type="text"
+                placeholder="Search By Artist Name..."
+                value={selectedFilters.searchQuery}
+                onChange={(e) => {
+                  handleFilterChange({ searchQuery: e.target.value });
+                }}
+                onKeyDown={handleKeyDown}
+              />
+              <Button className="ml-2 w-auto" onClick={handleSearch}>
+                <Search />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="mobile">
         <div className="flex w-full mt-3 max-w-sm items-center">
           <Input
             className="flex-grow"

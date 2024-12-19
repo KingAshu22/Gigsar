@@ -295,7 +295,7 @@ function ArtistList({
           </Button>
         </div>
       </Modal>
-      <div className="grid grid-rows-2 sm:grid-rows-2 md:grid-cols-3 gap-2 mt-4 lg:grid-cols-4">
+      <div className="grid grid-rows-2 sm:grid-rows-2 md:grid-cols-3 gap-2 mt-4 lg:grid-cols-6">
         {artists?.length > 0 ? (
           artists.map((artist, index) => {
             const eventTypeLink =
@@ -303,7 +303,7 @@ function ArtistList({
             return (
               <>
                 <div
-                  className="desktop border-[1px] rounded-lg p-3 cursor-pointer hover:border-primary shadow-lg"
+                  className="desktop border-[1px] rounded-lg p-3 cursor-pointer hover:border-primary shadow-lg pb-0"
                   key={index}
                 >
                   <Link href={`/artist/${artist.linkid}${eventTypeLink}`}>
@@ -319,7 +319,7 @@ function ArtistList({
                       <h2 className="text-[10px] bg-blue-100 p-1 rounded-full px-2 text-primary">
                         {artist.artistType}
                       </h2>
-                      <h2 className="font-bold">{artist.name}</h2>
+                      <h2 className="font-bold text-sm">{artist.name}</h2>
                       <h2 className="text-primary text-sm">
                         ₹{" "}
                         {budget && artist[budget]
@@ -334,9 +334,9 @@ function ArtistList({
                   {showEnquiry && (
                     <button
                       onClick={() => handleSendEnquiryClick(artist)}
-                      className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
+                      className="rounded-3xl w-full justify-center bg-gradient-to-r from-[#FA5252] to-[#DD2476] py-2 px-2 text-slate-50 inline-flex items-center gap-2 text-sm"
                     >
-                      Send enquiry
+                      Send Enquiry
                     </button>
                   )}
                   {showBooking && (

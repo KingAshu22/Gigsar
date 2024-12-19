@@ -103,13 +103,13 @@ const Header = () => {
       <div className="flex items-center justify-between p-4 shadow-sm bg-white">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex flex-row">
-            <h1 className="font-bold text-4xl text-primary">Gigsar </h1>
+            <h1 className="font-bold text-3xl text-primary">Gigsar </h1>
             <span className="font-bold">®</span>
           </Link>
           <ul className="hidden md:flex gap-8">
             {Menu.map((item, index) => (
               <Link href={item.path} key={index}>
-                <li className="hover:text-primary cursor-pointer hover:scale-105 transition-all ease-in-out">
+                <li className="hover:text-primary cursor-pointer hover:scale-105 transition-all ease-in-out text-sm">
                   {item.name}
                 </li>
               </Link>

@@ -42,6 +42,11 @@ function ArtistDetails({ params }) {
             name={artist?.name}
             artistType={artist?.artistType}
             location={artist?.location}
+            price={artist?.price}
+            corporateBudget={artist?.corporateBudget}
+            collegeBudget={artist?.collegeBudget}
+            singerCumGuitaristBudget={artist?.singerCumGuitaristBudget}
+            ticketingConcertBudget={artist?.ticketingConcertBudget}
           />
           <MainContent
             name={artist?.name}
@@ -58,10 +63,6 @@ function ArtistDetails({ params }) {
             gallery={artist?.gallery}
             spotify={artist?.spotify}
             videos={artist?.events}
-            price={artist?.price}
-            corporateBudget={artist?.corporateBudget}
-            collegeBudget={artist?.collegeBudget}
-            singerCumGuitaristBudget={artist?.singerCumGuitaristBudget}
           />
         </div>
       )}

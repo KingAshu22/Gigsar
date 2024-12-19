@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={outfit.className}>
-        <div className="md:px-20">
+        <div className="">
           <Header />
           {children}
           <Toaster />

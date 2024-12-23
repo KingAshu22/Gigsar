@@ -303,7 +303,7 @@ function ArtistList({
             return (
               <>
                 <div
-                  className="desktop border-[1px] rounded-lg p-3 cursor-pointer hover:border-primary shadow-lg pb-0"
+                  className="desktop border-[1px] rounded-lg p-3 cursor-pointer hover:border-primary shadow-lg"
                   key={index}
                 >
                   <Link href={`/artist/${artist.linkid}${eventTypeLink}`}>
@@ -319,7 +319,9 @@ function ArtistList({
                       <h2 className="text-[10px] bg-blue-100 p-1 rounded-full px-2 text-primary">
                         {artist.artistType}
                       </h2>
-                      <h2 className="font-bold text-sm">{artist.name}</h2>
+                      <h2 className="font-bold text-sm text-nowrap">
+                        {artist.name.slice(0, 15)}...
+                      </h2>
                       <h2 className="text-primary text-sm">
                         ₹{" "}
                         {budget && artist[budget]
@@ -327,7 +329,7 @@ function ArtistList({
                           : formatToIndianNumber(artist.price)}
                       </h2>
                       <h2 className="text-gray-500 text-sm">
-                        {artist.location}
+                        {artist.location.split(",")[0]}
                       </h2>
                     </div>
                   </Link>

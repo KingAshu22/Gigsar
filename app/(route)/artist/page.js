@@ -187,14 +187,16 @@ function ArtistFilter() {
           <div className="items-center flex flex-row w-2/5 gap-20 border-r-8">
             <h1 className="text-xl font-bold text-left">Filters</h1>
             <Button
-              className="bg-white text-primary py-2 px-4 text-sm rounded w-auto"
+              className="bg-white text-primary py-2 px-4 text-sm rounded w-auto hover:text-white"
               onClick={handleClearFilter}
             >
               Clear Filters
             </Button>
             <Button
               className="bg-primary text-white py-2 px-4 text-sm rounded w-auto"
-              onClick={handleCopyLink}
+              onClick={() => {
+                setApplyFilter(true);
+              }}
             >
               Apply
             </Button>

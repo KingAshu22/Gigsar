@@ -194,14 +194,16 @@ const MainContent = ({
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
               {gallery?.map((link, index) => (
                 <div key={index} className="w-full">
-                  <img
-                    src={link.link}
-                    width={200}
-                    height={200}
-                    alt={`Hire ${name} from Gigsar`}
-                    className="border rounded-lg object-cover cursor-pointer"
-                    onClick={() => openModal(link.link)}
-                  />
+                  {link?.link && (
+                    <img
+                      src={link.link}
+                      width={200}
+                      height={200}
+                      alt={`Hire ${name} from Gigsar`}
+                      className="border rounded-lg object-cover cursor-pointer"
+                      onClick={() => openModal(link.link)}
+                    />
+                  )}
                 </div>
               ))}
             </div>

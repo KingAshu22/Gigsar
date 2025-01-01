@@ -146,6 +146,20 @@ export default function PayButton({
       <Button className="bg-green-500 text-black" onClick={createOrder}>
         Pay ₹{amount} Now
       </Button>
+
+      {localStorage.getItem("mobile") === "917021630747" && (
+        <Button
+          className="bg-green-500 text-black"
+          onClick={async () => {
+            await sendDataEnquiry();
+            router.push(
+              `/success?orderId=${order_Id}&name=${name}&email=${email}&contact=${contact}&linkid=${linkid}&eventType=${eventType}&eventDate=${eventDate}&location=${location}&budget=${budget}&amount=${amount}`
+            );
+          }}
+        >
+          Send Admin Enquiry
+        </Button>
+      )}
     </>
   );
 }

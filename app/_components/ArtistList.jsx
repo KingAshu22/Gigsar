@@ -48,13 +48,14 @@ function ArtistList({
   const [eventDate, setEventDate] = useState(selectedDate); // New state for event date
   const [location, setLocation] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(6);
   const [currentArtistId, setCurrentArtistId] = useState(null);
   const [currentBudget, setCurrentBudget] = useState(""); // New state for current artist budget
   const [showLogin, setShowLogin] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [client, setClient] = useState(null);
+  const [enquiryOption, setEnquiryOption] = useState("");
 
   useEffect(() => {
     const storedContact = localStorage?.getItem("mobile");
@@ -146,6 +147,38 @@ function ArtistList({
       console.log("Enquiry sent successfully:", response.data);
     } catch (err) {
       console.error("Error sending enquiry:", err);
+    }
+  };
+
+  const sendDataEnquiry = async () => {
+    if (!currentArtistId) return;
+
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/data-entry`,
+        {
+          linkid: currentArtistId,
+          contact: client.contact,
+          selectedLocation: location,
+          selectedEventType: eventType,
+          selectedDate: eventDate
+            ? eventDate.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : "", // Format date as "18 Aug 2024"
+          budget: currentBudget,
+          paymentDone: false,
+        },
+        { withCredentials: true }
+      );
+      // toast.success("Enquiry sent successfully!");
+      router.push(
+        `/success?&name=${client?.name}&email=${client?.email}&contact=${client?.contact}&linkid=${currentArtistId}&eventType=${eventType}&eventDate=${eventDate}&location=${location}&budget=${budget}&amount=${amount}`
+      );
+    } catch (error) {
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -557,13 +590,14 @@ function ArtistList({
                         </>
                       )}
                       {step === 6 && (
-                        <div className="flex flex-col items-start p-4 bg-white shadow-lg rounded-lg">
-                          <p className="font-bold text-lg mb-4 text-gray-800">
+                        <div className="flex flex-col items-start p-4 bg-white shadow-lg rounded-lg max-w-lg mx-auto">
+                          <p className="font-bold text-2xl mb-4 text-gray-800">
                             {Number(currentBudget.replace(/,/g, "")) > 1000000
                               ? "Premium Enquiry"
                               : "Confirm your Enquiry"}
                           </p>
-                          <div className="mb-4">
+
+                          <div className="mb-6 space-y-4">
                             <p className="text-gray-700">
                               <strong>Event Type:</strong> {eventType}
                             </p>
@@ -584,26 +618,142 @@ function ArtistList({
                             </p>
                           </div>
 
-                          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                            <h2 className="text-primary font-semibold mb-4">
-                              Why Pay ₹
-                              {Number(currentBudget.replace(/,/g, "")) >
-                              1000000 ? (
-                                <span>99</span>
-                              ) : (
-                                <span>49</span>
-                              )}{" "}
-                              as Enquiry Charges?
-                            </h2>
-                            <ul className="list-disc list-inside text-gray-800 font-medium mb-2">
-                              <li>Prioritize Enquiries</li>
-                              <li>Avoid SPAM Enquiries</li>
-                              <li>Fast Service</li>
-                              <li>Dedicated Artist Manager</li>
-                            </ul>
+                          <div className="flex gap-2">
+                            {/* Free Enquiry Box */}
+                            <div
+                              onClick={() => setEnquiryOption("free")}
+                              className={`cursor-pointer p-2 w-full rounded-lg border border-gray-300 ${
+                                enquiryOption === "free"
+                                  ? "bg-primary text-white"
+                                  : "bg-gray-50"
+                              }`}
+                            >
+                              <h3 className="font-semibold text-lg mb-2">
+                                General Enquiry
+                              </h3>
+                              <ul className="text-gray-700">
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "free"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">✔️</span> Basic Enquiry
+                                  Management
+                                </li>
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "free"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">✔️</span> Free
+                                  Consultation
+                                </li>
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "free"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">✔️</span> Standard
+                                  Service Time
+                                </li>
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "free"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">❌</span> General Event
+                                  Assistance
+                                </li>
+                              </ul>
+                              <p className="font-bold my-2 text-lg">
+                                Fees: ₹0/-
+                              </p>
+                            </div>
+
+                            {/* Chargeable Enquiry Box */}
+                            <div
+                              onClick={() => setEnquiryOption("premium")}
+                              className={`cursor-pointer p-2 w-full rounded-lg border border-gray-300 ${
+                                enquiryOption === "premium"
+                                  ? "bg-primary text-white"
+                                  : "bg-gray-50"
+                              }`}
+                            >
+                              <h3 className="font-semibold text-lg mb-2">
+                                Premium Enquiry
+                              </h3>
+                              <ul className="text-gray-700">
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "premium"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">✔️</span> Prioritize
+                                  Enquiries
+                                </li>
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "premium"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">✔️</span> Avoid SPAM
+                                  Enquiries
+                                </li>
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "premium"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">✔️</span> Fast Service
+                                </li>
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "premium"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">✔️</span> Dedicated
+                                  Artist Manager
+                                </li>
+                                <li
+                                  className={`flex items-center text-sm whitespace-nowrap ${
+                                    enquiryOption === "premium"
+                                      ? "bg-primary text-white"
+                                      : "bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="mr-2">✔️</span> Customized
+                                  Solutions
+                                </li>
+                              </ul>
+                              <p className="font-bold my-2 text-lg">
+                                Fees: ₹
+                                {Number(currentBudget.replace(/,/g, "")) >
+                                1000000
+                                  ? "99"
+                                  : "49"}
+                                /-
+                              </p>
+                            </div>
                           </div>
                         </div>
                       )}
+
                       <div className="flex justify-between w-full mt-4">
                         {step > 1 && (
                           <button
@@ -628,9 +778,18 @@ function ArtistList({
                           </button>
                         )}
                         {step === 6 &&
-                          (Number(currentBudget.replace(/,/g, "")) > 1000000 ? (
+                          (enquiryOption === "free" ? (
+                            <Button onClick={() => sendDataEnquiry()}>
+                              Send Enquiry
+                            </Button>
+                          ) : enquiryOption === "premium" ? (
                             <PayButton
-                              amount={99}
+                              amount={
+                                Number(currentBudget.replace(/,/g, "")) >
+                                1000000
+                                  ? 99
+                                  : 49
+                              }
                               name={client.name}
                               email={client.email}
                               contact={client.contact}
@@ -640,19 +799,7 @@ function ArtistList({
                               location={location}
                               budget={currentBudget}
                             />
-                          ) : (
-                            <PayButton
-                              amount={49}
-                              name={client.name}
-                              email={client.email}
-                              contact={client.contact}
-                              linkid={currentArtistId}
-                              eventType={eventType}
-                              eventDate={eventDate}
-                              location={location}
-                              budget={currentBudget}
-                            />
-                          ))}
+                          ) : null)}
                       </div>
                     </div>
                   </Modal>

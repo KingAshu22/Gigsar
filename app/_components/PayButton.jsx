@@ -64,6 +64,7 @@ export default function PayButton({
               })
             : "", // Format date as "18 Aug 2024"
           budget,
+          paymentDone: true,
         },
         { withCredentials: true }
       );

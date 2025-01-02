@@ -28,10 +28,10 @@ const SingleSearch = ({
   );
 
   return (
-    <div className="mt-4">
-      <div className="mb-2">
+    <div className="mt-2">
+      <div className="">
         {type && (
-          <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+          <label className="block text-sm font-medium text-[#7184AD] mb-1 capitalize">
             {type}:
           </label>
         )}
@@ -50,7 +50,7 @@ const SingleSearch = ({
                 className={[
                   item === selectedItem
                     ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize text-xs"
-                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-xs",
+                    : "bg-[#f2f4f8] text-[#4A5E8B] px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-xs",
                   isOneLine ? "w-full" : "",
                 ].join(" ")}
               >
@@ -68,7 +68,7 @@ const SingleSearch = ({
           value={searchTerm}
           onChange={handleChange}
           placeholder={`Search for your ${type}`}
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-sm"
         />
       )}
       {searchTerm && (
@@ -98,7 +98,7 @@ const SingleSearch = ({
                 type="button"
                 key={index}
                 onClick={() => handleSelectItem(item)}
-                className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 text-xs"
+                className="bg-[#F2F4F8] text-[#4A5E8B] px-3 py-1 m-1 rounded-full hover:bg-gray-300 text-xs"
               >
                 {item}
               </button>

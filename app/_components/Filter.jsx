@@ -79,7 +79,7 @@ const FilterPanel = ({
 
   return (
     <>
-      <div className="desktop w-full lg:w-2/5 lg:sticky lg:top-2 lg:h-full overflow-y-auto max-h-screen">
+      <div className="desktop w-full lg:w-2/5 lg:sticky lg:top-2 lg:h-full overflow-y-auto">
         <div className="bg-white mt-4 p-4 rounded shadow-md mb-4">
           <SingleSearch
             type="Artist Type"
@@ -160,11 +160,11 @@ const FilterPanel = ({
             showSearch={false}
           />
           <hr />
+          <label className="block text-sm font-medium text-[#7184AD] mb-1 mt-2">
+            Minimum Budget
+          </label>
           <div className="rounded-lg border-2 mb-4">
-            <label className="block mb-2 ml-2 font-semibold">
-              Minimum Budget
-            </label>
-            <div className="overflow-y-auto max-h-36">
+            <div className="overflow-y-auto max-h-28">
               <SingleSearch
                 list={minBudgetOptions}
                 topList={minBudgetOptions}
@@ -177,11 +177,11 @@ const FilterPanel = ({
               />
             </div>
           </div>
+          <label className="block text-sm font-medium text-[#7184AD] mb-1 mt-2">
+            Maximum Budget
+          </label>
           <div className="rounded-lg border-2">
-            <label className="block mb-2 ml-2 font-semibold">
-              Maximum Budget
-            </label>
-            <div className="overflow-y-auto max-h-36">
+            <div className="overflow-y-auto max-h-28">
               <SingleSearch
                 list={maxBudgetOptions}
                 topList={maxBudgetOptions}

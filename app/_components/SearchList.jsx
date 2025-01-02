@@ -35,9 +35,9 @@ const SearchList = ({
   );
 
   return (
-    <div className="mt-4">
+    <div className="mt-2">
       <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-[#7184AD] mb-1">
           Selected {type}:
         </label>
         <div className="flex flex-wrap">
@@ -64,7 +64,7 @@ const SearchList = ({
         value={searchTerm}
         onChange={handleChange}
         placeholder={`Search for your ${type}`}
-        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-4 py-2 border rounded-lg text-[#4A5E8B] focus:outline-none focus:ring-2 focus:ring-[#C7D3ED] placeholder:text-sm"
       />
       {searchTerm && (
         <ul className="mt-2 border rounded-lg shadow-lg bg-white overflow-hidden">
@@ -90,7 +90,7 @@ const SearchList = ({
               type="button"
               key={index}
               onClick={() => handleSelectItem(item)}
-              className="bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 text-xs"
+              className="bg-[#F2F4F8] text-[#4A5E8B] px-3 py-1 m-1 rounded-full hover:bg-gray-300 text-xs"
             >
               {item}
             </button>

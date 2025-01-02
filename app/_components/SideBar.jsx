@@ -233,15 +233,13 @@ const Sidebar = ({
         }}
       />
       <div className="col-span-12 lg:col-span-3 p-0 m-0">
-        <div className="bg-slate-200 dark:bg-[#111111] rounded-2xl lg:mb-10 py-10 md:sticky top-24 left-0">
-          <div className="overflow-hidden text-center w-48 h-48 m-auto">
-            <img src={profilePic} className="rounded-3xl" />
+        <div className="bg-slate-200 dark:bg-[#111111] rounded-2xl lg:mb-10 py-2 md:sticky top-24 left-0">
+          <div className="overflow-hidden text-center w-40 h-40 mx-[70px]">
+            <img src={profilePic} className="rounded-2xl" />
           </div>
           <div className="text-center">
-            <h2 className="mt-2 text-2xl font-semibold dark:text-white">
-              {name}
-            </h2>
-            <h1 className="mb-1 text-[#7B7B7B] inline-block dark:bg-[#1D1D1D] px-5 py-1.5 rounded-lg dark:text-[#A6A6A6] capitalize">
+            <h2 className="text-2xl font-semibold dark:text-white">{name}</h2>
+            <h1 className="text-[#7B7B7B] inline-block dark:bg-[#1D1D1D] px-5 rounded-lg dark:text-[#A6A6A6] capitalize">
               {artistType?.replace("-", " ")}
             </h1>
           </div>
@@ -271,7 +269,7 @@ const Sidebar = ({
               <RiLinkedinFill />
             </a>
           </div> */}
-          <div className="px-4 mb-4 mt-5 md:ml-2">
+          <div className="px-4 mb-4 md:ml-2">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">
               Budgets
             </h2>

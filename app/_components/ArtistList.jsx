@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import useAuth from "@/lib/hook";
@@ -173,10 +175,11 @@ function ArtistList({
         },
         { withCredentials: true }
       );
-      // toast.success("Enquiry sent successfully!");
-      router.push(
-        `/success?&name=${client?.name}&email=${client?.email}&contact=${client?.contact}&linkid=${currentArtistId}&eventType=${eventType}&eventDate=${eventDate}&location=${location}&budget=${budget}&amount=${amount}`
-      );
+      setShowModal(false);
+      toast.success("Enquiry sent successfully!");
+      // router.push(
+      //   `/success?&name=${client?.name}&email=${client?.email}&contact=${client?.contact}&linkid=${currentArtistId}&eventType=${eventType}&eventDate=${eventDate}&location=${location}&budget=${budget}&amount=${amount}`
+      // );
     } catch (error) {
       console.error("Error submitting form:", error);
     }

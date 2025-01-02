@@ -183,9 +183,11 @@ function ArtistFilter() {
   return (
     <>
       <div className="desktop">
-        <div className="items-center px-5 flex flex-row gap-2 shadow-lg">
+        <div className="items-center px-5 flex flex-row gap-2">
           <div className="items-center flex flex-row w-2/5 gap-20 border-r-8">
-            <h1 className="text-xl font-bold text-left">Filters</h1>
+            <h1 className="text-xl font-bold text-left text-[#4A5E8B]">
+              Filters
+            </h1>
             <Button
               className="bg-white text-primary py-2 px-4 text-sm rounded w-auto hover:text-white"
               onClick={handleClearFilter}
@@ -201,7 +203,7 @@ function ArtistFilter() {
               Apply
             </Button>
           </div>
-          <div className="items-center px-5 flex flex-row justify-center w-3/4">
+          <div className="items-center px-5 flex flex-row justify-center w-3/4 pb-2">
             <div className="flex w-full mt-3 max-w-sm items-center">
               <Input
                 className="flex-grow"

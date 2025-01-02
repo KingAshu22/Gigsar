@@ -24,13 +24,13 @@ export async function GET(req) {
 
     const topGenres = Object.entries(genreFrequency)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
+      .slice(0, 5)
       .map(([genre]) => genre);
 
     const uniqueLocations = [
       "All Locations",
       ...new Set(artists.map((artist) => artist.location)),
-    ];
+    ].slice(0, 4);
 
     const allEventTypes = artists.flatMap((artist) =>
       artist.eventsType?.split(", ")

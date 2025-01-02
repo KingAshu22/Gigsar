@@ -79,7 +79,7 @@ const FilterPanel = ({
 
   return (
     <>
-      <div className="desktop w-full lg:w-2/5 lg:sticky lg:top-2 lg:h-full overflow-y-auto">
+      <div className="desktop w-full lg:w-2/5 lg:top-2 lg:h-full">
         <div className="bg-white mt-4 p-4 rounded shadow-md mb-4">
           <SingleSearch
             type="Artist Type"

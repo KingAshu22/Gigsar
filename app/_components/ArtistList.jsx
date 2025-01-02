@@ -244,7 +244,13 @@ function ArtistList({
     if (step === 4) {
       const intervalId = setInterval(() => {
         const mobile = localStorage.getItem("mobile");
-        if (mobile && mobile.length > 0) {
+        const authExpiry = localStorage.getItem("authExpiry");
+        if (
+          mobile &&
+          mobile.length > 0 &&
+          authExpiry &&
+          Date.now() < parseInt(authExpiry, 10)
+        ) {
           if (client && client?.name && client?.email) {
             setStep(6);
           } else {
@@ -352,7 +358,7 @@ function ArtistList({
                       className="object-cover rounded-lg"
                     />
                     <div className="mt-3 items-baseline flex flex-col gap-1">
-                      <h2 className="text-[10px] bg-[#F2F4F8] p-1 rounded-full px-2 text-[#4A5E8B]">
+                      <h2 className="text-[10px] bg-[#F2F4F8] p-1 rounded-full px-2 text-[#4A5E8B] capitalize">
                         {artist.artistType}
                       </h2>
                       <h2 className="font-bold text-sm text-nowrap">

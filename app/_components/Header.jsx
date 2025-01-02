@@ -109,7 +109,7 @@ const Header = () => {
           <ul className="hidden md:flex gap-8">
             {Menu.map((item, index) => (
               <Link href={item.path} key={index}>
-                <li className="hover:text-primary cursor-pointer hover:scale-105 transition-all ease-in-out text-sm">
+                <li className="text-[#4A5E8B] hover:text-primary cursor-pointer hover:scale-105 transition-all ease-in-out text-sm">
                   {item.name}
                 </li>
               </Link>
@@ -119,7 +119,7 @@ const Header = () => {
         {isMounted && (
           <div className="flex items-center gap-8 md:justify-end">
             <a href={"/chat"}>
-              <MessagesSquare />
+              <MessagesSquare className="text-[#4A5E8B]" />
             </a>
             <Popover className="md:hidden">
               <PopoverTrigger asChild>

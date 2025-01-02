@@ -24,6 +24,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
 
   useEffect(() => {
     if (initialImageLink && initialImageLink.length > 1) {
+      setAwsLink(initialImageLink);
       setShowCroppedImage(true);
       setCropData(initialImageLink);
     }

@@ -337,7 +337,7 @@ function ArtistList({
           </Button>
         </div>
       </Modal>
-      <div className="grid grid-rows-2 sm:grid-rows-2 md:grid-cols-3 gap-2 mt-4 lg:grid-cols-6">
+      <div className="grid grid-rows-2 sm:grid-rows-2 md:grid-cols-3 gap-2 mt-4 lg:grid-cols-5">
         {artists?.length > 0 ? (
           artists.map((artist, index) => {
             const eventTypeLink =
@@ -368,17 +368,21 @@ function ArtistList({
                         ₹{" "}
                         {budget && artist[budget]
                           ? formatToIndianNumber(artist[budget])
-                          : formatToIndianNumber(artist.price)}
+                          : formatToIndianNumber(artist.price)}{" "}
+                        ({selectedEventType})
                       </h2>
                       <h2 className="text-gray-500 text-sm">
-                        {artist.location.split(",")[0]}
+                        <div className="flex flex-cols">
+                          <MapPin className="w-4 -mt-1" />{" "}
+                          {artist.location.split(",")[0]}
+                        </div>
                       </h2>
                     </div>
                   </Link>
                   {showEnquiry && (
                     <button
                       onClick={() => handleSendEnquiryClick(artist)}
-                      className="rounded-3xl w-full justify-center bg-primary py-2 px-2 text-slate-50 inline-flex items-center gap-2 text-sm"
+                      className="rounded-md w-full mt-2 justify-center bg-[#FD4B3E] py-2 px-2 text-slate-50 inline-flex items-center gap-2 text-sm"
                     >
                       Send Enquiry
                     </button>
@@ -388,7 +392,7 @@ function ArtistList({
                       className="w-full"
                       href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
                     >
-                      <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
+                      <button className="bg-[#FD4B3E] p-2 px-3 border-[1px] border-primary text-primary rounded-md w-full text-center text-[14px] cursor-pointer hover:bg-primary hover:text-white">
                         Book Now
                       </button>
                     </Link>
@@ -459,7 +463,7 @@ function ArtistList({
                           e.stopPropagation();
                           handleSendEnquiryClick(artist);
                         }}
-                        className="p-1 px-2 border-[1px] border-primary text-primary rounded-full w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
+                        className="bg-[#FD4B3E] p-1 px-2 border-[1px] border-primary text-white rounded-sm w-full text-center text-[11px] mt-2 cursor-pointer hover:bg-primary hover:text-white"
                       >
                         Send enquiry
                       </button>
@@ -471,7 +475,7 @@ function ArtistList({
                         href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
                         className="w-full"
                       >
-                        <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-full w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
+                        <button className="p-2 px-3 border-[1px] border-primary text-primary rounded-sm w-full text-center text-[14px] mt-2 cursor-pointer hover:bg-primary hover:text-white">
                           Book Now
                         </button>
                       </Link>

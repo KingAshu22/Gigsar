@@ -35,7 +35,7 @@ export async function GET(req) {
     const allEventTypes = artists.flatMap((artist) =>
       artist.eventsType?.split(", ")
     );
-    const uniqueEventsTypes = ["All Event Types", ...new Set(allEventTypes)];
+    const uniqueEventsTypes = [...new Set(allEventTypes)];
 
     // Calculate top event types based on frequency
     const eventsFrequency = allEventTypes.reduce((acc, eventsType) => {

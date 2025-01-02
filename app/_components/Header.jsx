@@ -2,7 +2,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlignJustify, CircleUser, LogOut, MessagesSquare } from "lucide-react";
+import {
+  AlignJustify,
+  CircleUser,
+  LogOut,
+  MessageCircleMore,
+  MessagesSquare,
+} from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import {
@@ -92,11 +98,7 @@ const Header = () => {
     window.location.reload(); // Force a page refresh
   }, [router]);
 
-  const Menu = [
-    { id: 1, name: "Artist Login", path: "https://artist.gigsar.com" },
-    { id: 2, name: "User Login", path: "/user-dashboard" },
-    { id: 3, name: "Contact", path: "/contact-and-support" },
-  ];
+  const Menu = [{ id: 1, name: "Contact", path: "/contact-and-support" }];
 
   return (
     <>
@@ -118,9 +120,23 @@ const Header = () => {
         </div>
         {isMounted && (
           <div className="flex items-center gap-8 md:justify-end">
-            <a href={"/chat"}>
-              <MessagesSquare className="text-[#4A5E8B]" />
-            </a>
+            <div className="hidden md:flex gap-2">
+              <a href={"https://artist.gigsar.com"}>
+                <div className="flex flex-row items-center gap-1 bg-[#4A5E8B] px-2 text-white p-1 rounded-md">
+                  Artist Login
+                </div>
+              </a>
+              <a href={"/chat"}>
+                <div className="flex flex-row items-center gap-1 bg-[#4A5E8B] text-white p-1 rounded-md text-sm">
+                  Message <MessageCircleMore />
+                </div>
+              </a>
+              <a href={"/user-dashboard"}>
+                <div className="flex flex-row items-center gap-1 bg-[#4A5E8B] px-2 text-white p-1 rounded-md">
+                  User Login
+                </div>
+              </a>
+            </div>
             <Popover className="md:hidden">
               <PopoverTrigger asChild>
                 <Button variant="ghost" className="p-0 md:hidden">
@@ -136,6 +152,21 @@ const Header = () => {
                       </li>
                     </Link>
                   ))}
+                  <a href={"https://artist.gigsar.com"}>
+                    <div className="flex flex-row items-center gap-1 bg-[#4A5E8B] px-2 text-white p-1 rounded-md">
+                      Artist Login
+                    </div>
+                  </a>
+                  <a href={"/chat"}>
+                    <div className="flex flex-row items-center gap-1 bg-[#4A5E8B] text-white p-1 rounded-md text-sm">
+                      Message <MessageCircleMore />
+                    </div>
+                  </a>
+                  <a href={"/user-dashboard"}>
+                    <div className="flex flex-row items-center gap-1 bg-[#4A5E8B] px-2 text-white p-1 rounded-md">
+                      User Login
+                    </div>
+                  </a>
                 </ul>
               </PopoverContent>
             </Popover>

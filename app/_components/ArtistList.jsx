@@ -352,7 +352,7 @@ function ArtistList({
                       className="object-cover rounded-lg"
                     />
                     <div className="mt-3 items-baseline flex flex-col gap-1">
-                      <h2 className="text-[10px] bg-blue-100 p-1 rounded-full px-2 text-primary">
+                      <h2 className="text-[10px] bg-[#F2F4F8] p-1 rounded-full px-2 text-[#4A5E8B]">
                         {artist.artistType}
                       </h2>
                       <h2 className="font-bold text-sm text-nowrap">
@@ -372,7 +372,7 @@ function ArtistList({
                   {showEnquiry && (
                     <button
                       onClick={() => handleSendEnquiryClick(artist)}
-                      className="rounded-3xl w-full justify-center bg-gradient-to-r from-[#FA5252] to-[#DD2476] py-2 px-2 text-slate-50 inline-flex items-center gap-2 text-sm"
+                      className="rounded-3xl w-full justify-center bg-primary py-2 px-2 text-slate-50 inline-flex items-center gap-2 text-sm"
                     >
                       Send Enquiry
                     </button>

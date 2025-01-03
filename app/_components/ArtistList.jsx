@@ -25,6 +25,7 @@ import SignUp from "../(route)/(auth)/sign-up/page";
 
 function ArtistList({
   artists,
+  selectedFilters,
   selectedGenre,
   selectedEventType = "All Event Types",
   selectedDate,
@@ -337,6 +338,33 @@ function ArtistList({
           </Button>
         </div>
       </Modal>
+      <div className="flex flex-wrap gap-2">
+        {selectedFilters.category !== "All Artist Types" && (
+          <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
+            {selectedFilters.category}
+          </p>
+        )}
+        {selectedFilters.eventType !== "" && (
+          <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
+            {selectedFilters.eventType}
+          </p>
+        )}
+        {selectedFilters.gender !== "All" && (
+          <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
+            {selectedFilters.gender}
+          </p>
+        )}
+        {selectedFilters.location !== "All Locations" && (
+          <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
+            {selectedFilters.location}
+          </p>
+        )}
+        {selectedFilters.genre.length > 0 && (
+          <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
+            {selectedFilters.genre.join(", ")}
+          </p>
+        )}
+      </div>
       <div className="grid grid-rows-2 sm:grid-rows-2 md:grid-cols-3 gap-2 mt-4 lg:grid-cols-5">
         {artists?.length > 0 ? (
           artists.map((artist, index) => {
@@ -449,7 +477,7 @@ function ArtistList({
                               : formatToIndianNumber(artist.price)}
                           </h2>
                           <MapPin className="text-gray-500 h-[12px] mt-1 opacity-50 -z-10" />
-                          <h2 className="text-gray-500 text-sm">
+                          <h2 className="text-gray-500 text-sm -mt-2">
                             {artist.location}
                           </h2>
                         </div>

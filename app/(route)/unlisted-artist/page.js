@@ -30,7 +30,7 @@ function ArtistFilter() {
     category: "All Artist Types",
     genre: [],
     location: "All Locations",
-    eventType: "All Event Types",
+    eventType: "",
     gender: "All",
     minBudget: "",
     maxBudget: "",
@@ -142,7 +142,7 @@ function ArtistFilter() {
       category: params.category || "All Artist Types",
       genre: params.genre ? params.genre.split(",") : [],
       location: params.location || "All Locations",
-      eventType: params.eventType || "All Event Types",
+      eventType: params.eventType || "",
       gender: params.gender || "All",
       minBudget: params.minBudget || "",
       maxBudget: params.maxBudget || "",
@@ -205,7 +205,7 @@ function ArtistFilter() {
       category: "All Artist Types",
       genre: [],
       location: "All Locations",
-      eventType: "All Event Types",
+      eventType: "",
       gender: "All",
       minBudget: "",
       maxBudget: "",
@@ -297,6 +297,7 @@ function ArtistFilter() {
             ) : artists.length > 0 ? (
               <ArtistList
                 artists={artists}
+                selectedFilters={selectedFilters}
                 selectedCategory={selectedFilters.category}
                 selectedGenre={selectedFilters.genre}
                 selectedLocation={selectedFilters.location}

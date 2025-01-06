@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-function ArtistFilter() {
+function ArtistFilter({ initialFilters }) {
   const searchParams = useSearchParams();
   const filterParams = new URLSearchParams(searchParams.toString());
 
@@ -82,6 +82,26 @@ function ArtistFilter() {
     // Trigger fetching artists after filters are applied
     setApplyFilter(true);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (initialFilters) {
+      const updatedFilters = {
+        category: initialFilters?.category || "All Artist Types",
+        genre: initialFilters?.genre ? initialFilters?.genre.split(",") : [],
+        location: initialFilters?.location || "All Locations",
+        eventType: initialFilters?.eventType || "",
+        gender: initialFilters?.gender || "All",
+        minBudget: initialFilters?.minBudget || "",
+        maxBudget: initialFilters?.maxBudget || "",
+        searchQuery: initialFilters?.searchQuery || "",
+        sortOption: initialFilters?.sortOption || "High to Low",
+      };
+
+      setSelectedFilters(updatedFilters);
+      // Trigger fetching artists after filters are applied
+      setApplyFilter(true);
+    }
+  }, [initialFilters]);
 
   // Fetch filtered artists based on selected filters and current page
   const fetchFilteredArtists = useCallback(async () => {

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Head from "next/head";
 import ReactPlayer from "react-player";
+import ArtistFilter from "../../artist/page";
 
 export default function BlogPage({ params }) {
   const { linkid } = params;
@@ -56,8 +57,30 @@ export default function BlogPage({ params }) {
     return <p className="text-center text-gray-700">Blog not found.</p>;
   }
 
-  const { metaTitle, metaDescription, keywords, pageTitle, videos, content } =
-    blogData;
+  const {
+    metaTitle,
+    metaDescription,
+    keywords,
+    pageTitle,
+    videos,
+    content,
+    link,
+  } = blogData;
+
+  // Extract query parameters from the blogData.link
+  const extractFiltersFromLink = (url) => {
+    const urlParams = new URLSearchParams(url.split("?")[1]);
+    return {
+      category: urlParams.get("category") || "", // Defaults to empty string if not available
+      genre: urlParams.get("genre") || "", // Defaults to empty string if not available
+      location: urlParams.get("location") || "All Locations", // Default to 'All Locations'
+      eventType: urlParams.get("eventType") || "", // Defaults to empty string if not available
+      sortOption: urlParams.get("sortOption") || "", // Defaults to empty string if not available
+    };
+  };
+
+  const filters = extractFiltersFromLink(link);
+  console.log(filters); // Logs the extracted filters object
 
   return (
     <>
@@ -88,6 +111,8 @@ export default function BlogPage({ params }) {
         <h1 className="text-4xl font-bold text-center mb-6 text-primary">
           {pageTitle}
         </h1>
+
+        <ArtistFilter initialFilters={filters} />
 
         {/* Video Section */}
         {videos && videos.length > 0 && (

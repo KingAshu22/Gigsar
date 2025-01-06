@@ -6,7 +6,7 @@ import useAuth from "@/lib/hook";
 import Modal from "./Modal";
 import eventTypesOptions from "@/constants/eventTypes";
 import SingleSearch from "./SingleSearch";
-import { formatToIndianNumber } from "@/lib/utils";
+import { formatToIndianNumber, getFormattedRange } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
@@ -394,10 +394,13 @@ function ArtistList({
                       </h2>
                       <h2 className="text-primary text-sm">
                         ₹{" "}
-                        {budget && artist[budget]
-                          ? formatToIndianNumber(artist[budget])
-                          : formatToIndianNumber(artist.price)}{" "}
-                        ({selectedEventType})
+                        {getFormattedRange(
+                          artist?.price,
+                          artist?.corporateBudget,
+                          artist?.collegeBudget,
+                          artist?.singerCumGuitaristBudget,
+                          artist?.ticketingConcertBudget
+                        )}
                       </h2>
                       <h2 className="text-gray-500 text-sm">
                         <div className="flex flex-cols">
@@ -472,9 +475,16 @@ function ArtistList({
                         <div className="flex flex-row text-primary m-0 p-0">
                           <IndianRupee className="h-[12px] mt-[6px] opacity-50 -z-10" />
                           <h2 className="text-sm">
-                            {budget && artist[budget]
+                            {/* {budget && artist[budget]
                               ? formatToIndianNumber(artist[budget])
-                              : formatToIndianNumber(artist.price)}
+                              : formatToIndianNumber(artist.price)} */}
+                            {getFormattedRange(
+                              artist?.price,
+                              artist?.corporateBudget,
+                              artist?.collegeBudget,
+                              artist?.singerCumGuitaristBudget,
+                              artist?.ticketingConcertBudget
+                            )}
                           </h2>
                           <MapPin className="text-gray-500 h-[12px] mt-1 opacity-50 -z-10" />
                           <h2 className="text-gray-500 text-sm -mt-2">

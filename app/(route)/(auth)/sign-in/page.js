@@ -94,10 +94,11 @@ export default function SignIn() {
     }
 
     // Check if the phone number is exactly 10 digits
-    if (phone.length !== 10 || !/^[0-9]+$/.test(phone)) {
+    if (phone.length !== 10 || !/^[0-9]{10}$/.test(phone)) {
       toast.error("Please enter a valid 10-digit phone number.");
       return;
     }
+
     // Check for country code +91 and ensure the phone number is exactly 10 digits
     if (countryCode === "+91") {
       if (phone.length !== 10) {
@@ -177,12 +178,18 @@ export default function SignIn() {
                 )}
                 <span className="text-lg">{countryCode}</span>
                 <input
-                  type="number"
+                  type="text"
                   id="mobile-input"
                   placeholder="Enter mobile number"
+                  maxLength={10}
                   className="flex-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    const input = e.target.value;
+                    if (/^\d{0,10}$/.test(input)) {
+                      setPhone(input);
+                    }
+                  }}
                 />
               </div>
               <p className="text-sm mt-2">

@@ -175,7 +175,7 @@ export default function SignIn({ isModal = false }) {
                     )}
                     <span className="text-lg">{countryCode}</span>
                     <input
-                      type="text"
+                      type="number"
                       id="mobile-input"
                       placeholder="Enter mobile number"
                       maxLength={10}

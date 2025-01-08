@@ -143,7 +143,7 @@ export default function SignIn({ isModal = false }) {
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex justify-center p-4">
       {showVerifiedGif ? (
         <div className="flex items-center justify-center">
           <LottieImg animationData={animationData} loop="false" />

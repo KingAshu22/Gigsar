@@ -406,7 +406,7 @@ function ArtistList({
                       </h2>
                       <h2 className="text-gray-500 text-sm">
                         <div className="flex flex-cols">
-                          <MapPin className="w-4 -mt-1" />{" "}
+                          <MapPin className="w-4 -mt-0.5" />{" "}
                           {artist.location.split(",")[0]}
                         </div>
                       </h2>
@@ -440,14 +440,20 @@ function ArtistList({
                     href={`/artist/${artist.linkid}${eventTypeLink}`}
                     className="w-2/4 mt-2"
                   >
-                    <img
-                      src={artist.profilePic}
-                      alt={artist.name}
-                      width={200} // Adjust width as needed
-                      height={200} // Adjust height as needed
-                      loading="lazy"
-                      className="object-cover rounded-2xl border-[1px] shadow-xl"
-                    />
+                    {artist.profilePic ? (
+                      <img
+                        src={artist.profilePic}
+                        alt={artist.name}
+                        width={200}
+                        height={200}
+                        loading="lazy"
+                        className="object-cover rounded-2xl border-[1px] shadow-xl"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center object-cover rounded-2xl border-[1px] shadow-xl bg-gray-200 w-2/4">
+                        <span className="text-gray-500">No Image</span>
+                      </div>
+                    )}
                   </Link>
 
                   {/* Content section */}
@@ -461,8 +467,8 @@ function ArtistList({
                         <h2 className="font-bold text-sm tracking-wider pl-2">
                           {artist.name}
                         </h2>
-                        <h2 className="text-[10px] bg-slate-200 opacity-50 px-2 rounded-full w-fit capitalize">
-                          {artist.artistType}
+                        <h2 className="text-[10px] capitalize ml-2 p-1 text-gray-400 bg-gray-100 rounded-full w-fit">
+                          {artist.artistType.replace("-", " ")}
                         </h2>
 
                         {/* Genre */}
@@ -477,20 +483,19 @@ function ArtistList({
                         <div className="flex flex-row text-primary m-0 p-0">
                           <IndianRupee className="h-[12px] mt-[6px] opacity-50 -z-10" />
                           <h2 className="text-sm">
-                            {/* {budget && artist[budget]
+                            {budget && artist[budget]
                               ? formatToIndianNumber(artist[budget])
-                              : formatToIndianNumber(artist.price)} */}
-                            {getFormattedRange(
-                              artist?.price,
-                              artist?.corporateBudget,
-                              artist?.collegeBudget,
-                              artist?.singerCumGuitaristBudget,
-                              artist?.ticketingConcertBudget
-                            )}
+                              : getFormattedRange(
+                                  artist?.price,
+                                  artist?.corporateBudget,
+                                  artist?.collegeBudget,
+                                  artist?.singerCumGuitaristBudget,
+                                  artist?.ticketingConcertBudget
+                                )}
                           </h2>
-                          <MapPin className="text-gray-500 h-[12px] mt-1 opacity-50 -z-10" />
-                          <h2 className="text-gray-500 text-sm -mt-2">
-                            {artist.location}
+                          <MapPin className="text-gray-500 h-[12px] opacity-50 -z-10 mt-1" />
+                          <h2 className="text-gray-500 text-xs mt-0.5">
+                            {artist.location.split(",")[0]}
                           </h2>
                         </div>
                       </div>

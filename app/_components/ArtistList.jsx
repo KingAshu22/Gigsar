@@ -338,6 +338,7 @@ function ArtistList({
           </Button>
         </div>
       </Modal>
+      <p className="text-xs">Applied Filters:</p>
       <div className="flex flex-wrap gap-2">
         {selectedFilters.category !== "All Artist Types" && (
           <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">

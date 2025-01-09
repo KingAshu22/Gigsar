@@ -228,40 +228,65 @@ const MainContent = ({
               Videos
             </h3>
             <div className="">
-              {videos?.map((event, index) => {
-                const hasAvailableLinks = event.links.some(
-                  (link) => link.length > 0
-                );
+              {videos
+                ?.sort((a, b) => {
+                  // Custom sort to prioritize House Party events first, then others in the specified order
+                  const eventOrder = [
+                    "House Party",
+                    "Wedding/Private Event",
+                    "College Event",
+                    "Corporate Event",
+                    "Ticketing Concert",
+                    "Cover",
+                    "Bollywood Playback",
+                    "Original",
+                  ];
 
-                return (
-                  <div key={index}>
-                    {hasAvailableLinks && (
-                      <>
-                        <h3 className="font-semibold text-xs md:text-xl text-gray-700 mb-2">
-                          {event.name}
-                        </h3>
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                          {event.links.map(
-                            (link, linkIndex) =>
-                              link.length > 0 && (
-                                <div key={linkIndex} className="w-full h-64">
-                                  <ReactPlayer
-                                    url={`https://www.youtube.com/watch?v=${link}`}
-                                    className="react-player"
-                                    controls={false}
-                                    light={true}
-                                    width="100%"
-                                    height="72%"
-                                  />
-                                </div>
-                              )
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
+                  // Get the event type for comparison
+                  const getEventType = (event) => {
+                    return event?.name || ""; // Assuming `name` holds the event type
+                  };
+
+                  const aIndex = eventOrder.indexOf(getEventType(a));
+                  const bIndex = eventOrder.indexOf(getEventType(b));
+
+                  // Sort based on the order of the event type
+                  return aIndex - bIndex;
+                })
+                .map((event, index) => {
+                  const hasAvailableLinks = event?.links?.some(
+                    (link) => link.length > 0
+                  );
+
+                  return (
+                    <div key={index}>
+                      {hasAvailableLinks && (
+                        <>
+                          <h3 className="font-semibold text-xs md:text-xl text-gray-700 mb-2">
+                            {event.name}
+                          </h3>
+                          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            {event.links.map(
+                              (link, linkIndex) =>
+                                link.length > 0 && (
+                                  <div key={linkIndex} className="w-full h-64">
+                                    <ReactPlayer
+                                      url={`https://www.youtube.com/watch?v=${link}`}
+                                      className="react-player"
+                                      controls={false}
+                                      light={true}
+                                      width="100%"
+                                      height="72%"
+                                    />
+                                  </div>
+                                )
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>

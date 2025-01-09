@@ -394,13 +394,15 @@ function ArtistList({
                       </h2>
                       <h2 className="text-primary text-sm">
                         ₹{" "}
-                        {getFormattedRange(
-                          artist?.price,
-                          artist?.corporateBudget,
-                          artist?.collegeBudget,
-                          artist?.singerCumGuitaristBudget,
-                          artist?.ticketingConcertBudget
-                        )}
+                        {budget && artist[budget]
+                          ? formatToIndianNumber(artist[budget])
+                          : getFormattedRange(
+                              artist?.price,
+                              artist?.corporateBudget,
+                              artist?.collegeBudget,
+                              artist?.singerCumGuitaristBudget,
+                              artist?.ticketingConcertBudget
+                            )}
                       </h2>
                       <h2 className="text-gray-500 text-sm">
                         <div className="flex flex-cols">

@@ -183,7 +183,7 @@ function BookArtistPage() {
               artists={artist}
               showBooking={true}
               showEnquiry={false}
-              selectedEventType="House Party"
+              selectedEventType="House"
               selectedDate={date}
               name={name}
               bookLocation={location}

@@ -340,29 +340,29 @@ function ArtistList({
       </Modal>
       <p className="text-xs">Applied Filters:</p>
       <div className="flex flex-wrap gap-2">
-        {selectedFilters.category !== "All Artist Types" && (
+        {selectedFilters?.category !== "All Artist Types" && (
           <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
-            {selectedFilters.category}
+            {selectedFilters?.category}
           </p>
         )}
-        {selectedFilters.eventType !== "" && (
+        {selectedFilters?.eventType !== "" && (
           <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
-            {selectedFilters.eventType}
+            {selectedFilters?.eventType}
           </p>
         )}
-        {selectedFilters.gender !== "All" && (
+        {selectedFilters?.gender !== "All" && (
           <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
-            {selectedFilters.gender}
+            {selectedFilters?.gender}
           </p>
         )}
-        {selectedFilters.location !== "All Locations" && (
+        {selectedFilters?.location !== "All Locations" && (
           <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
-            {selectedFilters.location}
+            {selectedFilters?.location}
           </p>
         )}
-        {selectedFilters.genre.length > 0 && (
+        {selectedFilters?.genre.length > 0 && (
           <p className="bg-[#F2F4F8] p-2 rounded-full text-xs text-[#4A5E8B] capitalize">
-            {selectedFilters.genre.join(", ")}
+            {selectedFilters?.genre?.join(", ")}
           </p>
         )}
       </div>
@@ -426,7 +426,7 @@ function ArtistList({
                       className="w-full"
                       href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
                     >
-                      <button className="bg-[#FD4B3E] p-2 px-3 border-[1px] border-primary text-primary rounded-md w-full text-center text-[14px] cursor-pointer hover:bg-primary hover:text-white">
+                      <button className="bg-[#FD4B3E] p-2 px-3 border-[1px] border-primary text-white rounded-md w-full text-center text-[14px] cursor-pointer hover:bg-primary hover:text-white">
                         Book Now
                       </button>
                     </Link>

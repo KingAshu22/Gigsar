@@ -14,6 +14,8 @@ export default function PayButton({
   eventType,
   eventDate,
   location,
+  address,
+  zipCode,
   budget,
 }) {
   const router = useRouter();
@@ -54,7 +56,7 @@ export default function PayButton({
         {
           linkid,
           contact,
-          selectedLocation: location,
+          selectedLocation: location + " " + address + " " + zipCode,
           selectedEventType: eventType,
           selectedDate: eventDate
             ? eventDate.toLocaleDateString("en-GB", {

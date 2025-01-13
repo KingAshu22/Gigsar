@@ -34,6 +34,7 @@ import addOns from "./components/addOns";
 import SingleSearch from "@/app/_components/SingleSearch";
 import eventTypesOptions from "@/constants/eventTypes";
 import withAuth from "@/lib/withAuth";
+import PayButton from "@/app/_components/PayButton";
 
 const eventTypeMapping = {
   Corporate: "corporateBudget",
@@ -45,7 +46,7 @@ const eventTypeMapping = {
   "Mayra/Bhaat": "price",
   "Musical/Vedic Pheras": "price",
   Sangeet: "price",
-  "House Party": "singerCumGuitaristBudget",
+  House: "singerCumGuitaristBudget",
   "Ticketing Concert": "ticketingConcertBudget",
   Virtual: "singerCumGuitaristBudget",
 };
@@ -57,6 +58,7 @@ function BookArtistPage() {
 
   const artistName = params.artist.replace(/-/g, " ");
   const [artist, setArtist] = useState(null);
+  const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(false);
   const [event, setEvent] = useState("");
   const [priceName, setPriceName] = useState("");
@@ -75,7 +77,28 @@ function BookArtistPage() {
 
   useEffect(() => {
     getArtist();
+    getClient();
   }, []);
+
+  const getClient = async () => {
+    try {
+      console.log("Inside Get Client API");
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/client/contact/+${localStorage?.getItem(
+          "mobile"
+        )}`
+      );
+
+      console.log("Client:", response.data);
+
+      if (response.data) {
+        setClient(response.data);
+      }
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching Client:", error);
+    }
+  };
 
   useEffect(() => {
     const eventParam = searchParams.get("event");
@@ -269,21 +292,6 @@ function BookArtistPage() {
     setCurrentStep((prevStep) => prevStep - 1);
   };
 
-  useEffect(() => {
-    if (currentStep === 8) {
-      sendEnquiry();
-      const rzpPaymentForm = document.getElementById("rzp_payment_form");
-
-      if (!rzpPaymentForm.hasChildNodes()) {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/payment-button.js";
-        script.async = true;
-        script.dataset.payment_button_id = "pl_PA0LSqjXpwqKtX";
-        rzpPaymentForm.appendChild(script);
-      }
-    }
-  }, [currentStep]);
-
   return (
     <div className="container mx-auto p-4">
       <Script
@@ -308,7 +316,7 @@ function BookArtistPage() {
       />
       <h1 className="text-3xl font-bold mb-4 text-center">
         Book <span className="capitalize">{artist?.name}</span> for {event}{" "}
-        Event
+        Event {client?.name}
       </h1>
       {currentStep === 1 && (
         <SingleSearch
@@ -682,7 +690,21 @@ function BookArtistPage() {
             Next <ChevronRight />
           </Button>
         )}
-        {currentStep === 8 && <form id="rzp_payment_form"></form>}
+        {currentStep === 8 && (
+          <PayButton
+            amount={99}
+            name={client?.name}
+            email={client?.email}
+            contact={client?.contact}
+            linkid={artist?.linkid}
+            eventType={event}
+            eventDate={date}
+            location={location}
+            address={address}
+            zipCode={zipCode}
+            budget={total}
+          />
+        )}
       </div>
     </div>
   );

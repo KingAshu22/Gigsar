@@ -10,6 +10,10 @@ export async function GET(req) {
 
   console.log(date);
 
+  // Convert the date from DD/MM/YYYY to YYYY-MM-DD
+  const [day, month, year] = date.split("/");
+  const normalizedDate = `${year}-${month}-${day}`;
+
   await connectToDB(); // Connect to the database
 
   try {
@@ -20,7 +24,13 @@ export async function GET(req) {
       location: {
         $regex: new RegExp(location, "i"), // Case-insensitive search
       },
-    });
+      busyDates: {
+        $ne: normalizedDate, // Ensure the busyDates array does not include the selected date
+      },
+    }).or([
+      { location: { $regex: new RegExp(location.split(" ")[0], "i") } }, // First word of the location
+      { location: { $regex: new RegExp(location, "i") } }, // Full location match
+    ]);
 
     if (artists.length === 0) {
       return new Response(

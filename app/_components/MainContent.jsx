@@ -255,7 +255,7 @@ const MainContent = ({
                 })
                 .map((event, index) => {
                   const hasAvailableLinks = event?.links?.some(
-                    (link) => link.length > 0
+                    (link) => link?.length > 0
                   );
 
                   return (

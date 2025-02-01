@@ -98,7 +98,10 @@ const Header = () => {
     window.location.reload(); // Force a page refresh
   }, [router]);
 
-  const Menu = [{ id: 1, name: "Contact", path: "/contact-and-support" }];
+  const Menu = [
+    { id: 1, name: "Contact", path: "/contact-and-support" },
+    { id: 2, name: "About", path: "/about" },
+  ];
 
   return (
     <>

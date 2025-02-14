@@ -316,7 +316,7 @@ function BookArtistPage() {
       />
       <h1 className="text-3xl font-bold mb-4 text-center">
         Book <span className="capitalize">{artist?.name}</span> for {event}{" "}
-        Event {client?.name}
+        Event
       </h1>
       {currentStep === 1 && (
         <SingleSearch

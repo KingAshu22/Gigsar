@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import ArtistList from "@/app/_components/ArtistList";
 import { HashLoader } from "react-spinners";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 
 function ArtistFilter() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const filterParams = new URLSearchParams(searchParams.toString());
 
@@ -48,6 +49,49 @@ function ArtistFilter() {
   const [errorMsg, setErrorMsg] = useState(""); // For error message
 
   // Fetch initial filters (but skip artists if filters are applied in the URL)
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (
+      selectedFilters.category &&
+      !selectedFilters.category.includes("All Artist Types")
+    ) {
+      params.set("category", selectedFilters.category);
+    }
+    if (selectedFilters.genre.length > 0) {
+      params.set("genre", selectedFilters.genre.join(","));
+    }
+    if (
+      selectedFilters.location &&
+      !selectedFilters.location.includes("All Locations")
+    ) {
+      params.set("location", selectedFilters.location);
+    }
+    if (selectedFilters.eventType) {
+      params.set("eventType", selectedFilters.eventType);
+    }
+    if (selectedFilters.gender && !selectedFilters.gender.includes("All")) {
+      params.set("gender", selectedFilters.gender);
+    }
+    if (selectedFilters.minBudget) {
+      params.set("minBudget", selectedFilters.minBudget);
+    }
+    if (selectedFilters.maxBudget) {
+      params.set("maxBudget", selectedFilters.maxBudget);
+    }
+    if (selectedFilters.searchQuery) {
+      params.set("searchQuery", selectedFilters.searchQuery);
+    }
+    if (selectedFilters.sortOption) {
+      params.set("sortOption", selectedFilters.sortOption);
+    }
+    if (page > 1) {
+      params.set("page", page);
+    }
+    router.push(`?${params.toString()}`, undefined, {
+      shallow: true,
+    });
+  }, [selectedFilters, page]);
 
   useEffect(() => {
     const fetchPin = async () => {

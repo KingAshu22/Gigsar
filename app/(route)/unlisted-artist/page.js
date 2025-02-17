@@ -51,10 +51,54 @@ function ArtistFilter() {
   // Fetch initial filters (but skip artists if filters are applied in the URL)
 
   useEffect(() => {
+    const params = Object.fromEntries(filterParams.entries());
+
+    // ✅ Check if there are filters in the URL
+    if (Object.keys(params).length > 0) {
+      setSelectedFilters({
+        category: params.category || "All Artist Types",
+        genre: params.genre ? params.genre.split(",") : [],
+        location: params.location || "All Locations",
+        eventType: params.eventType || "",
+        gender: params.gender || "All",
+        minBudget: params.minBudget || "",
+        maxBudget: params.maxBudget || "",
+        searchQuery: params.searchQuery || "",
+        sortOption: params.sortOption || "High to Low",
+      });
+
+      setApplyFilter(true);
+    } else {
+      // ✅ Restore filters from sessionStorage if available
+      const storedFilters = sessionStorage.getItem("artistFilters");
+
+      if (storedFilters) {
+        const storedParams = new URLSearchParams(storedFilters);
+        setSelectedFilters({
+          category: storedParams.get("category") || "All Artist Types",
+          genre: storedParams.get("genre")
+            ? storedParams.get("genre").split(",")
+            : [],
+          location: storedParams.get("location") || "All Locations",
+          eventType: storedParams.get("eventType") || "",
+          gender: storedParams.get("gender") || "All",
+          minBudget: storedParams.get("minBudget") || "",
+          maxBudget: storedParams.get("maxBudget") || "",
+          searchQuery: storedParams.get("searchQuery") || "",
+          sortOption: storedParams.get("sortOption") || "High to Low",
+        });
+
+        setApplyFilter(true);
+      }
+    }
+  }, [searchParams]); // ✅ Only run when the URL changes
+
+  useEffect(() => {
     const params = new URLSearchParams();
+
     if (
       selectedFilters.category &&
-      !selectedFilters.category.includes("All Artist Types")
+      selectedFilters.category !== "All Artist Types"
     ) {
       params.set("category", selectedFilters.category);
     }
@@ -63,14 +107,14 @@ function ArtistFilter() {
     }
     if (
       selectedFilters.location &&
-      !selectedFilters.location.includes("All Locations")
+      selectedFilters.location !== "All Locations"
     ) {
       params.set("location", selectedFilters.location);
     }
     if (selectedFilters.eventType) {
       params.set("eventType", selectedFilters.eventType);
     }
-    if (selectedFilters.gender && !selectedFilters.gender.includes("All")) {
+    if (selectedFilters.gender && selectedFilters.gender !== "All") {
       params.set("gender", selectedFilters.gender);
     }
     if (selectedFilters.minBudget) {
@@ -82,15 +126,24 @@ function ArtistFilter() {
     if (selectedFilters.searchQuery) {
       params.set("searchQuery", selectedFilters.searchQuery);
     }
-    if (selectedFilters.sortOption) {
+    if (
+      selectedFilters.sortOption &&
+      selectedFilters.sortOption !== "High to Low"
+    ) {
       params.set("sortOption", selectedFilters.sortOption);
     }
     if (page > 1) {
       params.set("page", page);
     }
-    router.push(`?${params.toString()}`, undefined, {
-      shallow: true,
-    });
+
+    // ✅ Save the latest filters in sessionStorage
+    const filterSession = sessionStorage.getItem("artistFilters");
+    if (params.toString() !== "sortOption=High+to+Low") {
+      sessionStorage.setItem("artistFilters", params.toString());
+    }
+
+    // ✅ Use `router.replace()` to avoid adding to history stack
+    router.replace(`?${params.toString()}`, undefined, { shallow: true });
   }, [selectedFilters, page]);
 
   useEffect(() => {
@@ -177,29 +230,6 @@ function ArtistFilter() {
       setLoading(false);
     }
   };
-
-  // Extract filters from URL and apply them
-  useEffect(() => {
-    const params = Object.fromEntries(filterParams.entries());
-
-    const updatedFilters = {
-      category: params.category || "All Artist Types",
-      genre: params.genre ? params.genre.split(",") : [],
-      location: params.location || "All Locations",
-      eventType: params.eventType || "",
-      gender: params.gender || "All",
-      minBudget: params.minBudget || "",
-      maxBudget: params.maxBudget || "",
-      searchQuery: params.searchQuery || "",
-      sortOption: params.sortOption || "High to Low",
-    };
-
-    console.log(updatedFilters);
-
-    setSelectedFilters(updatedFilters);
-    // Trigger fetching artists after filters are applied
-    setApplyFilter(true);
-  }, [searchParams]);
 
   // Fetch filtered artists based on selected filters and current page
   const fetchFilteredArtists = useCallback(async () => {

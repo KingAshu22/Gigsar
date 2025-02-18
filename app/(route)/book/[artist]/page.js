@@ -35,6 +35,8 @@ import SingleSearch from "@/app/_components/SingleSearch";
 import eventTypesOptions from "@/constants/eventTypes";
 import withAuth from "@/lib/withAuth";
 import PayButton from "@/app/_components/PayButton";
+import SignIn from "../../(auth)/sign-up/page";
+import ClientRegistration from "../../user-dashboard/registration/page";
 
 const eventTypeMapping = {
   Corporate: "corporateBudget",
@@ -216,6 +218,49 @@ function BookArtistPage() {
   };
 
   useEffect(() => {
+    if (currentStep === 9) {
+      const intervalId = setInterval(() => {
+        const mobile = localStorage.getItem("mobile");
+        if (mobile && mobile.length > 0) {
+          console.log("Trying to fetch Client");
+          getClient();
+          if (client && client?.name && client?.email) {
+            console.log("Client fetched successfully");
+            setCurrentStep(10);
+          }
+        }
+      }, 200); // Check every 200 ms
+
+      // Cleanup the interval on component unmount or when step changes
+      return () => clearInterval(intervalId);
+    }
+  }, [currentStep, client]);
+
+  useEffect(() => {
+    if (currentStep === 8) {
+      const intervalId = setInterval(() => {
+        const mobile = localStorage.getItem("mobile");
+        const authExpiry = localStorage.getItem("authExpiry");
+        if (
+          mobile &&
+          mobile.length > 0 &&
+          authExpiry &&
+          Date.now() < parseInt(authExpiry, 10)
+        ) {
+          if (client && client?.name && client?.email) {
+            setCurrentStep(10);
+          } else {
+            setCurrentStep(9);
+          }
+        }
+      }, 200); // Check every 200 ms
+
+      // Cleanup the interval on component unmount or when step changes
+      return () => clearInterval(intervalId);
+    }
+  }, [currentStep]);
+
+  useEffect(() => {
     if (inputRef.current) {
       const initAutocomplete = () => {
         const autocomplete = new google.maps.places.Autocomplete(
@@ -289,7 +334,11 @@ function BookArtistPage() {
   };
 
   const prevStep = () => {
-    setCurrentStep((prevStep) => prevStep - 1);
+    if (currentStep !== 10) {
+      setCurrentStep((prevStep) => prevStep - 1);
+    } else if (currentStep === 10) {
+      setCurrentStep((prevStep) => prevStep - 3);
+    }
   };
 
   return (
@@ -380,11 +429,7 @@ function BookArtistPage() {
           {/* Street */}
           <div className="relative my-4">
             <Label htmlFor="address" className="text-lg">
-              {event === "House Party" ? (
-                <span>House</span>
-              ) : (
-                <span>Venue</span>
-              )}{" "}
+              {event === "House" ? <span>House</span> : <span>Venue</span>}{" "}
               Complete Address
             </Label>
             <Input
@@ -444,7 +489,7 @@ function BookArtistPage() {
               <SelectItem value="Up to 10">Up to 10</SelectItem>
               <SelectItem value="11 to 20">11 to 20</SelectItem>
               <SelectItem value="21 to 50">21 to 50</SelectItem>
-              {event !== "House Party" && (
+              {event !== "House" && (
                 <>
                   <SelectItem value="51 to 80">51 to 80</SelectItem>
                   <SelectItem value="81 to 120">81 to 120</SelectItem>
@@ -471,7 +516,7 @@ function BookArtistPage() {
             {soundSystems
               // Filter sound systems based on guest count if the event is "House Party"
               .filter((system) => {
-                if (event === "House Party") {
+                if (event === "House") {
                   return (
                     system.guests === "Up to 10" ||
                     system.guests === "11 to 20" ||
@@ -576,6 +621,16 @@ function BookArtistPage() {
         </div>
       )}
       {currentStep === 8 && (
+        <>
+          <SignIn isModal={true} />
+        </>
+      )}
+      {currentStep === 9 && (
+        <>
+          <ClientRegistration isModal={true} />
+        </>
+      )}
+      {currentStep === 10 && (
         <div>
           <h2 className="text-2xl font-bold mb-4">Pricing Details</h2>
           <p className="text-bold">
@@ -690,7 +745,7 @@ function BookArtistPage() {
             Next <ChevronRight />
           </Button>
         )}
-        {currentStep === 8 && (
+        {currentStep === 10 && (
           <PayButton
             amount={99}
             name={client?.name}
@@ -710,4 +765,4 @@ function BookArtistPage() {
   );
 }
 
-export default withAuth(BookArtistPage);
+export default BookArtistPage;

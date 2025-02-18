@@ -56,7 +56,7 @@ export default function PayButton({
         {
           linkid,
           contact,
-          selectedLocation: location + " " + address + " " + zipCode,
+          selectedLocation: address + " " + location + " " + zipCode,
           selectedEventType: eventType,
           selectedDate: eventDate
             ? eventDate.toLocaleDateString("en-GB", {

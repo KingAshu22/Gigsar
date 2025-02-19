@@ -13,6 +13,7 @@ import SignUp from "../(route)/(auth)/sign-up/page";
 import ClientRegistration from "../(route)/user-dashboard/registration/page";
 import axios from "axios";
 import PayButton from "./PayButton";
+import Link from "next/link";
 
 const Sidebar = ({
   artist,
@@ -24,6 +25,11 @@ const Sidebar = ({
   collegeBudget,
   singerCumGuitaristBudget,
   ticketingConcertBudget,
+  showBooking,
+  selectedEventType,
+  selectedEventDate,
+  eventLocation,
+  clientName,
 }) => {
   const inputRef = useRef(null);
   const [currentArtistId, setCurrentArtistId] = useState(null);
@@ -357,12 +363,29 @@ const Sidebar = ({
           </li>
         </ul> */}
           <div className="text-center">
-            <Button
-              className="rounded-3xl bg-gradient-to-r from-[#FA5252] to-[#DD2476] py-3 px-6 text-slate-50 inline-flex items-center gap-2 text-md"
-              onClick={() => handleSendEnquiryClick(artist)}
-            >
-              Send Enquiry
-            </Button>
+            {showBooking ? (
+              <Link
+                className="w-full"
+                href={`/book/${artist.linkid}?name=${sessionStorage?.getItem(
+                  "name"
+                )}&event=${sessionStorage?.getItem(
+                  "event"
+                )}&location=${sessionStorage?.getItem(
+                  "location"
+                )}&date=${sessionStorage?.getItem("date")}`}
+              >
+                <button className="bg-[#FD4B3E] p-2 px-3 border-[1px] border-primary text-white rounded-md w-full text-center text-[14px] cursor-pointer hover:bg-primary hover:text-white">
+                  Book Now
+                </button>
+              </Link>
+            ) : (
+              <Button
+                className="rounded-3xl bg-gradient-to-r from-[#FA5252] to-[#DD2476] py-3 px-6 text-slate-50 inline-flex items-center gap-2 text-md"
+                onClick={() => handleSendEnquiryClick(artist)}
+              >
+                Send Enquiry
+              </Button>
+            )}
           </div>
         </div>
       </div>

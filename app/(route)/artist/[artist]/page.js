@@ -10,9 +10,22 @@ import MainContent from "@/app/_components/MainContent";
 
 function ArtistDetails({ params }) {
   const [artist, setArtist] = useState(null);
+  const [showBooking, setShowBooking] = useState(false);
+  const [eventType, setEventType] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventLocation, setEventLocation] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams?.get("showBooking") === "true") {
+      setShowBooking(true);
+    }
+    setEventType(searchParams.get("selectedEventType"));
+    setEventDate(new Date(searchParams.get("date")));
+    setEventLocation(searchParams.get("location"));
+    setName(searchParams.get("name"));
     getArtist();
   }, []);
 
@@ -47,6 +60,11 @@ function ArtistDetails({ params }) {
             collegeBudget={artist?.collegeBudget}
             singerCumGuitaristBudget={artist?.singerCumGuitaristBudget}
             ticketingConcertBudget={artist?.ticketingConcertBudget}
+            showBooking={showBooking}
+            selectedEventType={eventType}
+            selectedEventDate={eventDate}
+            eventLocation={eventLocation}
+            clientName={name}
           />
           <MainContent
             name={artist?.name}

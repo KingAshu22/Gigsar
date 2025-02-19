@@ -36,9 +36,9 @@ function BookArtistPage() {
 
   useEffect(() => {
     // Load state from query parameters on mount
-    const storedDate = searchParams.get("date");
-    const storedLocation = searchParams.get("location");
-    const storedName = searchParams.get("name");
+    const storedDate = sessionStorage.getItem("date");
+    const storedLocation = sessionStorage.getItem("location");
+    const storedName = sessionStorage.getItem("name");
     const storedStep = searchParams.get("step");
 
     if (storedDate) setDate(new Date(storedDate));
@@ -50,13 +50,13 @@ function BookArtistPage() {
   useEffect(() => {
     // Update query parameters when any state changes
     const params = new URLSearchParams();
+    sessionStorage.setItem("event", "House");
     if (date) {
-      console.log(date.toLocaleDateString());
-
-      params.set("date", date.toLocaleDateString());
+      sessionStorage.setItem("date", date);
     }
-    if (location) params.set("location", location.split(",")[0].trim());
-    if (name) params.set("name", name);
+    if (location)
+      sessionStorage.setItem("location", location.split(",")[0].trim());
+    if (name) sessionStorage.setItem("name", name);
     params.set("step", currentStep);
 
     router.push(`/singer-for-house-party?${params.toString()}`, undefined, {

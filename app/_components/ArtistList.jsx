@@ -377,7 +377,7 @@ function ArtistList({
                   className="desktop border-[1px] rounded-lg p-3 cursor-pointer hover:border-primary shadow-lg"
                   key={index}
                 >
-                  <Link href={`/artist/${artist.linkid}${eventTypeLink}`}>
+                  <Link href={`/artist/${artist.linkid}?showBooking=true`}>
                     <img
                       src={artist.profilePic}
                       alt={artist.name}
@@ -422,10 +422,7 @@ function ArtistList({
                     </button>
                   )}
                   {showBooking && (
-                    <Link
-                      className="w-full"
-                      href={`/book/${artist.linkid}?name=${name}&event=${selectedEventType}&location=${bookLocation}&date=${selectedDate}`}
-                    >
+                    <Link className="w-full" href={`/book/${artist.linkid}`}>
                       <button className="bg-[#FD4B3E] p-2 px-3 border-[1px] border-primary text-white rounded-md w-full text-center text-[14px] cursor-pointer hover:bg-primary hover:text-white">
                         Book Now
                       </button>

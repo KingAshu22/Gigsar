@@ -435,7 +435,7 @@ function ArtistList({
                 >
                   {/* Link only wraps the image */}
                   <Link
-                    href={`/artist/${artist.linkid}${eventTypeLink}`}
+                    href={`/artist/${artist.linkid}?showBooking=true`}
                     className="w-2/4 mt-2"
                   >
                     {artist.profilePic ? (

@@ -28,11 +28,14 @@ const Home = () => {
         <CarouselContent>
           {[
             { href: "singer-for-house-party", src: "/carousel-1.png" },
-            { href: "singer-for-house-party", src: "/carousel-1.png" },
+            { href: "https://artist.gigsar.com", src: "/carousel-2.png" },
             { href: "singer-for-house-party", src: "/carousel-1.png" },
           ].map((slide, index) => (
             <CarouselItem key={index} className="w-full">
-              <Link href={`/${slide.href}`}>
+              <Link
+                href={slide.href}
+                target={slide.href.startsWith("http") ? "_blank" : "_self"}
+              >
                 <Image
                   src={slide.src}
                   width={1920}

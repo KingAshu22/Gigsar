@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -22,6 +22,7 @@ const Home = () => {
         className="w-full"
         opts={{
           loop: true,
+          align: "start", // Ensures multiple slides are aligned
         }}
         plugins={[autoplayPlugin.current]}
       >
@@ -29,9 +30,12 @@ const Home = () => {
           {[
             { href: "singer-for-house-party", src: "/carousel-1.png" },
             { href: "https://artist.gigsar.com", src: "/carousel-2.png" },
-            { href: "singer-for-house-party", src: "/carousel-1.png" },
+            { href: "/", src: "/carousel-3.png" },
           ].map((slide, index) => (
-            <CarouselItem key={index} className="w-full">
+            <CarouselItem
+              key={index}
+              className="w-full md:basis-1/2" // Shows 2 slides in medium+ screens
+            >
               <Link
                 href={slide.href}
                 target={slide.href.startsWith("http") ? "_blank" : "_self"}
@@ -71,17 +75,39 @@ const Home = () => {
       </div>
 
       <h1 className="text-2xl font-bold mt-6">Events Type</h1>
-      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 w-full">
+      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 w-full justify-items-center">
         {[
-          { href: "Corporate", label: "Corporate Event" },
-          { href: "College", label: "College Event" },
-          { href: "Wedding", label: "Wedding Event" },
-          { href: "House", label: "House Party" },
-          { href: "Virtual", label: "Virtual Event" },
+          {
+            href: "Corporate",
+            src: "/event-type/corporate.gif",
+            label: "Corporate Event",
+          },
+          {
+            href: "College",
+            src: "/event-type/college.gif",
+            label: "College Event",
+          },
+          {
+            href: "Wedding",
+            src: "/event-type/wedding.gif",
+            label: "Wedding Event",
+          },
+          { href: "House", src: "/event-type/house.gif", label: "House Party" },
+          {
+            href: "Virtual",
+            src: "/event-type/virtual.gif",
+            label: "Virtual Event",
+          },
         ].map((event, index) => (
           <Link key={index} href={`/?eventType=${event.href}`}>
-            <div className="rounded-lg bg-primary w-full h-32 flex items-center justify-center text-white text-lg font-bold text-center p-2">
-              {event.label}
+            <div className="rounded-lg w-full flex flex-col items-center justify-center text-lg font-bold text-center">
+              <Image
+                src={event.src}
+                width={1280}
+                height={720}
+                className="rounded-lg border-2 border-gray-200 py-2"
+                alt="Event"
+              />
             </div>
           </Link>
         ))}

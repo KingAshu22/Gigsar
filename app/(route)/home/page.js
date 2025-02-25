@@ -75,7 +75,7 @@ const Home = () => {
       </div>
 
       <h1 className="text-2xl font-bold mt-6">Events Type</h1>
-      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 w-full justify-items-center">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 w-full justify-items-center">
         {[
           {
             href: "Corporate",

@@ -54,22 +54,37 @@ const Home = () => {
       </Carousel>
 
       <h1 className="text-2xl font-bold mt-6">Artists</h1>
-      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:flex lg:flex-row">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 w-full justify-items-center">
         {[
-          { href: "singer-band", src: "/artist-type/Singer.png" },
-          { href: "instrumentalist", src: "/artist-type/musician.png" },
-          { href: "dj", src: "/artist-type/dj.png" },
-          { href: "comedian", src: "/artist-type/comedian.png" },
-          { href: "rapper", src: "/artist-type/rapper.png" },
+          {
+            href: "singer-band",
+            src: "/event-type/musician.svg",
+            label: "Singer Band",
+          },
+          {
+            href: "instrumentalist",
+            src: "/artist-type/musician.svg",
+            label: "Instrumentalist",
+          },
+          { href: "dj", src: "/event-type/dj.svg", label: "DJ" },
+          {
+            href: "comedian",
+            src: "/artist-type/comedian.svg",
+            label: "Comedian",
+          },
+          { href: "rapper", src: "/artist-type/rapper.svg", label: "Rapper" },
         ].map((artist, index) => (
           <Link key={index} href={`/?category=${artist.href}`}>
-            <Image
-              src={artist.src}
-              width={300}
-              height={300}
-              className="rounded-lg w-full"
-              alt="Artist"
-            />
+            <div className="rounded-lg w-full flex flex-col items-center justify-center text-lg font-bold text-center">
+              <Image
+                src={artist.src}
+                width={200}
+                height={200}
+                className="py-2"
+                alt="Artist"
+              />
+              <p>{artist.label}</p>
+            </div>
           </Link>
         ))}
       </div>
@@ -79,23 +94,23 @@ const Home = () => {
         {[
           {
             href: "Corporate",
-            src: "/event-type/corporate.gif",
+            src: "/event-type/corporate.svg",
             label: "Corporate Event",
           },
           {
             href: "College",
-            src: "/event-type/college.gif",
+            src: "/event-type/college.svg",
             label: "College Event",
           },
           {
             href: "Wedding",
-            src: "/event-type/wedding.gif",
+            src: "/event-type/wedding.svg",
             label: "Wedding Event",
           },
-          { href: "House", src: "/event-type/house.gif", label: "House Party" },
+          { href: "House", src: "/event-type/house.svg", label: "House Party" },
           {
             href: "Virtual",
-            src: "/event-type/virtual.gif",
+            src: "/event-type/virtual.svg",
             label: "Virtual Event",
           },
         ].map((event, index) => (
@@ -103,11 +118,12 @@ const Home = () => {
             <div className="rounded-lg w-full flex flex-col items-center justify-center text-lg font-bold text-center">
               <Image
                 src={event.src}
-                width={1280}
-                height={720}
-                className="rounded-lg border-2 border-gray-200 py-2"
+                width={200}
+                height={200}
+                className="py-2"
                 alt="Event"
               />
+              <p>{event.label}</p>
             </div>
           </Link>
         ))}

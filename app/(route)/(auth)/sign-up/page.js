@@ -12,10 +12,9 @@ export default function SignIn({ isModal = false }) {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [showOtpSection, setShowOtpSection] = useState(false);
-  const [OTPlessSignin, setOTPlessSignin] = useState(null);
   const [returnUrl, setReturnUrl] = useState("");
   const [error, setError] = useState("");
-  const [countryCode, setCountryCode] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
   const [countryFlag, setCountryFlag] = useState("");
   const [timer, setTimer] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -26,7 +25,6 @@ export default function SignIn({ isModal = false }) {
   useEffect(() => {
     const rawReturnUrl = searchParams.get("redirect_url");
     if (rawReturnUrl) {
-      // Only decode if rawReturnUrl is not null or empty
       setReturnUrl(decodeURIComponent(rawReturnUrl));
     }
   }, [searchParams]);
@@ -35,41 +33,13 @@ export default function SignIn({ isModal = false }) {
     fetch("https://ipapi.co/json/")
       .then((response) => response.json())
       .then((data) => {
-        const countryCode = data.country_calling_code;
+        const countryCode = data.country_calling_code || "+91";
         const countryFlag = `https://flagicons.lipis.dev/flags/4x3/${data.country.toLowerCase()}.svg`;
         setCountryCode(countryCode);
         setCountryFlag(countryFlag);
       })
       .catch((error) => console.error("Error fetching IP data:", error));
-
-    const script = document.createElement("script");
-    script.src = "https://otpless.com/v2/headless.js";
-    script.id = "otpless-sdk";
-    script.setAttribute("data-appid", "P2E0047ZZJ3U12JSZ4TV");
-    script.onload = () => {
-      if (typeof window.OTPless !== "undefined") {
-        const callback = (userinfo) => {
-          console.log("OTPless callback userinfo:", userinfo);
-          const authExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000;
-          const mobile = userinfo.identities[0].identityValue;
-          const city = userinfo.network.ipLocation.city.name;
-          localStorage.setItem("authExpiry", authExpiry.toString());
-          localStorage.setItem("mobile", mobile.toString());
-          localStorage.setItem("city", city.toString());
-          // Redirect to the full returnUrl
-          router.push(returnUrl);
-        };
-
-        const instance = new window.OTPless(callback);
-        setOTPlessSignin(instance);
-      }
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, [router, returnUrl]);
+  }, []);
 
   const startTimer = () => {
     setIsButtonDisabled(true);
@@ -86,60 +56,56 @@ export default function SignIn({ isModal = false }) {
     }, 1000);
   };
 
-  const handlePhoneAuth = () => {
-    if (!phone) {
-      toast.error("Please fill your phone number");
+  const handlePhoneAuth = async () => {
+    setError("");
+    if (!phone || phone.length !== 10 || !/^[0-9]+$/.test(phone)) {
+      toast.error("Please enter a valid 10-digit phone number.");
       return;
     }
 
-    // Check if the phone number is exactly 10 digits
-    if (phone.length !== 10 || !/^[0-9]+$/.test(phone)) {
-      toast.error("Please enter a valid 10-digit phone number.");
-      return;
-    }
-    if (countryCode === "+91" && phone.length !== 10) {
-      toast.error("Please enter a valid 10-digit phone number.");
-      return;
-    }
-    if (OTPlessSignin) {
-      OTPlessSignin.initiate({
-        channel: "PHONE",
-        phone,
-        countryCode,
+    try {
+      const generatedOTP = Math.floor(100000 + Math.random() * 900000); // Generate random 6-digit OTP
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/gigsar-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contactNumber: countryCode + phone,
+          otp: generatedOTP,
+        }),
       });
-      setShowOtpSection(true);
-      startTimer();
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success("OTP sent successfully!");
+        setShowOtpSection(true);
+        setOtp(generatedOTP.toString()); // For demo/testing – In real app, user should enter it manually
+        startTimer();
+      } else {
+        toast.error("Failed to send OTP. Try again.");
+        console.error(result);
+      }
+    } catch (err) {
+      console.error("Send OTP Error:", err);
+      toast.error("Something went wrong.");
     }
   };
 
   const handleVerifyOTP = () => {
-    if (OTPlessSignin) {
-      OTPlessSignin.verify({
-        channel: "PHONE",
-        phone,
-        otp,
-        countryCode,
-      })
-        .then((response) => {
-          console.log("Verification Response:", response);
-          if (response.success && response.response.requestID) {
-            if (!isModal) {
-              setShowVerifiedGif(true);
-            }
-            if (returnUrl) {
-              router.push(returnUrl);
-            }
-          } else {
-            setError(
-              "OTP is incorrect. Please try again or Session storage issue"
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Error verifying OTP:", error);
-          setError("OTP is incorrect. Please try again.");
-        });
+    // For demo purposes, we just verify that otp is 6 digits
+    if (!otp || otp.length !== 6 || !/^[0-9]+$/.test(otp)) {
+      setError("Please enter a valid 6-digit OTP.");
+      return;
     }
+
+    // In a real app, you'd call a backend to validate this OTP
+    // Here we simulate verification success
+    localStorage.setItem("authExpiry", (Date.now() + 7 * 24 * 60 * 60 * 1000).toString());
+    localStorage.setItem("mobile", phone);
+
+    if (!isModal) setShowVerifiedGif(true);
+    if (returnUrl) router.push(returnUrl);
   };
 
   return (
@@ -182,11 +148,9 @@ export default function SignIn({ isModal = false }) {
                       className="flex-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={phone}
                       onChange={(e) => {
-                        const input = e.target.value;
-                        // Remove any non-digit characters, including `.` and `-`
-                        const numericInput = input.replace(/[^0-9]/g, "");
-                        if (numericInput.length <= 10) {
-                          setPhone(numericInput);
+                        const input = e.target.value.replace(/[^0-9]/g, "");
+                        if (input.length <= 10) {
+                          setPhone(input);
                         }
                       }}
                     />

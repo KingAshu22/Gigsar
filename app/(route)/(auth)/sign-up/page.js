@@ -80,7 +80,6 @@ export default function SignIn({ isModal = false }) {
       if (response.ok) {
         toast.success("OTP sent successfully!");
         setShowOtpSection(true);
-        setOtp(generatedOTP.toString()); // For demo/testing – In real app, user should enter it manually
         startTimer();
       } else {
         toast.error("Failed to send OTP. Try again.");

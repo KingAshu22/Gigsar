@@ -101,7 +101,7 @@ export default function SignIn({ isModal = false }) {
     // In a real app, you'd call a backend to validate this OTP
     // Here we simulate verification success
     localStorage.setItem("authExpiry", (Date.now() + 7 * 24 * 60 * 60 * 1000).toString());
-    localStorage.setItem("mobile", phone);
+    localStorage.setItem("mobile", `${countryCode.slice(1)}${phone}`);
 
     if (!isModal) setShowVerifiedGif(true);
     if (returnUrl) router.push(returnUrl);

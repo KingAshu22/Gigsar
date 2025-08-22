@@ -18,7 +18,7 @@ export default function ContactUs() {
               <Phone className="text-blue-600 w-6 h-6" />
               <div>
                 <p className="text-lg font-semibold">Phone</p>
-                <p className="text-gray-600">+91 98700 62178</p>
+                <p className="text-gray-600">+91 98929 62178</p>
               </div>
             </div>
             <div className="flex items-center space-x-4 p-4 border border-gray-300 rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
@@ -33,8 +33,7 @@ export default function ContactUs() {
               <div>
                 <p className="text-lg font-semibold">Address</p>
                 <p className="text-gray-600">
-                  243, B Wing, Orchid Road Mall, Royal Palms, Goregaon(E), Aarey
-                  Milk Colony, Goregaon East, Mumbai- 400065, Maharashtra
+                  India
                 </p>
               </div>
             </div>

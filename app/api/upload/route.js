@@ -1,24 +1,28 @@
-import AWS from "aws-sdk";
+import {
+  S3Client,
+  PutObjectCommand,
+  ListObjectsV2Command,
+} from "@aws-sdk/client-s3";
 import sharp from "sharp";
 import { nanoid } from "nanoid";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+
+const REGION = "ap-south-1"; // Region where the S3 bucket is located
+const BUCKET = "gigsar";
 
 // Configure AWS S3 with your access keys
-AWS.config.setPromisesDependency(require("bluebird"));
-AWS.config.update({
-  accessKeyId: process.env.AWS_S3_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
-  region: "ap-south-1", // Specify the region where your S3 bucket is located
+const s3 = new S3Client({
+  region: REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
+  },
 });
-
-const s3 = new AWS.S3();
 
 export async function POST(req) {
   try {
     // Retrieve data from request body
-    const { artistName, cropData } = req.body;
-
-    console.log(req.body);
+    const { artistName, cropData } = await req.json();
 
     // Check if artistName or cropData is missing
     if (!artistName || !cropData) {
@@ -33,7 +37,7 @@ export async function POST(req) {
     // Replace spaces in artistName with "-"
     const folderName = artistName.replace(/\s+/g, "-");
 
-    // Check if folder exists, if not create it
+    // Check if folder exists
     const folderExists = await checkIfFolderExists(folderName);
 
     // Resize image to 350x350, compress, convert to webp
@@ -41,18 +45,21 @@ export async function POST(req) {
 
     // Generate unique filename
     const fileName = `${nanoid()}.webp`;
+    const key = folderExists ? `${folderName}/${fileName}` : fileName;
 
-    const s3Params = {
-      Bucket: "gigsar",
-      Key: folderExists ? `${folderName}/${fileName}` : fileName,
-      Body: resizedImage,
-      ACL: "public-read",
-      ContentEncoding: "base64", // required
-      ContentType: `image/webp`, // required. Notice the back ticks
-    };
-    const { Location } = await s3.upload(s3Params).promise();
-    console.log("Image uploaded successfully at:", Location);
-    return NextResponse.json({ success: true, location: Location });
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+        Body: resizedImage,
+        ACL: "public-read",
+        ContentType: "image/webp",
+      })
+    );
+
+    const location = `https://${BUCKET}.s3.${REGION}.amazonaws.com/${key}`;
+    console.log("Image uploaded successfully at:", location);
+    return NextResponse.json({ success: true, location });
   } catch (error) {
     console.error("Error uploading image:", error);
     return NextResponse.json(
@@ -64,14 +71,15 @@ export async function POST(req) {
 
 async function checkIfFolderExists(folderName) {
   try {
-    const params = {
-      Bucket: "gigsar",
-      Prefix: folderName + "/",
-    };
+    const data = await s3.send(
+      new ListObjectsV2Command({
+        Bucket: BUCKET,
+        Prefix: folderName + "/",
+        MaxKeys: 1,
+      })
+    );
 
-    const data = await s3.listObjectsV2(params).promise();
-
-    return data.Contents.length > 0;
+    return (data.KeyCount ?? 0) > 0;
   } catch (error) {
     console.error("Error checking if folder exists:", error);
     return false;

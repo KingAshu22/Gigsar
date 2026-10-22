@@ -8,6 +8,7 @@ const ArtistSchema = new Schema({
   name: String,
   profilePic: String,
   contact: String,
+  email: String,
   location: String,
   price: String,
   artistType: String,
@@ -27,6 +28,12 @@ const ArtistSchema = new Schema({
   testLinks: Array,
   reviews: Array,
   blog: String,
+  contactVisibility: {
+    email: Boolean,
+    call: Boolean,
+    whatsapp: Boolean,
+    enquiryOnly: Boolean,
+  },
 });
 
 const Artist = models.Artist || model("Artist", ArtistSchema);

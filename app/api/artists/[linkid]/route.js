@@ -1,5 +1,6 @@
 import Artist from "@/models/Artist";
 import { connectToDB } from "@/app/_utils/mongodb";
+import { toPublicArtist } from "@/lib/contactVisibility";
 
 export async function GET(req, { params }) {
   const { linkid } = params; // Get the linkid from params
@@ -17,8 +18,9 @@ export async function GET(req, { params }) {
       });
     }
 
-    // Return a successful response with the artist data
-    return new Response(JSON.stringify(artist), {
+    // Return a successful response with the artist data, minus any contact
+    // details the artist has chosen to keep private
+    return new Response(JSON.stringify(toPublicArtist(artist)), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

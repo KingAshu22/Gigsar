@@ -75,6 +75,37 @@ export default function PayButton({
     }
   };
 
+  // Emails the enquiry to the artist. The server re-checks the payment
+  // signature, so this only works for a genuine payment.
+  const emailArtist = async (razorpayResponse) => {
+    try {
+      await axios.post("/api/artist-enquiry", {
+        orderId: razorpayResponse.razorpay_order_id,
+        razorpayPaymentId: razorpayResponse.razorpay_payment_id,
+        razorpaySignature: razorpayResponse.razorpay_signature,
+        linkid,
+        name,
+        email,
+        contact,
+        eventType,
+        eventDate:
+          eventDate instanceof Date
+            ? eventDate.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : eventDate || "",
+        location,
+        address,
+        zipCode,
+        budget,
+      });
+    } catch (error) {
+      console.error("Error emailing artist:", error);
+    }
+  };
+
   const createOrder = async () => {
     const res = await fetch("/api/create-order", {
       method: "POST",
@@ -126,7 +157,7 @@ export default function PayButton({
         console.log(verifyData);
         if (verifyData.isOk) {
           // await sendEnquiry();
-          await sendDataEnquiry();
+          await Promise.all([sendDataEnquiry(), emailArtist(response)]);
           router.push(
             `/success?orderId=${order_Id}&name=${name}&email=${email}&contact=${contact}&linkid=${linkid}&eventType=${eventType}&eventDate=${eventDate}&location=${location}&budget=${budget}&amount=${amount}`
           );

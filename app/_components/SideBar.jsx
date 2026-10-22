@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import SendEnquiry from "./SendEnquiry";
-import { MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { formatToIndianNumber } from "@/lib/utils";
 import Script from "next/script";
 import Modal from "./Modal";
@@ -204,6 +204,14 @@ const Sidebar = ({
     }
   }, [step]);
 
+  // Contact options the artist has chosen to make public. The API only sends
+  // contact/email when the artist allows it.
+  const visibility = artist?.contactVisibility || {};
+  const contactDigits = String(artist?.contact || "").replace(/\D/g, "");
+  const showCall = visibility.call && contactDigits.length > 0;
+  const showWhatsapp = visibility.whatsapp && contactDigits.length > 0;
+  const showEmail = visibility.email && !!artist?.email;
+
   const handleModalClose = () => {
     setShowModal(false);
     setEventType("");
@@ -362,6 +370,43 @@ const Sidebar = ({
             </div>
           </li>
         </ul> */}
+          {(showCall || showWhatsapp || showEmail) && (
+            <div className="px-4 mb-4 flex flex-col gap-2">
+              {showCall && (
+                <a
+                  href={`tel:+${contactDigits}`}
+                  className="flex items-center justify-center gap-2 rounded-3xl bg-gray-900 py-2 px-6 text-white text-md hover:bg-gray-800"
+                >
+                  <Phone className="size-4" />
+                  Call Now
+                </a>
+              )}
+              {showWhatsapp && (
+                <a
+                  href={`https://wa.me/${contactDigits}?text=${encodeURIComponent(
+                    `Hi ${name}, I found your profile on Gigsar and would like to enquire about booking you for an event.`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-3xl bg-[#25D366] py-2 px-6 text-white text-md hover:bg-[#1ebe5b]"
+                >
+                  <MessageCircle className="size-4" />
+                  WhatsApp
+                </a>
+              )}
+              {showEmail && (
+                <a
+                  href={`mailto:${artist.email}?subject=${encodeURIComponent(
+                    `Booking enquiry via Gigsar`
+                  )}`}
+                  className="flex items-center justify-center gap-2 rounded-3xl border border-gray-400 bg-white py-2 px-6 text-gray-900 text-md hover:bg-gray-100"
+                >
+                  <Mail className="size-4" />
+                  Email
+                </a>
+              )}
+            </div>
+          )}
           <div className="text-center">
             {showBooking ? (
               <Link

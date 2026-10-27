@@ -19,6 +19,8 @@ export default function SignIn({ isModal = false }) {
   const [timer, setTimer] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [showVerifiedGif, setShowVerifiedGif] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -63,48 +65,73 @@ export default function SignIn({ isModal = false }) {
       return;
     }
 
+    setSending(true);
     try {
-      const generatedOTP = Math.floor(100000 + Math.random() * 900000); // Generate random 6-digit OTP
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/gigsar-otp`, {
+      const response = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contactNumber: countryCode + phone,
-          otp: generatedOTP,
-        }),
+        body: JSON.stringify({ phone: countryCode + phone }),
       });
-
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        toast.success("OTP sent successfully!");
+        toast.success("OTP sent on WhatsApp. Copy it from WhatsApp and paste it here.");
+        setOtp("");
         setShowOtpSection(true);
         startTimer();
       } else {
-        toast.error("Failed to send OTP. Try again.");
-        console.error(result);
+        toast.error(result.message || "Failed to send OTP. Try again.");
       }
     } catch (err) {
       console.error("Send OTP Error:", err);
       toast.error("Something went wrong.");
+    } finally {
+      setSending(false);
     }
   };
 
-  const handleVerifyOTP = () => {
-    // For demo purposes, we just verify that otp is 6 digits
-    if (!otp || otp.length !== 6 || !/^[0-9]+$/.test(otp)) {
+  const handlePasteOtp = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const code = text.replace(/\D/g, "").slice(0, 6);
+      if (code) setOtp(code);
+      else toast.error("No OTP found in clipboard");
+    } catch {
+      toast.error("Could not read clipboard. Please paste the OTP manually.");
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    setError("");
+    if (!/^[0-9]{6}$/.test(otp)) {
       setError("Please enter a valid 6-digit OTP.");
       return;
     }
 
-    // In a real app, you'd call a backend to validate this OTP
-    // Here we simulate verification success
-    localStorage.setItem("authExpiry", (Date.now() + 7 * 24 * 60 * 60 * 1000).toString());
-    localStorage.setItem("mobile", `${countryCode.slice(1)}${phone}`);
+    setVerifying(true);
+    try {
+      const response = await fetch("/api/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: countryCode + phone, otp }),
+      });
+      const data = await response.json().catch(() => ({}));
 
-    if (!isModal) setShowVerifiedGif(true);
-    if (returnUrl) router.push(returnUrl);
+      if (!response.ok || !data.success) {
+        setError(data.message || "OTP is incorrect. Please try again.");
+        return;
+      }
+
+      localStorage.setItem("authExpiry", (Date.now() + 7 * 24 * 60 * 60 * 1000).toString());
+      localStorage.setItem("mobile", data.mobile);
+
+      if (!isModal) setShowVerifiedGif(true);
+      if (returnUrl) router.push(returnUrl);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setVerifying(false);
+    }
   };
 
   return (
@@ -170,11 +197,15 @@ export default function SignIn({ isModal = false }) {
                 <button
                   onClick={handlePhoneAuth}
                   className={`w-full mt-4 px-4 py-2 bg-primary ${
-                    isButtonDisabled ? "opacity-75" : ""
+                    isButtonDisabled || sending ? "opacity-75" : ""
                   } text-white rounded-lg hover:bg-red-800 transition duration-200`}
-                  disabled={isButtonDisabled}
+                  disabled={isButtonDisabled || sending}
                 >
-                  {isButtonDisabled ? `Resend OTP in ${timer}s` : "Next"}
+                  {sending
+                    ? "Sending WhatsApp OTP..."
+                    : isButtonDisabled
+                    ? `Resend OTP in ${timer}s`
+                    : "Send WhatsApp OTP"}
                 </button>
               )}
             </div>
@@ -187,20 +218,46 @@ export default function SignIn({ isModal = false }) {
                 >
                   OTP
                 </label>
-                <input
-                  type="text"
-                  id="otp-input"
-                  placeholder="Enter OTP"
-                  maxLength={6}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
+                <p className="text-sm text-gray-500 mb-2">
+                  We sent a 6-digit code to your WhatsApp ({countryCode} {phone}). Tap &quot;Copy code&quot; there and paste it below.
+                </p>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    id="otp-input"
+                    placeholder="Enter OTP"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    className="flex-1 w-full px-4 py-2 border rounded-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    onKeyDown={(e) => e.key === "Enter" && handleVerifyOTP()}
+                  />
+                  <button
+                    type="button"
+                    onClick={handlePasteOtp}
+                    className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100 transition duration-200"
+                  >
+                    Paste
+                  </button>
+                </div>
                 <button
                   onClick={handleVerifyOTP}
-                  className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+                  disabled={verifying}
+                  className={`w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 ${verifying ? "opacity-75" : ""}`}
                 >
-                  Verify OTP
+                  {verifying ? "Verifying..." : "Verify OTP"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOtpSection(false);
+                    setOtp("");
+                    setError("");
+                  }}
+                  className="w-full mt-2 text-sm text-primary"
+                >
+                  Change number
                 </button>
               </div>
             )}

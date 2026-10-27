@@ -9,9 +9,6 @@ export const connectToDB = async () => {
   }
 
   try {
-    console.log(
-      `MongoDB URL: mongodb+srv://bookanartist2:NRMVq0Q1CJI4xZNa@book-my-singer.da90nao.mongodb.net/`
-    );
     await mongoose.connect(
       "mongodb+srv://bookanartist2:NRMVq0Q1CJI4xZNa@book-my-singer.da90nao.mongodb.net/",
       {

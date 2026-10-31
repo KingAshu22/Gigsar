@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { emailArtistEnquiry } from "@/lib/emailArtistEnquiry";
 import useAuth from "@/lib/hook";
 import Modal from "./Modal";
 import eventTypesOptions from "@/constants/eventTypes";
@@ -155,6 +156,18 @@ function ArtistList({
 
   const sendDataEnquiry = async () => {
     if (!currentArtistId) return;
+
+    // Email the artist alongside saving the enquiry; a failed email won't block it.
+    emailArtistEnquiry({
+      linkid: currentArtistId,
+      name: client?.name,
+      email: client?.email,
+      contact: client?.contact,
+      eventType,
+      eventDate: eventDate || selectedDate,
+      location,
+      budget: currentBudget,
+    });
 
     try {
       await axios.post(

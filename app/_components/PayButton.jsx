@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { useState } from "react";
+import { emailArtistEnquiry } from "@/lib/emailArtistEnquiry";
 
 export default function PayButton({
   amount,
@@ -77,34 +78,20 @@ export default function PayButton({
 
   // Emails the enquiry to the artist. The server re-checks the payment
   // signature, so this only works for a genuine payment.
-  const emailArtist = async (razorpayResponse) => {
-    try {
-      await axios.post("/api/artist-enquiry", {
-        orderId: razorpayResponse.razorpay_order_id,
-        razorpayPaymentId: razorpayResponse.razorpay_payment_id,
-        razorpaySignature: razorpayResponse.razorpay_signature,
-        linkid,
-        name,
-        email,
-        contact,
-        eventType,
-        eventDate:
-          eventDate instanceof Date
-            ? eventDate.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })
-            : eventDate || "",
-        location,
-        address,
-        zipCode,
-        budget,
-      });
-    } catch (error) {
-      console.error("Error emailing artist:", error);
-    }
-  };
+  const emailArtist = (razorpayResponse) =>
+    emailArtistEnquiry({
+      payment: razorpayResponse,
+      linkid,
+      name,
+      email,
+      contact,
+      eventType,
+      eventDate,
+      location,
+      address,
+      zipCode,
+      budget,
+    });
 
   const createOrder = async () => {
     const res = await fetch("/api/create-order", {
